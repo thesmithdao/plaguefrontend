@@ -146,16 +146,16 @@ export default function Profile({ onClose }: ProfileProps) {
           ) : nfts.length === 0 ? (
             <div className="text-center py-8">
               <div className="text-6xl mb-6">🦠</div>
-              <h3 className="text-xl font-bold text-gray-300 mb-4">No PLAGUE specimens detected</h3>
+              <h3 className="text-xl font-bold text-gray-300 mb-4">No Plague specimens detected</h3>
               <p className="text-gray-400 mb-6">
-                Patient appears to be uninfected. Acquire PLAGUE NFTs to unlock your infection profile!
+                Patient appears to be uninfected.
               </p>
               <button
                 onClick={openMagicEden}
                 className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg flex items-center gap-2 mx-auto transition-colors"
               >
                 <ShoppingCart className="h-5 w-5" />
-                Get PLAGUE NFTs on Magic Eden
+                Get Plague on Magic Eden
               </button>
             </div>
           ) : (
