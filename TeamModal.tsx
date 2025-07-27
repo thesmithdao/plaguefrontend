@@ -103,9 +103,7 @@ export default function TeamModal({ onClose }: TeamModalProps) {
                       alt={member.name}
                       className="w-full h-full rounded-full object-cover border-2 border-green-500/30"
                     />
-                    <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                      <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                    </div>
+                    
                   </div>
                   <h4 className="text-white font-bold text-lg">{member.name}</h4>
                   <p className="text-green-400 text-sm font-medium">{member.role}</p>
@@ -119,24 +117,7 @@ export default function TeamModal({ onClose }: TeamModalProps) {
           </div>
 
           <div className="mt-8 text-center">
-            <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-6">
-              <h4 className="text-green-400 font-bold text-lg mb-2">Join Our Laboratory</h4>
-              <p className="text-gray-300 text-sm mb-4">
-                We're always looking for talented individuals to join our viral marketing research team.
-              </p>
-              <button
-                onClick={() => {
-                  const subject = encodeURIComponent("Career Opportunity - Plague Labs")
-                  const body = encodeURIComponent(
-                    "Hello Plague Labs team,\n\nI'm interested in joining your viral marketing laboratory. Please let me know about current opportunities.\n\nBest regards,",
-                  )
-                  window.open(`mailto:hellohelloplaguelabs@gmail.com?subject=${subject}&body=${body}`, "_blank")
-                }}
-                className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg transition-colors"
-              >
-                Apply Now
-              </button>
-            </div>
+            
           </div>
         </div>
       </div>
