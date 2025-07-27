@@ -161,12 +161,7 @@ export default function Profile({ onClose }: ProfileProps) {
                 <Share2 className="h-4 w-4" />
                 Share Infection
               </button>
-              <button
-                onClick={handleDisconnect}
-                className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"
-              >
-                Disconnect
-              </button>
+              
             </div>
           </div>
 
