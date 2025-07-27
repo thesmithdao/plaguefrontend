@@ -120,9 +120,9 @@ export default function PlagueMain() {
         </div>
 
         {/* Mobile Navigation */}
-        <div className="md:hidden mt-4">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-center gap-8">
+        <div className="md:hidden mt-3">
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center justify-center gap-12">
               <button
                 onClick={() => openModal("about")}
                 className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-2 text-sm font-medium"
@@ -138,7 +138,7 @@ export default function PlagueMain() {
                 Moonshots
               </button>
             </div>
-            <div className="flex items-center justify-center gap-8">
+            <div className="flex items-center justify-center gap-12">
               <button
                 onClick={() => openModal("team")}
                 className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-2 text-sm font-medium"
