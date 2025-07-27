@@ -215,7 +215,7 @@ export default function PlagueMain() {
 
           {/* Features Section */}
           <div className="bg-gray-900/40 border border-green-500/20 rounded-xl p-6 sm:p-8 backdrop-blur-sm mt-16">
-            <h3 className="text-2xl sm:text-3xl font-bold text-green-400 mb-6">Our Services</h3>
+            <h3 className="text-2xl sm:text-3xl font-bold text-green-400 mb-6">octor's Recipe</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="flex items-start space-x-4">
                 <div className="w-16 h-16 rounded-lg bg-green-500/20 p-3 flex items-center justify-center group">
