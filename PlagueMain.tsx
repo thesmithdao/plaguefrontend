@@ -270,7 +270,7 @@ export default function PlagueMain() {
               </button>
 
               <button
-                className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 sm:px-8 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all shadow-lg flex items-center justify-center gap-2 text-sm sm:text-base opacity-100"
+                className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 sm:px-8 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all shadow-lg flex items-center justify-center gap-2 text-sm sm:text-base opacity-70"
                 onClick={() => setShowContactForm(true)}
               >
                 <CalendarPlus className="h-4 w-4 sm:h-5 sm:w-5" />
