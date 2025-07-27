@@ -64,7 +64,7 @@ export default function PlagueMain() {
       <header className="fixed top-0 left-0 right-0 z-20 p-4 sm:p-6 bg-transparent backdrop-blur-sm">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center space-x-3 px-20">
+          <div className="flex items-center space-x-3 px-4 sm:px-20">
             <Image
               src="/images/test-tube-logo.png"
               alt="PLAGUE"
@@ -111,12 +111,6 @@ export default function PlagueMain() {
             <WalletMultiButton
               className="!bg-green-600 hover:!bg-green-700 !text-white !font-bold !text-xs sm:!text-sm !px-1 sm:!px-3 !py-1 sm:!py-2 !rounded-lg !border-2 !border-green-500 hover:!border-green-400 !transition-all !shadow-lg !min-h-[28px] sm:!min-h-[40px] !max-w-[80px] sm:!max-w-none !overflow-hidden !whitespace-nowrap !text-ellipsis"
               startIcon={undefined}
-              style={{
-                fontSize: "10px",
-                "@media (min-width: 640px)": {
-                  fontSize: "14px",
-                },
-              }}
               onClick={(event) => {
                 // Let the default behavior handle wallet selection and connection
                 // This will auto-connect after wallet selection
