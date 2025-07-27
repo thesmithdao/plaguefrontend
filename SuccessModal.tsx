@@ -2,26 +2,12 @@
 
 import { X, ExternalLink } from "lucide-react"
 
-interface SuccessCase {
-  project: string
-  category: string
-  description: string
-  results: {
-    [key: string]: string
-  }
-  image: string
-  timeline?: string
-  services?: string[]
-  xUrl?: string
-  websiteUrl?: string
-}
-
 interface SuccessModalProps {
   onClose: () => void
 }
 
 export default function SuccessModal({ onClose }: SuccessModalProps) {
-  const successCases: SuccessCase[] = [
+  const successCases = [
     {
       project: "Serenia",
       category: "GameFi",
@@ -88,7 +74,7 @@ export default function SuccessModal({ onClose }: SuccessModalProps) {
         <div className="p-4 border-b border-gray-700 flex items-center justify-between sticky top-0 bg-gray-900 z-10">
           <h2 className="text-lg font-bold text-green-400">Moonshots</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
-            <X className="h-6 w-6" />
+            <X className="h-5 w-5" />
           </button>
         </div>
 
@@ -102,36 +88,22 @@ export default function SuccessModal({ onClose }: SuccessModalProps) {
             {successCases.map((project, index) => (
               <div
                 key={index}
-                className="bg-gray-800/50 rounded-lg border border-green-500/20 hover:border-green-500/40 transition-all duration-300 overflow-hidden group"
+                className="bg-gray-800/50 rounded-lg overflow-hidden border border-green-500/20 hover:border-green-500/50 transition-colors"
               >
-                <div className="relative h-48 overflow-hidden">
-                  <img
-                    src={project.image || "/placeholder.svg"}
-                    alt={project.project}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute top-4 left-4">
-                    <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm">
+                <img
+                  src={project.image || "/placeholder.svg"}
+                  alt={project.project}
+                  className="w-full h-48 object-cover"
+                />
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-white font-bold text-lg">{project.project}</h4>
+                    <span className="bg-green-600/20 text-green-400 text-xs px-2 py-1 rounded border border-green-500/30">
                       {project.category}
                     </span>
                   </div>
-                  {project.xUrl && (
-                    <div className="absolute top-4 right-4">
-                      <a
-                        href={project.xUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="bg-gray-900/80 text-white p-2 rounded-full hover:bg-gray-800 transition-colors backdrop-blur-sm"
-                      >
-                        <ExternalLink className="h-4 w-4" />
-                      </a>
-                    </div>
-                  )}
-                </div>
 
-                <div className="p-6">
-                  <h4 className="text-white font-bold text-xl mb-2">{project.project}</h4>
-                  <p className="text-gray-300 text-sm mb-4 leading-relaxed">{project.description}</p>
+                  <p className="text-gray-300 text-sm mb-4">{project.description}</p>
 
                   <div className="grid grid-cols-3 gap-4 mb-4">
                     {/* Original numerical data commented out for future utilization */}
@@ -160,32 +132,52 @@ export default function SuccessModal({ onClose }: SuccessModalProps) {
                     */}
                     <div className="col-span-3 text-center text-gray-400 text-lg font-semibold">Coming soon!</div>
                   </div>
+
+                  <div className="mb-4">
+                    <p className="text-gray-400 text-xs mb-2">
+                      Timeline: <span className="text-white">{project.timeline}</span>
+                    </p>
+                    <div className="flex flex-wrap gap-1">
+                      {project.services.map((service, serviceIndex) => (
+                        <span key={serviceIndex} className="bg-gray-700 text-gray-300 text-xs px-2 py-1 rounded">
+                          {service}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Social Links Section */}
+                  {(project.websiteUrl || project.xUrl) && (
+                    <div className="mt-4 pt-4 border-t border-gray-700">
+                      <div className="flex gap-2">
+                        {project.websiteUrl && (
+                          <a
+                            href={project.websiteUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-green-600 hover:bg-green-700 text-white p-2 rounded-lg transition-colors flex items-center justify-center"
+                            title="Visit Website"
+                          >
+                            <ExternalLink className="h-4 w-4" />
+                          </a>
+                        )}
+                        {project.xUrl && (
+                          <a
+                            href={project.xUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-black hover:bg-gray-800 text-white p-2 rounded-lg transition-colors flex items-center justify-center flex-row px-3.5"
+                            title="Follow on 𝕏"
+                          >
+                            <span className="text-sm font-bold">𝕏</span>
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
-          </div>
-
-          <div className="mt-8 text-center">
-            <div className="bg-gradient-to-r from-green-500/10 to-blue-500/10 border border-green-500/20 rounded-lg p-6">
-              <h4 className="text-green-400 font-bold text-lg mb-2">Ready to Go Viral?</h4>
-              <p className="text-gray-300 text-sm mb-4">
-                Join our success stories and let us help your project achieve moonshot results.
-              </p>
-              <button
-                onClick={() => {
-                  const title = encodeURIComponent("Moonshot Marketing Consultation")
-                  const details = encodeURIComponent(
-                    "I'm interested in discussing viral marketing strategies for my Web3 project with the Plague Labs team.",
-                  )
-                  const organizerEmail = encodeURIComponent("hellohelloplaguelabs@gmail.com")
-                  const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&add=${organizerEmail}`
-                  window.open(googleCalendarUrl, "_blank")
-                }}
-                className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-3 px-6 rounded-lg transition-all shadow-lg"
-              >
-                Start Your Campaign
-              </button>
-            </div>
           </div>
         </div>
       </div>
