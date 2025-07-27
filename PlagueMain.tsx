@@ -464,27 +464,14 @@ export default function PlagueMain() {
               <div className="border-t border-gray-700 pt-4">
                 <p className="text-sm text-gray-300 mb-3 text-center">Send your message via:</p>
 
-                <div className="bg-gray-800 rounded-lg p-3 mb-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-400">Email:</span>
-                    <button
-                      type="button"
-                      onClick={() => copyToClipboard("helloplaguelabs@gmail.com")}
-                      className="flex items-center gap-1 text-green-400 hover:text-green-300 transition-colors text-sm"
-                    >
-                      {copiedEmail ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                      {copiedEmail ? "Copied!" : "Copy"}
-                    </button>
-                  </div>
-                  <p className="text-white font-mono text-sm">helloplaguelabs@gmail.com</p>
-                </div>
+                
 
                 <div className="space-y-2">
                   <a
                     href="https://mail.google.com/mail/?view=cm&fs=1&to=helloplaguelabs@gmail.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                    className="w-full hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition-colors flex items-center justify-center gap-2 px-4 mx-0 h-auto flex-row bg-green-700"
                   >
                     <ExternalLink className="h-4 w-4" />
                     Open Gmail
@@ -494,7 +481,7 @@ export default function PlagueMain() {
                     href="https://outlook.live.com/mail/0/deeplink/compose?to=helloplaguelabs@gmail.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                    className="w-full hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 bg-green-700"
                   >
                     <ExternalLink className="h-4 w-4" />
                     Open Outlook
