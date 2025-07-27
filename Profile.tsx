@@ -11,6 +11,7 @@ import {
   RefreshCw,
   AlertTriangle,
   WormIcon as Virus,
+  Syringe,
 } from "lucide-react"
 
 interface NFT {
@@ -114,7 +115,7 @@ export default function Profile({ onClose }: ProfileProps) {
             </button>
           </div>
           <div className="text-center py-8">
-            <div className="text-4xl mb-4">💉</div>
+            <Syringe className="h-8 w-8 text-green-400 mx-auto mb-4" />
             <p className="text-gray-300">Connect your wallet to see your Plague NFTs</p>
             <p className="text-gray-400 text-sm mt-2">No wallet connected</p>
             <a
