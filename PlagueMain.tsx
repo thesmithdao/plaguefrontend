@@ -185,7 +185,7 @@ export default function PlagueMain() {
       <main className="relative z-10 flex-1 flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12 pt-48 sm:pt-32">
         <div className="max-w-4xl mx-auto text-center">
           <div className="mb-8 sm:mb-12 mr-0">
-            <div className="mb-6 sm:mb-8 text-white leading-tight px-0 text-6xl">
+            <div className="mb-6 sm:mb-8 text-white leading-tight px-0 text-4xl sm:text-5xl md:text-6xl">
               <div className="mb-2 px-0">A web3 marketing agency</div>
               <div className="px-3.5">
                 focused on <em className="italic font-normal">memetic</em> languages.
