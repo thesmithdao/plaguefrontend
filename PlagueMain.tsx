@@ -12,6 +12,7 @@ import Footer from "./Footer"
 import TeamModal from "./TeamModal"
 import SuccessModal from "./SuccessModal"
 import PrivacyModal from "./PrivacyModal"
+import CookieConsent from "./CookieConsent"
 
 export default function PlagueMain() {
   const { connected } = useWallet()
@@ -125,14 +126,14 @@ export default function PlagueMain() {
             <div className="flex items-center justify-center gap-12">
               <button
                 onClick={() => openModal("about")}
-                className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-2 text-sm font-medium"
+                className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-2 text-base font-medium"
               >
                 <Info className="h-4 w-4" />
                 About
               </button>
               <button
                 onClick={() => openModal("success")}
-                className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-2 text-sm font-medium"
+                className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-2 text-base font-medium"
               >
                 <TrendingUp className="h-4 w-4" />
                 Moonshots
@@ -141,14 +142,14 @@ export default function PlagueMain() {
             <div className="flex items-center justify-center gap-12">
               <button
                 onClick={() => openModal("team")}
-                className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-2 text-sm font-medium"
+                className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-2 text-base font-medium"
               >
                 <User className="h-4 w-4" />
                 Team
               </button>
               <button
                 onClick={() => openModal("profile")}
-                className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-2 text-sm font-medium"
+                className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-2 text-base font-medium"
               >
                 <User className="h-4 w-4" />
                 Profile
@@ -322,6 +323,9 @@ export default function PlagueMain() {
       </main>
 
       <Footer onOpenTerms={() => openModal("terms")} onOpenPrivacy={() => openModal("privacy")} />
+
+      {/* Cookie Consent */}
+      <CookieConsent />
 
       {/* Modals */}
       {activeModal === "about" && <AboutModal onClose={closeModal} />}
