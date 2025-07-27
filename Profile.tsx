@@ -34,7 +34,6 @@ export default function Profile({ onClose }: ProfileProps) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [currentGridPage, setCurrentGridPage] = useState(0)
 
   useEffect(() => {
     if (publicKey) {
@@ -82,13 +81,6 @@ export default function Profile({ onClose }: ProfileProps) {
     setCurrentIndex((prev) => (prev - 1 + nfts.length) % nfts.length)
   }
 
-  const getInfectionStatus = (count: number) => {
-    if (count === 0) return { status: "Clean", color: "text-green-400", risk: "Low" }
-    if (count <= 5) return { status: "Carrier", color: "text-yellow-400", risk: "Medium" }
-    if (count <= 15) return { status: "Infected", color: "text-orange-400", risk: "High" }
-    return { status: "Patient Zero", color: "text-red-400", risk: "Critical" }
-  }
-
   const shareInfection = () => {
     const text = `I'm infected with ${nfts.length} Plague specimens! 🦠 Check out my collection: ${window.location.href}`
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`
@@ -99,10 +91,6 @@ export default function Profile({ onClose }: ProfileProps) {
     disconnect()
     onClose()
   }
-
-  useEffect(() => {
-    setCurrentGridPage(0)
-  }, [nfts])
 
   if (!publicKey) {
     return (
@@ -132,8 +120,6 @@ export default function Profile({ onClose }: ProfileProps) {
     )
   }
 
-  const infectionData = getInfectionStatus(nfts.length)
-
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
       <div className="bg-gray-900 border border-gray-700 rounded-xl w-full h-full sm:max-w-3xl sm:w-full sm:max-h-[90vh] sm:h-auto overflow-y-auto">
@@ -157,14 +143,6 @@ export default function Profile({ onClose }: ProfileProps) {
               <div>
                 <h3 className="text-green-400 font-semibold mb-2">Specimen Count</h3>
                 <p className="text-white text-2xl font-bold">{nfts.length}</p>
-              </div>
-              <div>
-                <h3 className="text-green-400 font-semibold mb-2">Infection Status</h3>
-                <p className={`text-lg font-bold ${infectionData.color}`}>{infectionData.status}</p>
-              </div>
-              <div>
-                <h3 className="text-green-400 font-semibold mb-2">Contagion Risk</h3>
-                <p className={`text-lg font-bold ${infectionData.color}`}>{infectionData.risk}</p>
               </div>
             </div>
 
@@ -244,7 +222,6 @@ export default function Profile({ onClose }: ProfileProps) {
                       onClick={() => {
                         const imageUrl = nfts[currentIndex]?.image
                         if (imageUrl) {
-                          // Convert to friendly IPFS link if it's an IPFS URL
                           const friendlyUrl = imageUrl.includes("ipfs://")
                             ? imageUrl.replace("ipfs://", "https://ipfs.io/ipfs/")
                             : imageUrl.includes("gateway.pinata.cloud") || imageUrl.includes("cloudflare-ipfs.com")
@@ -283,16 +260,21 @@ export default function Profile({ onClose }: ProfileProps) {
                       <ChevronLeft className="h-5 w-5" />
                     </button>
 
-                    <div className="flex space-x-1">
-                      {nfts.map((_, index) => (
-                        <button
-                          key={index}
-                          onClick={() => setCurrentIndex(index)}
-                          className={`w-2 h-2 rounded-full transition-colors ${
-                            index === currentIndex ? "bg-green-400" : "bg-gray-600"
-                          }`}
-                        />
-                      ))}
+                    <div className="flex space-x-1 max-w-xs overflow-hidden">
+                      {nfts
+                        .slice(Math.max(0, currentIndex - 5), Math.min(nfts.length, currentIndex + 6))
+                        .map((_, index) => {
+                          const actualIndex = Math.max(0, currentIndex - 5) + index
+                          return (
+                            <button
+                              key={actualIndex}
+                              onClick={() => setCurrentIndex(actualIndex)}
+                              className={`w-2 h-2 rounded-full transition-colors ${
+                                actualIndex === currentIndex ? "bg-green-400" : "bg-gray-600"
+                              }`}
+                            />
+                          )
+                        })}
                     </div>
 
                     <button
@@ -305,66 +287,38 @@ export default function Profile({ onClose }: ProfileProps) {
                 )}
               </div>
 
-              {/* NFT Grid with Pagination */}
+              {/* Specimen Carousel */}
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <h5 className="text-green-400 font-semibold">All Specimens</h5>
-                  <div className="text-gray-400 text-sm">
-                    Showing {Math.min(currentGridPage * 24 + 24, nfts.length)} of {nfts.length}
-                  </div>
+                  <h5 className="text-green-400 font-semibold">Specimen Carousel</h5>
+                  <div className="text-gray-400 text-sm">{nfts.length} specimens total</div>
                 </div>
 
-                <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-12 gap-2">
-                  {nfts.slice(currentGridPage * 24, (currentGridPage + 1) * 24).map((nft, index) => {
-                    const actualIndex = currentGridPage * 24 + index
-                    return (
+                <div className="relative">
+                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+                    {nfts.map((nft, index) => (
                       <button
                         key={nft.mint}
-                        onClick={() => setCurrentIndex(actualIndex)}
-                        className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all hover:scale-105 ${
-                          actualIndex === currentIndex
+                        onClick={() => setCurrentIndex(index)}
+                        className={`relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all hover:scale-105 ${
+                          index === currentIndex
                             ? "border-green-400 ring-2 ring-green-400/50"
                             : "border-gray-600 hover:border-green-500"
                         }`}
                       >
                         <img
-                          src={nft.image || "/placeholder.svg?height=100&width=100&text=Plague"}
+                          src={nft.image || "/placeholder.svg?height=64&width=64&text=Plague"}
                           alt={nft.name}
                           className="w-full h-full object-cover"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement
-                            target.src = "/placeholder.svg?height=100&width=100&text=Plague"
+                            target.src = "/placeholder.svg?height=64&width=64&text=Plague"
                           }}
                         />
                       </button>
-                    )
-                  })}
-                </div>
-
-                {/* Grid Pagination */}
-                {nfts.length > 24 && (
-                  <div className="flex justify-center items-center gap-4 mt-4">
-                    <button
-                      onClick={() => setCurrentGridPage(Math.max(0, currentGridPage - 1))}
-                      disabled={currentGridPage === 0}
-                      className="bg-gray-700 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed text-white p-2 rounded-lg transition-colors"
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                    </button>
-
-                    <span className="text-gray-300 text-sm">
-                      Page {currentGridPage + 1} of {Math.ceil(nfts.length / 24)}
-                    </span>
-
-                    <button
-                      onClick={() => setCurrentGridPage(Math.min(Math.ceil(nfts.length / 24) - 1, currentGridPage + 1))}
-                      disabled={currentGridPage >= Math.ceil(nfts.length / 24) - 1}
-                      className="bg-gray-700 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed text-white p-2 rounded-lg transition-colors"
-                    >
-                      <ChevronRight className="h-4 w-4" />
-                    </button>
+                    ))}
                   </div>
-                )}
+                </div>
               </div>
             </div>
           )}

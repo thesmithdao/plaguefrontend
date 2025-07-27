@@ -26,6 +26,7 @@ export async function checkRateLimit(
       .gte("created_at", windowStart.toISOString())
 
     if (error) {
+      console.error("Rate limit check error:", error)
       // Always allow request if we can't check (fail open)
       return {
         success: true,
@@ -46,6 +47,7 @@ export async function checkRateLimit(
       resetTime,
     }
   } catch (error) {
+    console.error("Rate limit error:", error)
     // Always allow request if there's an error (fail open)
     return {
       success: true,
