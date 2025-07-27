@@ -370,10 +370,18 @@ export default function PlagueMain() {
                 const formData = new FormData(e.target as HTMLFormElement)
                 const name = formData.get("name")
                 const email = formData.get("email")
+                const subject = formData.get("subject")
                 const message = formData.get("message")
-                const subject = `New Contact from ${name}`
+
+                const emailSubject = `${subject} - From ${name}`
                 const body = `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`
-                window.location.href = `mailto:helloplaguelabs@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+
+                const mailtoLink = `mailto:helloplaguelabs@gmail.com?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(body)}`
+
+                // Open email client
+                window.open(mailtoLink, "_blank")
+
+                // Close the form
                 setShowContactForm(false)
               }}
             >
@@ -401,6 +409,19 @@ export default function PlagueMain() {
                   required
                   className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
                   placeholder="your@email.com"
+                />
+              </div>
+              <div>
+                <label htmlFor="subject" className="block text-sm font-medium text-gray-300 mb-1">
+                  Subject
+                </label>
+                <input
+                  type="text"
+                  id="subject"
+                  name="subject"
+                  required
+                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
+                  placeholder="Project inquiry, collaboration, etc."
                 />
               </div>
               <div>
