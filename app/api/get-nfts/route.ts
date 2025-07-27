@@ -1,33 +1,29 @@
 import { type NextRequest, NextResponse } from "next/server"
 
-// PLAGUE collection configuration
-const COLLECTION_CONFIG = {
-  // PLAGUE collection verified creator address
-  VERIFIED_CREATOR: "PLAGUEhKiPBcNLKqWgVVhQJVkwbXbWyXUWcp8Jc6KqE",
-  // This is the actual PLAGUE collection creator address
-  COLLECTION_ADDRESS: "J1S9H3QjnRtBbbuD4HjPV6RpRhwuk4zKbxsnCHuTgh9w",
-}
-
-export async function GET(req: NextRequest) {
-  const searchParams = req.nextUrl.searchParams
-  const walletAddress = searchParams.get("walletAddress")
-
-  if (!walletAddress) {
-    return NextResponse.json({ error: "Wallet address is required" }, { status: 400 })
-  }
-
+export async function GET(request: NextRequest) {
   try {
-    // Use the provided Helius API key
-    const HELIUS_API_KEY = process.env.HELIUS_API_KEY || "90a5d0fd-8930-477a-bb54-c1efab193ba7"
+    const { searchParams } = new URL(request.url)
+    const walletAddress = searchParams.get("walletAddress")
 
-    const response = await fetch(`https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`, {
+    if (!walletAddress) {
+      return NextResponse.json({ success: false, error: "Wallet address is required" }, { status: 400 })
+    }
+
+    const heliusApiKey = process.env.HELIUS_API_KEY
+    if (!heliusApiKey) {
+      return NextResponse.json({ success: false, error: "Helius API key not configured" }, { status: 500 })
+    }
+
+    const url = `https://mainnet.helius-rpc.com/?api-key=${heliusApiKey}`
+
+    const response = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         jsonrpc: "2.0",
-        id: "get-assets-by-owner",
+        id: "my-id",
         method: "getAssetsByOwner",
         params: {
           ownerAddress: walletAddress,
@@ -42,7 +38,7 @@ export async function GET(req: NextRequest) {
     })
 
     if (!response.ok) {
-      throw new Error(`Helius API failed with status: ${response.status}`)
+      throw new Error(`Helius API error: ${response.status}`)
     }
 
     const data = await response.json()
@@ -51,99 +47,41 @@ export async function GET(req: NextRequest) {
       throw new Error(`Helius API error: ${data.error.message}`)
     }
 
-    const allAssets = data.result?.items || []
+    const allNfts = data.result?.items || []
 
-    // Filter for PLAGUE collection NFTs using multiple verification methods
-    const collectionNfts = allAssets.filter((asset: any) => {
-      // Check if it's an NFT
-      const isNFT =
-        asset.interface === "V1_NFT" ||
-        asset.interface === "ProgrammableNFT" ||
-        asset.interface === "MplCoreAsset" ||
-        asset.interface === "V1_PRINT"
+    // Filter for PLAGUE NFTs
+    const plagueNfts = allNfts.filter((nft: any) => {
+      const collectionName = nft.grouping?.[0]?.group_value || ""
+      const nftName = nft.content?.metadata?.name || ""
 
-      if (!isNFT) return false
-
-      // Check for valid content
-      const hasValidContent =
-        asset.content?.metadata?.name &&
-        (asset.content?.files?.length > 0 || asset.content?.links?.image || asset.content?.json_uri)
-
-      if (!hasValidContent) return false
-
-      // Primary check: verified creator address
-      const hasVerifiedCreator = asset.creators?.some(
-        (creator: any) => creator.verified && creator.address === COLLECTION_CONFIG.VERIFIED_CREATOR,
+      return (
+        collectionName.toLowerCase().includes("plague") ||
+        nftName.toLowerCase().includes("plague") ||
+        (nft.content?.metadata?.symbol && nft.content.metadata.symbol.toLowerCase().includes("plague"))
       )
-
-      // Secondary check: collection name or symbol contains "PLAGUE"
-      const isPlague =
-        asset.content?.metadata?.name?.toUpperCase().includes("PLAGUE") ||
-        asset.content?.metadata?.symbol?.toUpperCase().includes("PLAGUE") ||
-        asset.grouping?.some(
-          (group: any) =>
-            group.group_key === "collection" &&
-            (group.group_value?.includes("PLAGUE") || group.group_value === COLLECTION_CONFIG.COLLECTION_ADDRESS),
-        )
-
-      // Tertiary check: authority or update authority matches known PLAGUE addresses
-      const hasPlaugeAuthority =
-        asset.authorities?.some((auth: any) => auth.address === COLLECTION_CONFIG.VERIFIED_CREATOR) ||
-        asset.compression?.creator_hash?.includes(COLLECTION_CONFIG.VERIFIED_CREATOR)
-
-      return hasVerifiedCreator || (isPlague && (hasPlaugeAuthority || asset.creators?.length > 0))
     })
 
-    // Format the NFTs for the frontend
-    const formattedNfts = collectionNfts.map((nft: any) => {
-      let imageUrl = "/placeholder.svg?height=400&width=400&text=PLAGUE"
-
-      // Try multiple sources for image URL
-      if (nft.content?.files?.length > 0) {
-        const imageFile = nft.content.files.find(
-          (file: any) => file.mime?.startsWith("image/") || file.cdn_uri || file.uri,
-        )
-        if (imageFile) {
-          imageUrl = imageFile.cdn_uri || imageFile.uri || imageUrl
-        }
-      } else if (nft.content?.links?.image) {
-        imageUrl = nft.content.links.image
-      } else if (nft.content?.json_uri) {
-        // For metadata URIs, we'll use them as fallback
-        imageUrl = nft.content.json_uri
-      }
-
-      return {
-        mint: nft.id,
-        name: nft.content?.metadata?.name || "PLAGUE Specimen",
-        image: imageUrl,
-        description: nft.content?.metadata?.description || "",
-        attributes: nft.content?.metadata?.attributes || [],
-        collection: nft.grouping?.find((g: any) => g.group_key === "collection")?.group_value || null,
-      }
-    })
-
-    // Sort by NFT number for consistent ordering
-    formattedNfts.sort((a, b) => {
-      const getNumber = (name: string) => {
-        const match = name.match(/#(\d+)/)
-        return match ? Number.parseInt(match[1]) : 0
-      }
-      return getNumber(a.name) - getNumber(b.name)
-    })
+    const formattedNfts = plagueNfts.map((nft: any) => ({
+      mint: nft.id,
+      name: nft.content?.metadata?.name || "Unknown",
+      image: nft.content?.files?.[0]?.uri || nft.content?.links?.image || "",
+      description: nft.content?.metadata?.description || "",
+      attributes: nft.content?.metadata?.attributes || [],
+      collection: nft.grouping?.[0]?.group_value || null,
+    }))
 
     return NextResponse.json({
+      success: true,
       nfts: formattedNfts,
       total: formattedNfts.length,
-      success: true,
     })
   } catch (error: any) {
     return NextResponse.json(
       {
+        success: false,
         error: error.message || "Failed to fetch NFTs",
         nfts: [],
         total: 0,
-        success: false,
       },
       { status: 500 },
     )
