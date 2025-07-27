@@ -79,7 +79,7 @@ export default function Profile({ onClose }: ProfileProps) {
   }
 
   const shareInfection = () => {
-    const text = `I'm infected with ${nfts.length} PLAGUE specimens! 🦠 Check out my collection: ${window.location.href}`
+    const text = `I'm infected with ${nfts.length} Plague specimens! 🦠 Check out my collection: ${window.location.href}`
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`
     window.open(twitterUrl, "_blank")
   }
@@ -103,6 +103,14 @@ export default function Profile({ onClose }: ProfileProps) {
             <div className="text-4xl mb-4">💉</div>
             <p className="text-gray-300">Connect your wallet to see your Plague NFTs</p>
             <p className="text-gray-400 text-sm mt-2">No wallet connected</p>
+            <a
+              href="https://magiceden.io/marketplace/plagueproject"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block mt-4 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+            >
+              Get Plague NFTs on Magic Eden
+            </a>
           </div>
         </div>
       </div>
@@ -177,8 +185,16 @@ export default function Profile({ onClose }: ProfileProps) {
           ) : nfts.length === 0 ? (
             <div className="text-center py-8">
               <div className="text-2xl mb-2">🦠</div>
-              <p className="text-gray-300 mb-2">No PLAGUE specimens detected.</p>
-              <p className="text-gray-400 text-sm">Patient appears to be uninfected.</p>
+              <p className="text-gray-300 mb-2">No Plague specimens detected.</p>
+              <p className="text-gray-400 text-sm mb-4">Patient appears to be uninfected.</p>
+              <a
+                href="https://magiceden.io/marketplace/plagueproject"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+              >
+                Get Plague NFTs on Magic Eden
+              </a>
             </div>
           ) : (
             <div className="space-y-4">
@@ -212,7 +228,7 @@ export default function Profile({ onClose }: ProfileProps) {
                       crossOrigin="anonymous"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement
-                        target.src = "/placeholder.svg?height=256&width=256&text=PLAGUE"
+                        target.src = "/placeholder.svg?height=256&width=256&text=Plague"
                       }}
                     />
                   </div>
@@ -275,12 +291,12 @@ export default function Profile({ onClose }: ProfileProps) {
                     }`}
                   >
                     <img
-                      src={nft.image || "/placeholder.svg?height=100&width=100&text=PLAGUE"}
+                      src={nft.image || "/placeholder.svg?height=100&width=100&text=Plague"}
                       alt={nft.name}
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement
-                        target.src = "/placeholder.svg?height=100&width=100&text=PLAGUE"
+                        target.src = "/placeholder.svg?height=100&width=100&text=Plague"
                       }}
                     />
                   </button>
