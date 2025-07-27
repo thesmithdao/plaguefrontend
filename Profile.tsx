@@ -216,17 +216,10 @@ export default function Profile({ onClose }: ProfileProps) {
                   <div className="flex-shrink-0">
                     <img
                       key={`${nfts[currentIndex]?.mint}-${currentIndex}`}
-                      src={
-                        nfts[currentIndex]?.image
-                          ? nfts[currentIndex].image.includes("ipfs://")
-                            ? nfts[currentIndex].image.replace("ipfs://", "https://ipfs.io/ipfs/")
-                            : nfts[currentIndex].image
-                          : "/placeholder.svg?height=120&width=120&text=plaguelabs"
-                      }
+                      src={nfts[currentIndex]?.image || "/placeholder.svg?height=120&width=120&text=plaguelabs"}
                       alt={nfts[currentIndex]?.name || "Plague NFT"}
                       className="w-full md:w-32 h-32 object-cover rounded-lg border border-green-500/30 cursor-pointer hover:border-green-400 transition-colors"
                       crossOrigin="anonymous"
-                      loading="eager"
                       onClick={() => {
                         const imageUrl = nfts[currentIndex]?.image
                         if (imageUrl) {
@@ -242,11 +235,6 @@ export default function Profile({ onClose }: ProfileProps) {
                         const target = e.target as HTMLImageElement
                         target.src = "/placeholder.svg?height=128&width=128&text=Plague"
                       }}
-                      onLoad={(e) => {
-                        const target = e.target as HTMLImageElement
-                        target.style.opacity = "1"
-                      }}
-                      style={{ opacity: 0, transition: "opacity 0.3s ease-in-out" }}
                     />
                   </div>
 
