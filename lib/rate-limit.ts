@@ -16,7 +16,6 @@ export async function checkRateLimit(
 
   try {
     // Very soft rate limiting - only block obvious spam
-    // For testing, let's make the "unknown" limit the same as the general limit
     const actualLimit = limit
 
     // Count submissions from this identifier in the time window
