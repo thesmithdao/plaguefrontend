@@ -86,14 +86,14 @@ export default function Footer({ onOpenPrivacy, onOpenTerms }: FooterProps) {
               onClick={onOpenPrivacy}
               className="text-gray-400 hover:text-green-400 text-sm transition-colors flex items-center gap-1"
             >
-              <span className="text-xs">🛡️</span>
+              
               Privacy Policy
             </button>
             <button
               onClick={onOpenTerms}
               className="text-gray-400 hover:text-green-400 text-sm transition-colors flex items-center gap-1"
             >
-              <span className="text-xs">📄</span>
+              
               Terms of Service
             </button>
           </div>
