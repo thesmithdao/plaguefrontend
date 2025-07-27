@@ -192,7 +192,7 @@ export default function PlagueMain() {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8 sm:mt-12">
+            <div className="flex flex-row gap-4 justify-center items-center mt-8 sm:mt-12">
               <button
                 onClick={() => openModal("success")}
                 className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 sm:px-8 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all shadow-lg flex items-center justify-center gap-2 text-sm sm:text-base"
@@ -313,7 +313,8 @@ export default function PlagueMain() {
                 />
                 <h4 className="text-lg font-semibold text-white mb-2">Goo Friends </h4>
                 <p className="text-gray-400 text-sm mb-4">
-                  Goo Friends is a free Solana NFT collection celebrating community culture. Backed by major collabs like Okay Bear.
+                  Goo Friends is a free Solana NFT collection celebrating community culture. Backed by major collabs
+                  like Okay Bear.
                 </p>
                 <div className="flex justify-between text-sm text-green-400">
                   <span>Mint Out in 1 Hour</span>
