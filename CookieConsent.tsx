@@ -30,10 +30,10 @@ export default function CookieConsent() {
 
   return (
     <div className="max-w-xs sm:max-w-sm mx-2 sm:mx-0 z-50 fixed bottom-4 left-1/2 transform -translate-x-1/2 sm:right-4 sm:left-auto sm:transform-none w-full">
-      <div className="bg-gray-900/95 backdrop-blur-sm border border-gray-700 rounded-xl shadow-2xl p-2 sm:p-4 text-white">
+      <div className="bg-gray-900/95 backdrop-blur-sm border-gray-700 rounded-xl shadow-2xl p-2 sm:p-4 text-white border-0">
         <div className="flex items-center justify-between mb-2">
           <button onClick={handleDecline} className="text-gray-400 hover:text-white transition-colors">
-            <X className="h-4 w-4" />
+            
           </button>
         </div>
         <p className="text-xs sm:text-sm text-gray-300 mb-3 leading-relaxed">
@@ -48,14 +48,14 @@ export default function CookieConsent() {
         <div className="flex flex-row justify-center gap-2 sm:flex-row sm:gap-3">
           <Button
             onClick={handleAccept}
-            className="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-2 sm:py-2 sm:px-3 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all text-xs sm:text-sm"
+            className="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-2 sm:py-2 sm:px-3 rounded-lg border-green-500 hover:border-green-400 transition-all text-xs sm:text-sm border"
           >
             Accept
           </Button>
           <Button
             onClick={handleDecline}
             variant="outline"
-            className="bg-gray-800/80 hover:bg-gray-700/80 text-green-400 font-bold py-1 px-2 sm:py-2 sm:px-3 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all backdrop-blur-sm text-xs sm:text-sm"
+            className="bg-gray-800/80 hover:bg-gray-700/80 text-green-400 font-bold py-1 px-2 sm:py-2 sm:px-3 rounded-lg border-green-500 hover:border-green-400 transition-all backdrop-blur-sm text-xs sm:text-sm border"
           >
             Decline
           </Button>
