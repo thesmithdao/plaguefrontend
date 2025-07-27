@@ -40,6 +40,10 @@ export default function PlagueMain() {
     }
   }, [])
 
+  const handleLogoClick = () => {
+    window.location.href = "/" // Navigates to home and refreshes the page
+  }
+
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
       {/* Video Background */}
@@ -79,7 +83,13 @@ export default function PlagueMain() {
       <header className="fixed top-0 left-0 right-0 z-20 p-4 sm:p-6 bg-transparent backdrop-blur-sm">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center space-x-3 px-4 sm:px-20">
+          <div
+            className="flex items-center space-x-3 px-4 sm:px-20 cursor-pointer"
+            onClick={handleLogoClick}
+            role="button"
+            tabIndex={0}
+            aria-label="Go to home page"
+          >
             <Image
               src="/images/test-tube-logo.png"
               alt="PLAGUE"
@@ -291,7 +301,8 @@ export default function PlagueMain() {
                 />
                 <h4 className="text-lg font-semibold text-white mb-2">Goo Friends </h4>
                 <p className="text-gray-400 text-sm mb-4">
-                  Goo Friends is a free Solana NFT collection celebrating community culture. Backed by major collabs like Okay Bear.
+                  Goo Friends is a free Solana NFT collection (1 per wallet) celebrating community culture. Backed by
+                  major collabs like Okay Bear.
                 </p>
                 <div className="flex justify-between text-sm text-green-400">
                   <span>Sold Out in 1 Hour</span>
