@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
 import Image from "next/image"
@@ -34,6 +34,7 @@ export default function PlagueMain() {
   const [showContactForm, setShowContactForm] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitMessage, setSubmitMessage] = useState<{ type: "success" | "error"; text: string } | null>(null)
+  const formRef = useRef<HTMLFormElement>(null)
 
   const openModal = (modalName: string) => {
     setActiveModal(modalName)
@@ -89,8 +90,10 @@ export default function PlagueMain() {
           type: "success",
           text: data.message || "Message sent successfully! We'll get back to you within 24 hours.",
         })
-        // Reset form
-        e.currentTarget.reset()
+        // Reset form safely
+        if (formRef.current) {
+          formRef.current.reset()
+        }
       } else {
         if (response.status === 429) {
           setSubmitMessage({ type: "error", text: "Too many requests. Please wait a few minutes before trying again." })
@@ -423,14 +426,17 @@ export default function PlagueMain() {
             <div className="p-4 border-b border-gray-700 flex items-center justify-between">
               <h2 className="text-lg font-bold text-green-400">Get in Touch</h2>
               <button
-                onClick={() => setShowContactForm(false)}
+                onClick={() => {
+                  setShowContactForm(false)
+                  setSubmitMessage(null)
+                }}
                 className="text-gray-400 hover:text-white transition-colors"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <form className="p-6 space-y-4" onSubmit={handleFormSubmit}>
+            <form ref={formRef} className="p-6 space-y-4" onSubmit={handleFormSubmit}>
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">
                   Name

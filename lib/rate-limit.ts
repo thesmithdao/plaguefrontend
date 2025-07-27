@@ -9,46 +9,65 @@ interface RateLimitResult {
 
 export async function checkRateLimit(
   identifier: string,
-  limit = 10, // Increased to 10 requests
+  limit = 10,
   windowMs: number = 60 * 60 * 1000, // 1 hour window
 ): Promise<RateLimitResult> {
-  const windowStart = new Date(Date.now() - windowMs)
-
   try {
-    // Very soft rate limiting - only block obvious spam
-    const actualLimit = identifier === "unknown" ? 5 : limit
+    const now = new Date()
+    const windowStart = new Date(now.getTime() - windowMs)
 
-    // Count submissions from this identifier in the time window
-    const { data: submissions, error } = await supabaseAdmin
-      .from("contact_submissions")
-      .select("id")
-      .eq("ip_address", identifier)
+    // Clean up old entries first
+    await supabaseAdmin.from("rate_limits").delete().lt("created_at", windowStart.toISOString())
+
+    // Count current requests in the window
+    const { data: existingRequests, error: countError } = await supabaseAdmin
+      .from("rate_limits")
+      .select("*")
+      .eq("identifier", identifier)
       .gte("created_at", windowStart.toISOString())
 
-    if (error) {
-      console.error("Rate limit check error:", error)
-      // Always allow request if we can't check (fail open)
+    if (countError) {
+      console.error("Rate limit count error:", countError)
+      // Fail open - allow the request if we can't check rate limits
       return {
         success: true,
-        limit: actualLimit,
-        remaining: actualLimit - 1,
-        resetTime: new Date(Date.now() + windowMs),
+        limit,
+        remaining: limit - 1,
+        resetTime: new Date(now.getTime() + windowMs),
       }
     }
 
-    const count = submissions?.length || 0
-    const remaining = Math.max(0, actualLimit - count - 1)
-    const resetTime = new Date(Date.now() + windowMs)
+    const currentCount = existingRequests?.length || 0
+
+    if (currentCount >= limit) {
+      return {
+        success: false,
+        limit,
+        remaining: 0,
+        resetTime: new Date(now.getTime() + windowMs),
+      }
+    }
+
+    // Add new request to rate limit table
+    const { error: insertError } = await supabaseAdmin.from("rate_limits").insert({
+      identifier,
+      created_at: now.toISOString(),
+    })
+
+    if (insertError) {
+      console.error("Rate limit insert error:", insertError)
+      // Fail open - allow the request if we can't record it
+    }
 
     return {
-      success: count < actualLimit,
-      limit: actualLimit,
-      remaining,
-      resetTime,
+      success: true,
+      limit,
+      remaining: limit - currentCount - 1,
+      resetTime: new Date(now.getTime() + windowMs),
     }
   } catch (error) {
-    console.error("Rate limit error:", error)
-    // Always allow request if there's an error (fail open)
+    console.error("Rate limit check error:", error)
+    // Fail open - allow the request if rate limiting fails
     return {
       success: true,
       limit,
