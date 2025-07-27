@@ -231,7 +231,7 @@ export default function PlagueMain() {
               </div>
               <div className="flex items-start space-x-4">
                 <div className="w-16 h-16 rounded-lg bg-green-500/20 p-3 flex items-center justify-center group">
-                  <Syringe className="h-8 w-8 text-white group-hover:text-green-400 transition-colors" />
+                  <Syringe className="h-8 w-8 group-hover:text-green-400 transition-colors text-green-300" />
                 </div>
                 <div>
                   <h4 className="text-lg font-semibold text-white mb-2">Community Management</h4>
@@ -243,7 +243,7 @@ export default function PlagueMain() {
               </div>
               <div className="flex items-start space-x-4">
                 <div className="w-16 h-16 rounded-lg bg-green-500/20 p-3 flex items-center justify-center group">
-                  <TestTubeDiagonal className="h-8 w-8 text-white group-hover:text-green-400 transition-colors" />
+                  <TestTubeDiagonal className="h-8 w-8 group-hover:text-green-400 transition-colors text-green-300" />
                 </div>
                 <div>
                   <h4 className="text-lg font-semibold text-white mb-2">Content Creation</h4>
@@ -255,7 +255,7 @@ export default function PlagueMain() {
               </div>
               <div className="flex items-start space-x-4">
                 <div className="w-16 h-16 rounded-lg bg-green-500/20 p-3 flex items-center justify-center group">
-                  <Radiation className="h-8 w-8 text-white group-hover:text-green-400 transition-colors" />
+                  <Radiation className="h-8 w-8 group-hover:text-green-400 transition-colors text-green-300" />
                 </div>
                 <div>
                   <h4 className="text-lg font-semibold text-white mb-2">Web3 Growth</h4>
