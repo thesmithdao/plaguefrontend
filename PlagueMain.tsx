@@ -41,7 +41,7 @@ export default function PlagueMain() {
   }, [])
 
   const handleLogoClick = () => {
-    window.location.href = "/" // Navigates to home and refreshes the page
+    window.scrollTo({ top: 0, behavior: "smooth" }) // Scrolls to the top of the page smoothly
   }
 
   return (
