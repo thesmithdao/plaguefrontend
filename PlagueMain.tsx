@@ -1,10 +1,26 @@
 "use client"
 
+import type React from "react"
+
 import { useState, useEffect } from "react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
 import Image from "next/image"
-import { Info, User, TrendingUp, CalendarPlus, Users, Rat, Syringe, TestTubeDiagonal, Radiation, X } from "lucide-react"
+import {
+  Info,
+  User,
+  TrendingUp,
+  CalendarPlus,
+  Users,
+  Rat,
+  Syringe,
+  TestTubeDiagonal,
+  Radiation,
+  X,
+  Copy,
+  Check,
+  ExternalLink,
+} from "lucide-react"
 import AboutModal from "./AboutModal"
 import Profile from "./Profile"
 import TermsModal from "./TermsModal"
@@ -18,6 +34,8 @@ export default function PlagueMain() {
   const { connected } = useWallet()
   const [activeModal, setActiveModal] = useState<string | null>(null)
   const [showContactForm, setShowContactForm] = useState(false)
+  const [formSubmitted, setFormSubmitted] = useState(false)
+  const [copiedEmail, setCopiedEmail] = useState(false)
 
   const openModal = (modalName: string) => {
     setActiveModal(modalName)
@@ -43,6 +61,50 @@ export default function PlagueMain() {
 
   const handleLogoClick = () => {
     window.scrollTo({ top: 0, behavior: "smooth" }) // Scrolls to the top of the page smoothly
+  }
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopiedEmail(true)
+      setTimeout(() => setCopiedEmail(false), 2000)
+    } catch (err) {
+      // Fallback for older browsers
+      const textArea = document.createElement("textarea")
+      textArea.value = text
+      document.body.appendChild(textArea)
+      textArea.select()
+      document.execCommand("copy")
+      document.body.removeChild(textArea)
+      setCopiedEmail(true)
+      setTimeout(() => setCopiedEmail(false), 2000)
+    }
+  }
+
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const formData = new FormData(e.target as HTMLFormElement)
+    const name = formData.get("name")
+    const email = formData.get("email")
+    const subject = formData.get("subject")
+    const message = formData.get("message")
+
+    // Store form data in localStorage for user reference
+    const contactData = {
+      name,
+      email,
+      subject,
+      message,
+      timestamp: new Date().toISOString(),
+    }
+
+    localStorage.setItem("lastContactForm", JSON.stringify(contactData))
+    setFormSubmitted(true)
+  }
+
+  const resetForm = () => {
+    setFormSubmitted(false)
+    setShowContactForm(false)
   }
 
   return (
@@ -351,6 +413,8 @@ export default function PlagueMain() {
       {activeModal === "team" && <TeamModal onClose={closeModal} />}
       {activeModal === "success" && <SuccessModal onClose={closeModal} />}
       {activeModal === "privacy" && <PrivacyModal onClose={closeModal} />}
+
+      {/* Contact Form Modal */}
       {showContactForm && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-md">
@@ -363,106 +427,131 @@ export default function PlagueMain() {
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <form
-              className="p-6 space-y-4"
-              onSubmit={(e) => {
-                e.preventDefault()
-                const formData = new FormData(e.target as HTMLFormElement)
-                const name = formData.get("name")
-                const email = formData.get("email")
-                const subject = formData.get("subject")
-                const message = formData.get("message")
 
-                const emailSubject = `${subject} - From ${name}`
-                const body = `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`
+            {!formSubmitted ? (
+              <form className="p-6 space-y-4" onSubmit={handleFormSubmit}>
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">
+                    Name
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    required
+                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
+                    placeholder="Your name"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    required
+                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
+                    placeholder="your@email.com"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="subject" className="block text-sm font-medium text-gray-300 mb-1">
+                    Subject
+                  </label>
+                  <input
+                    type="text"
+                    id="subject"
+                    name="subject"
+                    required
+                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
+                    placeholder="Project inquiry, collaboration, etc."
+                  />
+                </div>
+                <div>
+                  <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-1">
+                    Message
+                  </label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    required
+                    rows={4}
+                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors resize-none"
+                    placeholder="Tell us about your project..."
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                >
+                  <CalendarPlus className="h-4 w-4" />
+                  Send Message
+                </button>
+              </form>
+            ) : (
+              <div className="p-6 text-center space-y-4">
+                <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Check className="h-8 w-8 text-green-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-2">Message Ready!</h3>
+                <p className="text-gray-300 text-sm mb-4">
+                  Your message has been prepared. Please send it to us via email:
+                </p>
 
-                const mailtoLink = `mailto:helloplaguelabs@gmail.com?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(body)}`
+                <div className="bg-gray-800 rounded-lg p-4 mb-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-gray-400">Email:</span>
+                    <button
+                      onClick={() => copyToClipboard("helloplaguelabs@gmail.com")}
+                      className="flex items-center gap-1 text-green-400 hover:text-green-300 transition-colors text-sm"
+                    >
+                      {copiedEmail ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                      {copiedEmail ? "Copied!" : "Copy"}
+                    </button>
+                  </div>
+                  <p className="text-white font-mono text-sm">helloplaguelabs@gmail.com</p>
+                </div>
 
-                // Try multiple methods to ensure email client opens
-                try {
-                  // Method 1: Try window.location.href (most compatible)
-                  window.location.href = mailtoLink
-                } catch (error) {
-                  try {
-                    // Method 2: Fallback to window.open
-                    window.open(mailtoLink, "_self")
-                  } catch (error2) {
-                    // Method 3: Create a temporary link and click it
-                    const tempLink = document.createElement("a")
-                    tempLink.href = mailtoLink
-                    tempLink.style.display = "none"
-                    document.body.appendChild(tempLink)
-                    tempLink.click()
-                    document.body.removeChild(tempLink)
-                  }
-                }
+                <div className="space-y-3">
+                  <a
+                    href="https://mail.google.com/mail/?view=cm&fs=1&to=helloplaguelabs@gmail.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    Open Gmail
+                  </a>
 
-                // Close the form after a short delay
-                setTimeout(() => {
-                  setShowContactForm(false)
-                }, 100)
-              }}
-            >
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">
-                  Name
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  required
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
-                  placeholder="Your name"
-                />
+                  <a
+                    href="https://outlook.live.com/mail/0/deeplink/compose?to=helloplaguelabs@gmail.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    Open Outlook
+                  </a>
+                </div>
+
+                <div className="flex gap-2 mt-4">
+                  <button
+                    onClick={resetForm}
+                    className="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                  >
+                    New Message
+                  </button>
+                  <button
+                    onClick={() => setShowContactForm(false)}
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                  >
+                    Close
+                  </button>
+                </div>
               </div>
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  required
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
-                  placeholder="your@email.com"
-                />
-              </div>
-              <div>
-                <label htmlFor="subject" className="block text-sm font-medium text-gray-300 mb-1">
-                  Subject
-                </label>
-                <input
-                  type="text"
-                  id="subject"
-                  name="subject"
-                  required
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
-                  placeholder="Project inquiry, collaboration, etc."
-                />
-              </div>
-              <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-1">
-                  Message
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  required
-                  rows={4}
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors resize-none"
-                  placeholder="Tell us about your project..."
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
-              >
-                <CalendarPlus className="h-4 w-4" />
-                Send Message
-              </button>
-            </form>
+            )}
           </div>
         </div>
       )}
