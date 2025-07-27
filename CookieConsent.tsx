@@ -29,10 +29,9 @@ export default function CookieConsent() {
   }
 
   return (
-    <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 sm:right-4 sm:left-auto sm:transform-none z-50 w-full max-w-sm mx-3 sm:mx-0">
-      <div className="bg-gray-900/95 backdrop-blur-sm border-gray-700 rounded-xl shadow-2xl p-3 sm:p-4 text-white border-0">
+    <div className="max-w-xs sm:max-w-sm mx-2 sm:mx-0 z-50 fixed bottom-4 left-1/2 transform -translate-x-1/2 sm:right-4 sm:left-auto sm:transform-none w-full">
+      <div className="bg-gray-900/95 backdrop-blur-sm border border-gray-700 rounded-xl shadow-2xl p-2 sm:p-4 text-white">
         <div className="flex items-center justify-between mb-2">
-          
           <button onClick={handleDecline} className="text-gray-400 hover:text-white transition-colors">
             <X className="h-4 w-4" />
           </button>
