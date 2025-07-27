@@ -9,14 +9,14 @@ interface RateLimitResult {
 
 export async function checkRateLimit(
   identifier: string,
-  limit = 10, // Increased to 10 requests
-  windowMs: number = 60 * 60 * 1000, // 1 hour window
+  limit = 15, // Increased limit for smoother testing
+  windowMs: number = 60 * 1000, // 1 minute window for testing
 ): Promise<RateLimitResult> {
   const windowStart = new Date(Date.now() - windowMs)
 
   try {
     // Very soft rate limiting - only block obvious spam
-    const actualLimit = identifier === "unknown" ? 5 : limit
+    const actualLimit = limit
 
     // Count submissions from this identifier in the time window
     const { data: submissions, error } = await supabaseAdmin

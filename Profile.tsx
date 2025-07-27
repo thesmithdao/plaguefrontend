@@ -158,10 +158,13 @@ export default function Profile({ onClose }: ProfileProps) {
                 <h3 className="text-green-400 font-semibold mb-2">Specimen Count</h3>
                 <p className="text-white text-2xl font-bold">{nfts.length}</p>
               </div>
-              
               <div>
-                
-                
+                <h3 className="text-green-400 font-semibold mb-2">Infection Status</h3>
+                <p className={`text-lg font-bold ${infectionData.color}`}>{infectionData.status}</p>
+              </div>
+              <div>
+                <h3 className="text-green-400 font-semibold mb-2">Contagion Risk</h3>
+                <p className={`text-lg font-bold ${infectionData.color}`}>{infectionData.risk}</p>
               </div>
             </div>
 

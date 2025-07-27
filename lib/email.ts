@@ -17,7 +17,7 @@ interface EmailResult {
 export async function sendContactNotification(data: ContactData): Promise<EmailResult> {
   try {
     const { data: result, error } = await resend.emails.send({
-      from: "Contact Form <noreply@yourdomain.com>", // Replace with your verified domain
+      from: "Contact Form <noreply@plaguelabs.wtf>",
       to: ["helloplaguelabs@gmail.com"],
       subject: `New Contact Form Submission: ${data.subject}`,
       html: `
@@ -62,7 +62,7 @@ export async function sendContactNotification(data: ContactData): Promise<EmailR
 export async function sendConfirmationEmail(data: ContactData): Promise<EmailResult> {
   try {
     const { data: result, error } = await resend.emails.send({
-      from: "Plague Labs <noreply@yourdomain.com>", // Replace with your verified domain
+      from: "Plague Labs <hello@plaguelabs.wtf>",
       to: [data.email],
       subject: "Thank you for contacting Plague Labs",
       html: `

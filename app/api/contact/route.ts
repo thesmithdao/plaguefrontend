@@ -57,13 +57,13 @@ export async function POST(request: NextRequest) {
     const clientIP = getClientIP(request)
     const userAgent = request.headers.get("user-agent") || "unknown"
 
-    // Very soft rate limiting - 10 requests per hour
-    const rateLimitResult = await checkRateLimit(clientIP, 10, 60 * 60 * 1000)
+    // Rate limiting - 15 requests per minute for testing
+    const rateLimitResult = await checkRateLimit(clientIP, 15, 60 * 1000)
 
     if (!rateLimitResult.success) {
       return NextResponse.json(
         {
-          error: "Too many requests. Please try again in an hour.",
+          error: "Too many requests. Please try again in a minute.",
         },
         { status: 429 },
       )
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
 
     const { name, email, subject, message } = validationResult.data
 
-    // Store in database
+    // Store in database first
     const { data: submission, error: dbError } = await supabaseAdmin
       .from("contact_submissions")
       .insert({
@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
         email,
         subject,
         message,
-        ip_address: clientIP, // This will now be stored as TEXT
+        ip_address: clientIP,
         user_agent: userAgent,
         status: "new",
       })
@@ -109,7 +109,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Send emails (don't fail the request if emails fail)
+    let emailStatus = "submitted"
+    let notificationSent = false
+    let confirmationSent = false
+
     try {
+      // Send notification email
       const notificationResult = await sendContactNotification({
         name,
         email,
@@ -117,6 +122,14 @@ export async function POST(request: NextRequest) {
         message,
       })
 
+      if (notificationResult.success) {
+        notificationSent = true
+        console.log("Notification email sent successfully")
+      } else {
+        console.error("Notification email failed:", notificationResult.error)
+      }
+
+      // Send confirmation email
       const confirmationResult = await sendConfirmationEmail({
         name,
         email,
@@ -124,15 +137,22 @@ export async function POST(request: NextRequest) {
         message,
       })
 
-      // Update status based on email results
-      let status = "submitted"
-      if (notificationResult.success && confirmationResult.success) {
-        status = "emails_sent"
-      } else if (notificationResult.success) {
-        status = "notification_sent"
+      if (confirmationResult.success) {
+        confirmationSent = true
+        console.log("Confirmation email sent successfully")
+      } else {
+        console.error("Confirmation email failed:", confirmationResult.error)
       }
 
-      await supabaseAdmin.from("contact_submissions").update({ status }).eq("id", submission.id)
+      // Update status based on email results
+      if (notificationSent && confirmationSent) {
+        emailStatus = "emails_sent"
+      } else if (notificationSent) {
+        emailStatus = "notification_sent"
+      }
+
+      // Update submission status
+      await supabaseAdmin.from("contact_submissions").update({ status: emailStatus }).eq("id", submission.id)
     } catch (emailError) {
       console.error("Email error:", emailError)
       // Don't fail the request if emails fail
@@ -141,6 +161,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       message: "Message sent successfully! We'll get back to you within 24 hours.",
       id: submission.id,
+      emailStatus: {
+        notification: notificationSent,
+        confirmation: confirmationSent,
+      },
     })
   } catch (error) {
     console.error("Contact form error:", error)
