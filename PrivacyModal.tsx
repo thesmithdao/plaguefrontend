@@ -8,8 +8,8 @@ interface PrivacyModalProps {
 
 export default function PrivacyModal({ onClose }: PrivacyModalProps) {
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
-      <div className="bg-gray-900 border border-gray-700 rounded-xl w-full h-full sm:max-w-2xl sm:w-full sm:max-h-[90vh] sm:h-auto overflow-y-auto">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-2xl max-h-[85vh] overflow-y-auto">
         <div className="p-4 border-b border-gray-700 flex items-center justify-between sticky top-0 bg-gray-900 z-10">
           <h2 className="text-lg font-bold text-green-400">Privacy Policy</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
