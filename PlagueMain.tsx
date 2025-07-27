@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
 import Image from "next/image"
@@ -34,7 +34,6 @@ export default function PlagueMain() {
   const [showContactForm, setShowContactForm] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitMessage, setSubmitMessage] = useState<{ type: "success" | "error"; text: string } | null>(null)
-  const formRef = useRef<HTMLFormElement>(null)
 
   const openModal = (modalName: string) => {
     setActiveModal(modalName)
@@ -90,13 +89,11 @@ export default function PlagueMain() {
           type: "success",
           text: data.message || "Message sent successfully! We'll get back to you within 24 hours.",
         })
-        // Reset form safely
-        if (formRef.current) {
-          formRef.current.reset()
-        }
+        // Reset form
+        e.currentTarget.reset()
       } else {
         if (response.status === 429) {
-          setSubmitMessage({ type: "error", text: "Too many requests. Please wait a minute before trying again." })
+          setSubmitMessage({ type: "error", text: "Too many requests. Please wait a few minutes before trying again." })
         } else if (data.details) {
           const errorMessages = data.details.map((detail: any) => detail.message).join(", ")
           setSubmitMessage({ type: "error", text: errorMessages })
@@ -270,7 +267,7 @@ export default function PlagueMain() {
               </button>
 
               <button
-                className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 sm:px-8 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all shadow-lg flex items-center justify-center gap-2 text-sm sm:text-base opacity-70"
+                className="bg-gray-800/80 hover:bg-gray-700/80 text-green-400 font-bold py-3 px-6 sm:px-8 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all backdrop-blur-sm flex items-center justify-center gap-2 text-sm sm:text-base"
                 onClick={() => setShowContactForm(true)}
               >
                 <CalendarPlus className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -394,7 +391,7 @@ export default function PlagueMain() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <button
-                  className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 sm:px-8 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all shadow-lg flex items-center justify-center gap-2 text-sm sm:text-base"
+                  className="bg-gray-800/80 hover:bg-gray-700/80 text-green-400 font-bold py-3 px-8 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all backdrop-blur-sm flex items-center justify-center gap-2 text-sm sm:text-base"
                   onClick={() => setShowContactForm(true)}
                 >
                   <CalendarPlus className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -426,17 +423,14 @@ export default function PlagueMain() {
             <div className="p-4 border-b border-gray-700 flex items-center justify-between">
               <h2 className="text-lg font-bold text-green-400">Get in Touch</h2>
               <button
-                onClick={() => {
-                  setShowContactForm(false)
-                  setSubmitMessage(null)
-                }}
+                onClick={() => setShowContactForm(false)}
                 className="text-gray-400 hover:text-white transition-colors"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <form ref={formRef} className="p-6 space-y-4" onSubmit={handleFormSubmit}>
+            <form className="p-6 space-y-4" onSubmit={handleFormSubmit}>
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">
                   Name
