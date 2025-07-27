@@ -34,15 +34,13 @@ export default function CookieConsent() {
       <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 sm:left-auto sm:right-4 sm:transform-none z-50 max-w-sm mx-3 sm:mx-0">
         <div className="bg-gray-900/95 backdrop-blur-sm border border-gray-700 rounded-xl p-4 shadow-2xl">
           <div className="flex items-start justify-between mb-3">
-            <h3 className="text-base font-semibold text-white">Cookies</h3>
+            
             <button onClick={declineCookies} className="text-gray-400 hover:text-white transition-colors ml-2">
               
             </button>
     
           <p className="text-sm text-gray-300 mb-4 leading-relaxed">
-            We use cookies to enhance your experience. By continuing, you agree to
-
-
+            We use cookies to enhance your experience. By continuing, you agree to our {" "}
             <button
               onClick={() => setShowPrivacy(true)}
               className="text-green-400 hover:text-green-300 underline transition-colors"
