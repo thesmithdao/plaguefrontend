@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
 import Image from "next/image"
-import { Info, User, TrendingUp, CalendarPlus } from "lucide-react"
+import { Info, User, TrendingUp, CalendarPlus, Users } from "lucide-react"
 import AboutModal from "./AboutModal"
 import Profile from "./Profile"
 import TermsModal from "./TermsModal"
@@ -121,7 +121,7 @@ export default function PlagueMain() {
               onClick={() => openModal("team")}
               className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-2 font-medium"
             >
-              <User className="h-4 w-4" />
+              <Users className="h-4 w-4" />
               Team
             </button>
             <button
@@ -167,7 +167,7 @@ export default function PlagueMain() {
               onClick={() => openModal("team")}
               className="text-gray-300 hover:text-green-400 transition-colors flex flex-col items-center gap-1 text-sm font-medium whitespace-nowrap"
             >
-              <User className="h-4 w-4" />
+              <Users className="h-4 w-4" />
               Team
             </button>
             <button
