@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
 import Image from "next/image"
-import { Info, User, TrendingUp, CalendarPlus, Users, Rat, Syringe, TestTubeDiagonal, Radiation } from "lucide-react"
+import { Info, User, TrendingUp, CalendarPlus, Users, Rat, Syringe, TestTubeDiagonal, Radiation, X } from "lucide-react"
 import AboutModal from "./AboutModal"
 import Profile from "./Profile"
 import TermsModal from "./TermsModal"
@@ -17,6 +17,7 @@ import CookieConsent from "./CookieConsent"
 export default function PlagueMain() {
   const { connected } = useWallet()
   const [activeModal, setActiveModal] = useState<string | null>(null)
+  const [showContactForm, setShowContactForm] = useState(false)
 
   const openModal = (modalName: string) => {
     setActiveModal(modalName)
@@ -203,9 +204,7 @@ export default function PlagueMain() {
 
               <button
                 className="bg-gray-800/80 hover:bg-gray-700/80 text-green-400 font-bold py-3 px-6 sm:px-8 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all backdrop-blur-sm flex items-center justify-center gap-2 text-sm sm:text-base"
-                onClick={() => {
-                  window.location.href = "mailto:helloplaguelabs@gmail.com"
-                }}
+                onClick={() => setShowContactForm(true)}
               >
                 <CalendarPlus className="h-4 w-4 sm:h-5 sm:w-5" />
                 Get in touch
@@ -329,9 +328,7 @@ export default function PlagueMain() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <button
                   className="bg-gray-800/80 hover:bg-gray-700/80 text-green-400 font-bold py-3 px-8 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all backdrop-blur-sm flex items-center justify-center gap-2 text-sm sm:text-base"
-                  onClick={() => {
-                    window.location.href = "mailto:helloplaguelabs@gmail.com"
-                  }}
+                  onClick={() => setShowContactForm(true)}
                 >
                   <CalendarPlus className="h-4 w-4 sm:h-5 sm:w-5" />
                   Get in touch
@@ -354,6 +351,82 @@ export default function PlagueMain() {
       {activeModal === "team" && <TeamModal onClose={closeModal} />}
       {activeModal === "success" && <SuccessModal onClose={closeModal} />}
       {activeModal === "privacy" && <PrivacyModal onClose={closeModal} />}
+      {showContactForm && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-md">
+            <div className="p-4 border-b border-gray-700 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-green-400">Get in Touch</h2>
+              <button
+                onClick={() => setShowContactForm(false)}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <form
+              className="p-6 space-y-4"
+              onSubmit={(e) => {
+                e.preventDefault()
+                const formData = new FormData(e.target as HTMLFormElement)
+                const name = formData.get("name")
+                const email = formData.get("email")
+                const message = formData.get("message")
+                const subject = `New Contact from ${name}`
+                const body = `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`
+                window.location.href = `mailto:helloplaguelabs@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+                setShowContactForm(false)
+              }}
+            >
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">
+                  Name
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  required
+                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
+                  placeholder="Your name"
+                />
+              </div>
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  required
+                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
+                  placeholder="your@email.com"
+                />
+              </div>
+              <div>
+                <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-1">
+                  Message
+                </label>
+                <textarea
+                  id="message"
+                  name="message"
+                  required
+                  rows={4}
+                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors resize-none"
+                  placeholder="Tell us about your project..."
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+              >
+                <CalendarPlus className="h-4 w-4" />
+                Send Message
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
