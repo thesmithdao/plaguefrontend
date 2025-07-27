@@ -47,7 +47,7 @@ export default function PlagueMain() {
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
       {/* Video Background */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 overflow-hidden">
         <video
           autoPlay
           loop
@@ -55,9 +55,11 @@ export default function PlagueMain() {
           playsInline
           crossOrigin="anonymous"
           preload="auto"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover sm:object-cover object-center min-w-full min-h-full"
           style={{
             filter: "brightness(0.6) contrast(1.1)",
+            objectPosition: "center center",
+            transform: "scale(1.02)", // Slight scale to avoid edge artifacts on mobile
           }}
         >
           <source
