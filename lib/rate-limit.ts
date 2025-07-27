@@ -15,6 +15,9 @@ export async function checkRateLimit(
   const windowStart = new Date(Date.now() - windowMs)
 
   try {
+    // If identifier is "unknown", use a more restrictive rate limit
+    const actualLimit = identifier === "unknown" ? Math.floor(limit / 2) : limit
+
     // Count submissions from this identifier in the time window
     const { data: submissions, error } = await supabaseAdmin
       .from("contact_submissions")
@@ -27,19 +30,19 @@ export async function checkRateLimit(
       // Allow request if we can't check (fail open)
       return {
         success: true,
-        limit,
-        remaining: limit - 1,
+        limit: actualLimit,
+        remaining: actualLimit - 1,
         resetTime: new Date(Date.now() + windowMs),
       }
     }
 
     const count = submissions?.length || 0
-    const remaining = Math.max(0, limit - count - 1)
+    const remaining = Math.max(0, actualLimit - count - 1)
     const resetTime = new Date(Date.now() + windowMs)
 
     return {
-      success: count < limit,
-      limit,
+      success: count < actualLimit,
+      limit: actualLimit,
       remaining,
       resetTime,
     }

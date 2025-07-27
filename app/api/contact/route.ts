@@ -15,16 +15,40 @@ const contactSchema = z.object({
 function getClientIP(request: NextRequest): string {
   const forwarded = request.headers.get("x-forwarded-for")
   const realIP = request.headers.get("x-real-ip")
+  const remoteAddr = request.headers.get("x-vercel-forwarded-for")
 
   if (forwarded) {
-    return forwarded.split(",")[0].trim()
+    const ip = forwarded.split(",")[0].trim()
+    // Validate IP format
+    if (isValidIP(ip)) return ip
   }
 
-  if (realIP) {
+  if (realIP && isValidIP(realIP)) {
     return realIP
   }
 
+  if (remoteAddr && isValidIP(remoteAddr)) {
+    return remoteAddr
+  }
+
   return "unknown"
+}
+
+function isValidIP(ip: string): boolean {
+  // Simple IP validation (IPv4 and IPv6)
+  const ipv4Regex = /^(\d{1,3}\.){3}\d{1,3}$/
+  const ipv6Regex = /^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/
+
+  if (ipv4Regex.test(ip)) {
+    // Check if each octet is valid (0-255)
+    const octets = ip.split(".")
+    return octets.every((octet) => {
+      const num = Number.parseInt(octet, 10)
+      return num >= 0 && num <= 255
+    })
+  }
+
+  return ipv6Regex.test(ip)
 }
 
 export async function POST(request: NextRequest) {
