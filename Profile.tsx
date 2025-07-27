@@ -229,7 +229,7 @@ export default function Profile({ onClose }: ProfileProps) {
                       <img
                         src={nfts[currentIndex]?.image || "/placeholder.svg?height=256&width=256&text=PLAGUE"}
                         alt={nfts[currentIndex]?.name}
-                        className="w-full md:w-64 h-64 object-cover rounded-lg border border-green-500/30"
+                        className="w-full object-cover rounded-lg border border-green-500/30 md:w-12 h-[4]"
                         crossOrigin="anonymous"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement
