@@ -42,7 +42,7 @@ export default function CookieConsent() {
             onClick={() => window.dispatchEvent(new CustomEvent("open-privacy-modal"))}
             className="text-green-400 hover:underline focus:outline-none"
           >
-            privacy policy
+            privacy policy.
           </button>
         </p>
         <div className="flex flex-row justify-center gap-2 sm:flex-row sm:gap-3">
