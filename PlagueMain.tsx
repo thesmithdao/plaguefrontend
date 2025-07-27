@@ -378,11 +378,29 @@ export default function PlagueMain() {
 
                 const mailtoLink = `mailto:helloplaguelabs@gmail.com?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(body)}`
 
-                // Open email client
-                window.open(mailtoLink, "_blank")
+                // Try multiple methods to ensure email client opens
+                try {
+                  // Method 1: Try window.location.href (most compatible)
+                  window.location.href = mailtoLink
+                } catch (error) {
+                  try {
+                    // Method 2: Fallback to window.open
+                    window.open(mailtoLink, "_self")
+                  } catch (error2) {
+                    // Method 3: Create a temporary link and click it
+                    const tempLink = document.createElement("a")
+                    tempLink.href = mailtoLink
+                    tempLink.style.display = "none"
+                    document.body.appendChild(tempLink)
+                    tempLink.click()
+                    document.body.removeChild(tempLink)
+                  }
+                }
 
-                // Close the form
-                setShowContactForm(false)
+                // Close the form after a short delay
+                setTimeout(() => {
+                  setShowContactForm(false)
+                }, 100)
               }}
             >
               <div>
