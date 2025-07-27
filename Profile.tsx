@@ -252,7 +252,7 @@ export default function Profile({ onClose }: ProfileProps) {
 
                 {/* Navigation */}
                 {nfts.length > 1 && (
-                  <div className="flex justify-between items-center mt-4">
+                  <div className="flex justify-center items-center gap-4 mt-4">
                     <button
                       onClick={prevNFT}
                       className="bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-lg transition-colors"
