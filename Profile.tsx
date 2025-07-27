@@ -2,7 +2,16 @@
 
 import { useState, useEffect } from "react"
 import { useWallet } from "@solana/wallet-adapter-react"
-import { ChevronLeft, ChevronRight, X, ExternalLink, Share2, RefreshCw } from "lucide-react"
+import {
+  ChevronLeft,
+  ChevronRight,
+  X,
+  ExternalLink,
+  Share2,
+  RefreshCw,
+  AlertTriangle,
+  WormIcon as Virus,
+} from "lucide-react"
 
 interface NFT {
   name: string
@@ -97,7 +106,7 @@ export default function Profile({ onClose }: ProfileProps) {
   if (!publicKey) {
     return (
       <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-4xl max-h-[85vh] overflow-y-auto">
+        <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-3xl max-h-[85vh] overflow-y-auto">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-bold text-green-400">Patient Profile</h2>
             <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
@@ -126,7 +135,7 @@ export default function Profile({ onClose }: ProfileProps) {
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
-      <div className="bg-gray-900 border border-gray-700 rounded-xl w-full h-full sm:max-w-4xl sm:w-full sm:max-h-[90vh] sm:h-auto overflow-y-auto">
+      <div className="bg-gray-900 border border-gray-700 rounded-xl w-full h-full sm:max-w-3xl sm:w-full sm:max-h-[90vh] sm:h-auto overflow-y-auto">
         <div className="p-4 border-b border-gray-700 flex items-center justify-between sticky top-0 bg-gray-900 z-10">
           <h2 className="text-lg font-bold text-green-400">Patient Profile</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
@@ -177,7 +186,7 @@ export default function Profile({ onClose }: ProfileProps) {
             </div>
           ) : error ? (
             <div className="text-center py-8">
-              <div className="text-2xl mb-2">⚠️</div>
+              <AlertTriangle className="h-8 w-8 text-red-400 mx-auto mb-2" />
               <p className="text-red-400 mb-4">Error: {error}</p>
               <button
                 onClick={fetchNFTs}
@@ -189,7 +198,7 @@ export default function Profile({ onClose }: ProfileProps) {
             </div>
           ) : nfts.length === 0 ? (
             <div className="text-center py-8">
-              <div className="text-2xl mb-2">🦠</div>
+              <Virus className="h-8 w-8 text-green-400 mx-auto mb-2" />
               <p className="text-gray-300 mb-2">No Plague specimens detected.</p>
               <p className="text-gray-400 text-sm mb-4">Patient appears to be uninfected.</p>
               <a
