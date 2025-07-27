@@ -271,7 +271,7 @@ export default function PlagueMain() {
 
           {/* Case Studies Section */}
           <div className="rounded-xl p-6 sm:p-8 backdrop-blur-sm mt-8 border-0 bg-transparent">
-            <h3 className="text-2xl sm:text-3xl font-bold text-green-400 py-0 mt-0 mb-6">Infected Ecosystem</h3>
+            <h3 className="text-2xl sm:text-3xl font-bold text-green-400 py-0 mt-0 mb-6">Ecosystem</h3>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <a
                 href="https://magiceden.io/marketplace/plagueproject"
