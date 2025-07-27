@@ -1,5 +1,7 @@
 "use client"
 
+import { X, Mail, Youtube, Twitch } from "lucide-react"
+
 interface FooterProps {
   onOpenPrivacy: () => void
   onOpenTerms: () => void
@@ -30,10 +32,10 @@ export default function Footer({ onOpenPrivacy, onOpenTerms }: FooterProps) {
                 href="https://twitter.com/plague_labs"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-green-400 transition-colors"
+                className="text-gray-400 hover:text-green-400 transition-colors flex items-center justify-center w-8 h-8"
                 aria-label="Twitter"
               >
-                <span className="text-lg font-bold">𝕏</span>
+                <X className="h-5 w-5" />
               </a>
               {/*
               <a
@@ -50,28 +52,28 @@ export default function Footer({ onOpenPrivacy, onOpenTerms }: FooterProps) {
                 href="mailto:helloplaguelabs@gmail.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-green-400 transition-colors"
+                className="text-gray-400 hover:text-green-400 transition-colors flex items-center justify-center w-8 h-8"
                 aria-label="Email"
               >
-                <span className="text-lg">📧</span>
+                <Mail className="h-5 w-5" />
               </a>
               <a
                 href="https://www.youtube.com/@plague_labs"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-green-400 transition-colors"
+                className="text-gray-400 hover:text-green-400 transition-colors flex items-center justify-center w-8 h-8"
                 aria-label="YouTube"
               >
-                <span className="text-lg">▶️</span>
+                <Youtube className="h-5 w-5" />
               </a>
               <a
                 href="https://www.twitch.tv/plaguelabs"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-green-400 transition-colors"
+                className="text-gray-400 hover:text-green-400 transition-colors flex items-center justify-center w-8 h-8"
                 aria-label="Twitch"
               >
-                <span className="text-lg">{"🟢"}</span>
+                <Twitch className="h-5 w-5" />
               </a>
             </div>
           </div>
