@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
 import Image from "next/image"
@@ -25,6 +25,20 @@ export default function PlagueMain() {
   const closeModal = () => {
     setActiveModal(null)
   }
+
+  // Listen for custom events to open modals from CookieConsent
+  useEffect(() => {
+    const handleOpenPrivacy = () => openModal("privacy")
+    const handleOpenTerms = () => openModal("terms")
+
+    window.addEventListener("open-privacy-modal", handleOpenPrivacy)
+    window.addEventListener("open-terms-modal", handleOpenTerms)
+
+    return () => {
+      window.removeEventListener("open-privacy-modal", handleOpenPrivacy)
+      window.removeEventListener("open-terms-modal", handleOpenTerms)
+    }
+  }, [])
 
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
@@ -122,39 +136,35 @@ export default function PlagueMain() {
 
         {/* Mobile Navigation */}
         <div className="md:hidden mt-3">
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center justify-center gap-12">
-              <button
-                onClick={() => openModal("about")}
-                className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-2 text-base font-medium"
-              >
-                <Info className="h-4 w-4" />
-                About
-              </button>
-              <button
-                onClick={() => openModal("success")}
-                className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-2 text-base font-medium"
-              >
-                <TrendingUp className="h-4 w-4" />
-                Moonshots
-              </button>
-            </div>
-            <div className="flex items-center justify-center gap-12">
-              <button
-                onClick={() => openModal("team")}
-                className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-2 text-base font-medium"
-              >
-                <User className="h-4 w-4" />
-                Team
-              </button>
-              <button
-                onClick={() => openModal("profile")}
-                className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-2 text-base font-medium"
-              >
-                <User className="h-4 w-4" />
-                Profile
-              </button>
-            </div>
+          <div className="flex items-center justify-between gap-4 px-4">
+            <button
+              onClick={() => openModal("about")}
+              className="text-gray-300 hover:text-green-400 transition-colors flex flex-col items-center gap-1 text-sm font-medium whitespace-nowrap"
+            >
+              <Info className="h-4 w-4" />
+              About
+            </button>
+            <button
+              onClick={() => openModal("success")}
+              className="text-gray-300 hover:text-green-400 transition-colors flex flex-col items-center gap-1 text-sm font-medium whitespace-nowrap"
+            >
+              <TrendingUp className="h-4 w-4" />
+              Moonshots
+            </button>
+            <button
+              onClick={() => openModal("team")}
+              className="text-gray-300 hover:text-green-400 transition-colors flex flex-col items-center gap-1 text-sm font-medium whitespace-nowrap"
+            >
+              <User className="h-4 w-4" />
+              Team
+            </button>
+            <button
+              onClick={() => openModal("profile")}
+              className="text-gray-300 hover:text-green-400 transition-colors flex flex-col items-center gap-1 text-sm font-medium whitespace-nowrap"
+            >
+              <User className="h-4 w-4" />
+              Profile
+            </button>
           </div>
         </div>
       </header>
