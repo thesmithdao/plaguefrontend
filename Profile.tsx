@@ -117,7 +117,7 @@ export default function Profile({ onClose }: ProfileProps) {
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-gray-900 border border-gray-700 rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-gray-900 border border-gray-700 rounded-xl max-w-4xl max-h-[90vh] overflow-y-auto w-full">
         <div className="p-4 border-b border-gray-700 flex items-center justify-between sticky top-0 bg-gray-900 z-10">
           <h2 className="text-lg font-bold text-green-400">Patient Profile</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
