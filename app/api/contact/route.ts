@@ -104,7 +104,6 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (dbError) {
-      console.error("Database error:", dbError)
       return NextResponse.json({ error: "Failed to save submission. Please try again." }, { status: 500 })
     }
 
@@ -124,9 +123,7 @@ export async function POST(request: NextRequest) {
 
       if (notificationResult.success) {
         notificationSent = true
-        console.log("Notification email sent successfully")
       } else {
-        console.error("Notification email failed:", notificationResult.error)
       }
 
       // Send confirmation email
@@ -139,9 +136,7 @@ export async function POST(request: NextRequest) {
 
       if (confirmationResult.success) {
         confirmationSent = true
-        console.log("Confirmation email sent successfully")
       } else {
-        console.error("Confirmation email failed:", confirmationResult.error)
       }
 
       // Update status based on email results
@@ -154,7 +149,6 @@ export async function POST(request: NextRequest) {
       // Update submission status
       await supabaseAdmin.from("contact_submissions").update({ status: emailStatus }).eq("id", submission.id)
     } catch (emailError) {
-      console.error("Email error:", emailError)
       // Don't fail the request if emails fail
     }
 
@@ -167,7 +161,6 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error("Contact form error:", error)
     return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 })
   }
 }

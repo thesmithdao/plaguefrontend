@@ -48,13 +48,11 @@ export async function sendContactNotification(data: ContactData): Promise<EmailR
     })
 
     if (error) {
-      console.error("Failed to send notification email:", error)
       return { success: false, error: error.message }
     }
 
     return { success: true }
   } catch (error) {
-    console.error("Email service error:", error)
     return { success: false, error: "Failed to send email" }
   }
 }
@@ -94,13 +92,11 @@ export async function sendConfirmationEmail(data: ContactData): Promise<EmailRes
     })
 
     if (error) {
-      console.error("Failed to send confirmation email:", error)
       return { success: false, error: error.message }
     }
 
     return { success: true }
   } catch (error) {
-    console.error("Confirmation email error:", error)
     return { success: false, error: "Failed to send confirmation email" }
   }
 }

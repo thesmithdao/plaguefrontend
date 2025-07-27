@@ -105,7 +105,6 @@ export default function PlagueMain() {
         }
       }
     } catch (error) {
-      console.error("Form submission error:", error)
       setSubmitMessage({ type: "error", text: "Network error. Please check your connection and try again." })
     } finally {
       setIsSubmitting(false)
