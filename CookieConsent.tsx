@@ -39,7 +39,7 @@ export default function CookieConsent() {
               
             </button>
     
-          <p className="text-sm text-gray-300 mb-4 leading-relaxed">
+          <p className="text-sm text-gray-300 mb-4 leading-relaxed text-center">
             We use cookies to enhance your experience. By continuing, you agree to our {" "}
             <button
               onClick={() => setShowPrivacy(true)}
