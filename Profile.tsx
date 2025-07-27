@@ -109,7 +109,7 @@ export default function Profile({ onClose }: ProfileProps) {
           </div>
           <div className="text-center py-8">
             <div className="text-4xl mb-4">💉</div>
-            <p className="text-gray-300">Connect your wallet to see your PLAGUE NFTs</p>
+            <p className="text-gray-300">Connect your wallet to see your Plague NFTs</p>
             <p className="text-gray-400 text-sm mt-2">No wallet connected</p>
           </div>
         </div>
