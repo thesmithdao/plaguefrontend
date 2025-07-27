@@ -4,8 +4,6 @@ import { useEffect, useRef, useState, useCallback } from "react"
 import { GAME_CONSTANTS, COLORS, IMAGES, FONTS } from "../constants"
 import { useWallet } from "@solana/wallet-adapter-react"
 import WalletConnection from "./WalletConnection"
-import Leaderboard from "./Leaderboard"
-import ScoreSubmission from "./ScoreSubmission"
 import AboutModal from "./AboutModal"
 import LoreModal from "./LoreModal"
 import NFTModal from "./NFTModal"
@@ -68,7 +66,6 @@ export default function SnowBored() {
   const [score, setScore] = useState(0)
   const [gameTime, setGameTime] = useState(0)
   const [gameOver, setGameOver] = useState(false)
-  const [scoreSubmitted, setScoreSubmitted] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [gameKey, setGameKey] = useState(0)
   const [lives, setLives] = useState(3)
@@ -82,7 +79,7 @@ export default function SnowBored() {
   const [showNFT, setShowNFT] = useState(false)
   const [showTerms, setShowTerms] = useState(false)
 
-  const [activeTab, setActiveTab] = useState<"profile" | "leaderboard">("profile")
+  const [activeTab, setActiveTab] = useState<"profile">("profile")
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768 || "ontouchstart" in window)
@@ -165,7 +162,6 @@ export default function SnowBored() {
     setScore(0)
     setGameTime(0)
     setGameOver(false)
-    setScoreSubmitted(false)
     setLives(3)
     setGameStarted(true)
     setFirstTimeLoad(false)
@@ -175,7 +171,6 @@ export default function SnowBored() {
     setScore,
     setGameTime,
     setGameOver,
-    setScoreSubmitted,
     setLives,
     setGameStarted,
     setFirstTimeLoad,
@@ -675,7 +670,6 @@ export default function SnowBored() {
               setScore(0)
               setGameTime(0)
               setGameOver(false)
-              setScoreSubmitted(false)
               setLives(3)
               setFirstTimeLoad(true)
               setGameStarted(false)
@@ -808,7 +802,6 @@ export default function SnowBored() {
                       Time: {Math.floor(gameTime / 60)}:{(gameTime % 60).toString().padStart(2, "0")}
                     </p>
                   </div>
-                  <ScoreSubmission score={score} gameTime={gameTime} onSubmitted={() => setScoreSubmitted(true)} />
                   <button
                     onClick={resetGame}
                     className="w-full bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-bold py-2 px-3 rounded-lg text-xs border-2 border-orange-500 hover:border-orange-400 transition-all pixel-font shadow-lg"
@@ -834,34 +827,20 @@ export default function SnowBored() {
           >
             Points unlock exclusive perks.
           </a>
-          {/* Mobile Profile/Leaderboard */}
+          {/* Mobile Profile */}
           <div className="w-full mt-6 lg:hidden" style={{ maxWidth: "800px" }}>
             <div className="flex justify-center mb-3 gap-2">
               <button
                 onClick={() => setActiveTab("profile")}
-                className={`px-4 py-1.5 text-xs pixel-font rounded-lg transition-all ${
-                  activeTab === "profile"
-                    ? "bg-orange-500 text-white border-2 border-orange-400"
-                    : "bg-gray-700/50 text-gray-400 border-2 border-gray-600 hover:bg-gray-700/80"
-                }`}
+                className="px-4 py-1.5 text-xs pixel-font rounded-lg transition-all bg-orange-500 text-white border-2 border-orange-400"
               >
                 PROFILE
               </button>
-              <button
-                onClick={() => setActiveTab("leaderboard")}
-                className={`px-4 py-1.5 text-xs pixel-font rounded-lg transition-all ${
-                  activeTab === "leaderboard"
-                    ? "bg-orange-500 text-white border-2 border-orange-400"
-                    : "bg-gray-700/50 text-gray-400 border-2 border-gray-600 hover:bg-gray-700/80"
-                }`}
-              >
-                LEADERBOARD
-              </button>
             </div>
-            {activeTab === "profile" ? <Profile /> : <Leaderboard key={scoreSubmitted ? "submitted" : "default"} />}
+            <Profile />
           </div>
         </div>
-        {/* Desktop Profile/Leaderboard */}
+        {/* Desktop Profile */}
         <div
           className="hidden lg:block w-full lg:w-auto lg:flex-shrink-0 lg:self-start order-2 lg:order-2"
           style={{ width: "400px", maxWidth: "100%" }}
@@ -869,26 +848,12 @@ export default function SnowBored() {
           <div className="flex justify-center mb-4 gap-2">
             <button
               onClick={() => setActiveTab("profile")}
-              className={`px-5 py-2 text-sm pixel-font rounded-lg transition-all ${
-                activeTab === "profile"
-                  ? "bg-orange-500 text-white border-2 border-orange-400 shadow-lg"
-                  : "bg-gray-700/50 text-gray-300 border-2 border-gray-600 hover:bg-gray-700/80"
-              }`}
+              className="px-5 py-2 text-sm pixel-font rounded-lg transition-all bg-orange-500 text-white border-2 border-orange-400 shadow-lg"
             >
               PROFILE
             </button>
-            <button
-              onClick={() => setActiveTab("leaderboard")}
-              className={`px-5 py-2 text-sm pixel-font rounded-lg transition-all ${
-                activeTab === "leaderboard"
-                  ? "bg-orange-500 text-white border-2 border-orange-400 shadow-lg"
-                  : "bg-gray-700/50 text-gray-300 border-2 border-gray-600 hover:bg-gray-700/80"
-              }`}
-            >
-              LEADERBOARD
-            </button>
           </div>
-          {activeTab === "profile" ? <Profile /> : <Leaderboard key={scoreSubmitted ? "submitted" : "default"} />}
+          <Profile />
         </div>
       </main>
       <section className="relative z-10 w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 pb-6 lg:pb-8 mt-8 lg:mt-6">
