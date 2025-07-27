@@ -47,7 +47,7 @@ export default function Footer({ onOpenPrivacy, onOpenTerms }: FooterProps) {
               </a>
               */}
               <a
-                href="mailto:contact@plague.labs"
+                href="mailto:helloplaguelabs@gmail.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-green-400 transition-colors"
