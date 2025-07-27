@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useState, useEffect } from "react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
@@ -25,12 +27,13 @@ import TeamModal from "./TeamModal"
 import SuccessModal from "./SuccessModal"
 import PrivacyModal from "./PrivacyModal"
 import CookieConsent from "./CookieConsent"
-import { useActionState } from "react"
 
 export default function PlagueMain() {
   const { connected } = useWallet()
   const [activeModal, setActiveModal] = useState<string | null>(null)
   const [showContactForm, setShowContactForm] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitMessage, setSubmitMessage] = useState<{ type: "success" | "error"; text: string } | null>(null)
 
   const openModal = (modalName: string) => {
     setActiveModal(modalName)
@@ -58,7 +61,13 @@ export default function PlagueMain() {
     window.scrollTo({ top: 0, behavior: "smooth" }) // Scrolls to the top of the page smoothly
   }
 
-  const [submitState, submitAction, isPending] = useActionState(async (prevState: any, formData: FormData) => {
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    setSubmitMessage(null)
+
+    const formData = new FormData(e.currentTarget)
+
     try {
       const response = await fetch("/api/contact", {
         method: "POST",
@@ -75,28 +84,30 @@ export default function PlagueMain() {
 
       const data = await response.json()
 
-      if (!response.ok) {
+      if (response.ok) {
+        setSubmitMessage({
+          type: "success",
+          text: data.message || "Message sent successfully! We'll get back to you within 24 hours.",
+        })
+        // Reset form
+        e.currentTarget.reset()
+      } else {
         if (response.status === 429) {
-          return {
-            success: false,
-            message: "Too many requests. Please wait a few minutes before trying again.",
-          }
-        }
-
-        if (data.details) {
+          setSubmitMessage({ type: "error", text: "Too many requests. Please wait a few minutes before trying again." })
+        } else if (data.details) {
           const errorMessages = data.details.map((detail: any) => detail.message).join(", ")
-          return { success: false, message: errorMessages }
+          setSubmitMessage({ type: "error", text: errorMessages })
+        } else {
+          setSubmitMessage({ type: "error", text: data.error || "Failed to send message. Please try again." })
         }
-
-        return { success: false, message: data.error || "Failed to send message" }
       }
-
-      return { success: true, message: data.message }
     } catch (error) {
       console.error("Form submission error:", error)
-      return { success: false, message: "Network error. Please check your connection and try again." }
+      setSubmitMessage({ type: "error", text: "Network error. Please check your connection and try again." })
+    } finally {
+      setIsSubmitting(false)
     }
-  }, null)
+  }
 
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
@@ -419,7 +430,7 @@ export default function PlagueMain() {
               </button>
             </div>
 
-            <form className="p-6 space-y-4" action={submitAction}>
+            <form className="p-6 space-y-4" onSubmit={handleFormSubmit}>
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">
                   Name
@@ -477,37 +488,36 @@ export default function PlagueMain() {
                 <p className="text-sm text-gray-300 mb-4 text-center">
                   Fill out the form above and we'll get back to you within 24 hours.
                 </p>
-                <div className="pt-4">
-                  {submitState?.message && (
-                    <div
-                      className={`mb-3 p-3 rounded-lg text-sm ${
-                        submitState.success
-                          ? "bg-green-900/50 text-green-300 border border-green-500/30"
-                          : "bg-red-900/50 text-red-300 border border-red-500/30"
-                      }`}
-                    >
-                      {submitState.message}
-                    </div>
-                  )}
 
-                  <button
-                    type="submit"
-                    disabled={isPending}
-                    className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                {submitMessage && (
+                  <div
+                    className={`mb-3 p-3 rounded-lg text-sm ${
+                      submitMessage.type === "success"
+                        ? "bg-green-900/50 text-green-300 border border-green-500/30"
+                        : "bg-red-900/50 text-red-300 border border-red-500/30"
+                    }`}
                   >
-                    {isPending ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                        Sending...
-                      </>
-                    ) : (
-                      <>
-                        <ExternalLink className="h-4 w-4" />
-                        Send Message
-                      </>
-                    )}
-                  </button>
-                </div>
+                    {submitMessage.text}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <ExternalLink className="h-4 w-4" />
+                      Send Message
+                    </>
+                  )}
+                </button>
               </div>
             </form>
           </div>
