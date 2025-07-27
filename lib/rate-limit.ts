@@ -10,7 +10,7 @@ interface RateLimitResult {
 export async function checkRateLimit(
   identifier: string,
   limit = 10, // Increased to 10 requests
-  windowMs: number = 60 * 60 * 1000, // 1 hour window (much longer)
+  windowMs: number = 60 * 60 * 1000, // 1 hour window
 ): Promise<RateLimitResult> {
   const windowStart = new Date(Date.now() - windowMs)
 

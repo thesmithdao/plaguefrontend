@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS contact_submissions (
   email TEXT NOT NULL,
   subject TEXT NOT NULL,
   message TEXT NOT NULL,
-  ip_address TEXT,
+  ip_address TEXT, -- Using TEXT to handle "unknown" values
   user_agent TEXT,
   status TEXT DEFAULT 'new' CHECK (status IN ('new', 'submitted', 'notification_sent', 'emails_sent')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),

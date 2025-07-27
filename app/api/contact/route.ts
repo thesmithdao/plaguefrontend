@@ -17,26 +17,39 @@ function getClientIP(request: NextRequest): string {
   const realIP = request.headers.get("x-real-ip")
   const vercelForwarded = request.headers.get("x-vercel-forwarded-for")
 
+  // Try to get IP from various headers
+  let ip = "unknown"
+
   if (forwarded) {
-    const ip = forwarded.split(",")[0].trim()
-    if (isValidIP(ip)) return ip
+    const firstIP = forwarded.split(",")[0].trim()
+    if (isValidIP(firstIP)) {
+      ip = firstIP
+    }
+  } else if (realIP && isValidIP(realIP)) {
+    ip = realIP
+  } else if (vercelForwarded && isValidIP(vercelForwarded)) {
+    ip = vercelForwarded
   }
 
-  if (realIP && isValidIP(realIP)) {
-    return realIP
-  }
-
-  if (vercelForwarded && isValidIP(vercelForwarded)) {
-    return vercelForwarded
-  }
-
-  return "unknown"
+  return ip
 }
 
 function isValidIP(ip: string): boolean {
-  // Simple IP validation
+  if (!ip || ip === "unknown") return false
+
+  // Simple IPv4 validation
   const ipv4Regex = /^(\d{1,3}\.){3}\d{1,3}$/
-  return ipv4Regex.test(ip)
+  if (ipv4Regex.test(ip)) {
+    const octets = ip.split(".")
+    return octets.every((octet) => {
+      const num = Number.parseInt(octet, 10)
+      return num >= 0 && num <= 255
+    })
+  }
+
+  // Simple IPv6 validation
+  const ipv6Regex = /^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/
+  return ipv6Regex.test(ip)
 }
 
 export async function POST(request: NextRequest) {
@@ -83,7 +96,7 @@ export async function POST(request: NextRequest) {
         email,
         subject,
         message,
-        ip_address: clientIP,
+        ip_address: clientIP, // This will now be stored as TEXT
         user_agent: userAgent,
         status: "new",
       })
