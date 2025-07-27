@@ -17,8 +17,6 @@ import {
   TestTubeDiagonal,
   Radiation,
   X,
-  Copy,
-  Check,
   ExternalLink,
 } from "lucide-react"
 import AboutModal from "./AboutModal"
@@ -29,12 +27,12 @@ import TeamModal from "./TeamModal"
 import SuccessModal from "./SuccessModal"
 import PrivacyModal from "./PrivacyModal"
 import CookieConsent from "./CookieConsent"
+import { useActionState } from "react"
 
 export default function PlagueMain() {
   const { connected } = useWallet()
   const [activeModal, setActiveModal] = useState<string | null>(null)
   const [showContactForm, setShowContactForm] = useState(false)
-  const [copiedEmail, setCopiedEmail] = useState(false)
 
   const openModal = (modalName: string) => {
     setActiveModal(modalName)
@@ -60,24 +58,6 @@ export default function PlagueMain() {
 
   const handleLogoClick = () => {
     window.scrollTo({ top: 0, behavior: "smooth" }) // Scrolls to the top of the page smoothly
-  }
-
-  const copyToClipboard = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text)
-      setCopiedEmail(true)
-      setTimeout(() => setCopiedEmail(false), 2000)
-    } catch (err) {
-      // Fallback for older browsers
-      const textArea = document.createElement("textarea")
-      textArea.value = text
-      document.body.appendChild(textArea)
-      textArea.select()
-      document.execCommand("copy")
-      document.body.removeChild(textArea)
-      setCopiedEmail(true)
-      setTimeout(() => setCopiedEmail(false), 2000)
-    }
   }
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -106,6 +86,31 @@ export default function PlagueMain() {
       icon: ExternalLink,
     }
   }
+
+  const [submitState, submitAction, isPending] = useActionState(async (prevState: any, formData: FormData) => {
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.get("name"),
+          email: formData.get("email"),
+          subject: formData.get("subject"),
+          message: formData.get("message"),
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to send message")
+      }
+
+      return { success: true, message: "Message sent successfully!" }
+    } catch (error) {
+      return { success: false, message: "Failed to send message. Please try again." }
+    }
+  }, null)
 
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
@@ -428,7 +433,7 @@ export default function PlagueMain() {
               </button>
             </div>
 
-            <form className="p-6 space-y-4" onSubmit={handleFormSubmit}>
+            <form className="p-6 space-y-4" action={submitAction}>
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">
                   Name
@@ -483,41 +488,39 @@ export default function PlagueMain() {
               </div>
 
               <div className="border-t border-gray-700 pt-4">
-                <p className="text-sm text-gray-300 mb-3 text-center">Send your message via email:</p>
-
-                <div className="bg-gray-800 rounded-lg p-3 mb-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-400">Contact:</span>
-                    <button
-                      type="button"
-                      onClick={() => copyToClipboard("helloplaguelabs@gmail.com")}
-                      className="flex items-center gap-1 text-green-400 hover:text-green-300 transition-colors text-sm"
+                <p className="text-sm text-gray-300 mb-4 text-center">
+                  Fill out the form above and we'll get back to you within 24 hours.
+                </p>
+                <div className="pt-4">
+                  {submitState?.message && (
+                    <div
+                      className={`mb-3 p-3 rounded-lg text-sm ${
+                        submitState.success
+                          ? "bg-green-900/50 text-green-300 border border-green-500/30"
+                          : "bg-red-900/50 text-red-300 border border-red-500/30"
+                      }`}
                     >
-                      {copiedEmail ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                      {copiedEmail ? "Copied!" : "Copy"}
-                    </button>
-                  </div>
-                  <p className="text-white font-mono text-sm">helloplaguelabs@gmail.com</p>
-                </div>
+                      {submitState.message}
+                    </div>
+                  )}
 
-                <div className="space-y-2">
-                  <a
-                    href={detectEmailPreference().url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                  <button
+                    type="submit"
+                    disabled={isPending}
+                    className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
                   >
-                    <ExternalLink className="h-4 w-4" />
-                    Open {detectEmailPreference().name}
-                  </a>
-
-                  <a
-                    href="mailto:helloplaguelabs@gmail.com"
-                    className="w-full bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm"
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                    Use Default Email App
-                  </a>
+                    {isPending ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <ExternalLink className="h-4 w-4" />
+                        Send Message
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
             </form>
