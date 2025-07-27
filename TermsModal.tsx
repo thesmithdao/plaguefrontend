@@ -8,8 +8,8 @@ interface TermsModalProps {
 
 export default function TermsModal({ onClose }: TermsModalProps) {
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-gray-900 border border-gray-700 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
+      <div className="bg-gray-900 border border-gray-700 rounded-xl w-full h-full sm:max-w-2xl sm:w-full sm:max-h-[90vh] sm:h-auto overflow-y-auto">
         <div className="p-4 border-b border-gray-700 flex items-center justify-between sticky top-0 bg-gray-900 z-10">
           <h2 className="text-lg font-bold text-green-400">Terms of Service</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
@@ -21,14 +21,17 @@ export default function TermsModal({ onClose }: TermsModalProps) {
           <div>
             <h3 className="text-white font-semibold mb-2">Acceptance of Terms</h3>
             <p>
-              By accessing and using Plague Labs services, you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
+              By accessing and using Plague Labs services, you accept and agree to be bound by the terms and provision
+              of this agreement. If you do not agree to abide by the above, please do not use this service.
             </p>
           </div>
 
           <div>
             <h3 className="text-white font-semibold mb-2">Service Description</h3>
             <p>
-              Plague Labs provides web3 marketing services, NFT collection management, and community building tools. Our services are provided "as is" and we make no warranties regarding the availability or functionality of our services.
+              Plague Labs provides web3 marketing services, NFT collection management, and community building tools. Our
+              services are provided "as is" and we make no warranties regarding the availability or functionality of our
+              services.
             </p>
           </div>
 
@@ -46,14 +49,17 @@ export default function TermsModal({ onClose }: TermsModalProps) {
           <div>
             <h3 className="text-white font-semibold mb-2">Intellectual Property</h3>
             <p>
-              The service and its original content, features, and functionality are and will remain the exclusive property of Plague Labs and its licensors. The service is protected by copyright, trademark, and other laws.
+              The service and its original content, features, and functionality are and will remain the exclusive
+              property of Plague Labs and its licensors. The service is protected by copyright, trademark, and other
+              laws.
             </p>
           </div>
 
           <div>
             <h3 className="text-white font-semibold mb-2">Limitation of Liability</h3>
             <p>
-              In no event shall Plague Labs be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses.
+              In no event shall Plague Labs be liable for any indirect, incidental, special, consequential, or punitive
+              damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses.
             </p>
           </div>
 
