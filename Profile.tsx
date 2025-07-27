@@ -24,6 +24,7 @@ export default function Profile({ onClose }: ProfileProps) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [currentGridPage, setCurrentGridPage] = useState(0)
 
   useEffect(() => {
     if (publicKey) {
@@ -88,6 +89,10 @@ export default function Profile({ onClose }: ProfileProps) {
     disconnect()
     onClose()
   }
+
+  useEffect(() => {
+    setCurrentGridPage(0)
+  }, [nfts])
 
   if (!publicKey) {
     return (
@@ -224,8 +229,20 @@ export default function Profile({ onClose }: ProfileProps) {
                     <img
                       src={nfts[currentIndex]?.image || "/placeholder.svg?height=120&width=120&text=plaguelabs"}
                       alt={nfts[currentIndex]?.name}
-                      className="w-full md:w-64 h-64 object-cover rounded-lg border border-green-500/30"
+                      className="w-full md:w-48 h-48 object-cover rounded-lg border border-green-500/30 cursor-pointer hover:border-green-400 transition-colors"
                       crossOrigin="anonymous"
+                      onClick={() => {
+                        const imageUrl = nfts[currentIndex]?.image
+                        if (imageUrl) {
+                          // Convert to friendly IPFS link if it's an IPFS URL
+                          const friendlyUrl = imageUrl.includes("ipfs://")
+                            ? imageUrl.replace("ipfs://", "https://ipfs.io/ipfs/")
+                            : imageUrl.includes("gateway.pinata.cloud") || imageUrl.includes("cloudflare-ipfs.com")
+                              ? imageUrl
+                              : imageUrl
+                          window.open(friendlyUrl, "_blank", "noopener,noreferrer")
+                        }
+                      }}
                       onError={(e) => {
                         const target = e.target as HTMLImageElement
                         target.src = "/placeholder.svg?height=256&width=256&text=Plague"
@@ -278,29 +295,66 @@ export default function Profile({ onClose }: ProfileProps) {
                 )}
               </div>
 
-              {/* NFT Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
-                {nfts.map((nft, index) => (
-                  <button
-                    key={nft.mint}
-                    onClick={() => setCurrentIndex(index)}
-                    className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${
-                      index === currentIndex
-                        ? "border-green-400 ring-2 ring-green-400/50"
-                        : "border-gray-600 hover:border-green-500"
-                    }`}
-                  >
-                    <img
-                      src={nft.image || "/placeholder.svg?height=100&width=100&text=Plague"}
-                      alt={nft.name}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement
-                        target.src = "/placeholder.svg?height=100&width=100&text=Plague"
-                      }}
-                    />
-                  </button>
-                ))}
+              {/* NFT Grid with Pagination */}
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <h5 className="text-green-400 font-semibold">All Specimens</h5>
+                  <div className="text-gray-400 text-sm">
+                    Showing {Math.min(currentGridPage * 24 + 24, nfts.length)} of {nfts.length}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-12 gap-2">
+                  {nfts.slice(currentGridPage * 24, (currentGridPage + 1) * 24).map((nft, index) => {
+                    const actualIndex = currentGridPage * 24 + index
+                    return (
+                      <button
+                        key={nft.mint}
+                        onClick={() => setCurrentIndex(actualIndex)}
+                        className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all hover:scale-105 ${
+                          actualIndex === currentIndex
+                            ? "border-green-400 ring-2 ring-green-400/50"
+                            : "border-gray-600 hover:border-green-500"
+                        }`}
+                      >
+                        <img
+                          src={nft.image || "/placeholder.svg?height=100&width=100&text=Plague"}
+                          alt={nft.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement
+                            target.src = "/placeholder.svg?height=100&width=100&text=Plague"
+                          }}
+                        />
+                      </button>
+                    )
+                  })}
+                </div>
+
+                {/* Grid Pagination */}
+                {nfts.length > 24 && (
+                  <div className="flex justify-center items-center gap-4 mt-4">
+                    <button
+                      onClick={() => setCurrentGridPage(Math.max(0, currentGridPage - 1))}
+                      disabled={currentGridPage === 0}
+                      className="bg-gray-700 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed text-white p-2 rounded-lg transition-colors"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </button>
+
+                    <span className="text-gray-300 text-sm">
+                      Page {currentGridPage + 1} of {Math.ceil(nfts.length / 24)}
+                    </span>
+
+                    <button
+                      onClick={() => setCurrentGridPage(Math.min(Math.ceil(nfts.length / 24) - 1, currentGridPage + 1))}
+                      disabled={currentGridPage >= Math.ceil(nfts.length / 24) - 1}
+                      className="bg-gray-700 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed text-white p-2 rounded-lg transition-colors"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           )}
