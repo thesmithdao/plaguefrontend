@@ -53,8 +53,7 @@ export default function TermsModal({ onClose }: TermsModalProps) {
           <div>
             <h3 className="text-white font-semibold mb-2">Limitation of Liability</h3>
             <p>
-              In no event shall PLAGUE Labs be liable for any indirect, incidental, special, consequential, or punitive
-              damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses.
+              In no event shall Plague Labs be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses.
             </p>
           </div>
 
@@ -74,7 +73,7 @@ export default function TermsModal({ onClose }: TermsModalProps) {
             </p>
           </div>
 
-          <div className="text-xs text-gray-400 pt-4 border-t border-gray-700">Last updated: January 2024</div>
+          <div className="text-xs text-gray-400 pt-4 border-t border-gray-700">Last updated: January 2025</div>
         </div>
       </div>
     </div>
