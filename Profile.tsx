@@ -206,7 +206,7 @@ export default function Profile({ onClose }: ProfileProps) {
                 <div className="flex flex-col md:flex-row gap-4">
                   <div className="flex-shrink-0">
                     <img
-                      src={nfts[currentIndex]?.image || "/placeholder.svg?height=256&width=256&text=PLAGUE"}
+                      src={nfts[currentIndex]?.image || "/placeholder.svg?height=120&width=120&text=plaguelabs"}
                       alt={nfts[currentIndex]?.name}
                       className="w-full md:w-64 h-64 object-cover rounded-lg border border-green-500/30"
                       crossOrigin="anonymous"
