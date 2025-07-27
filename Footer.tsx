@@ -79,7 +79,7 @@ export default function Footer({ onOpenPrivacy, onOpenTerms }: FooterProps) {
 
         <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col sm:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm">© 2025 Plague Labs</p>
-          <div className="flex flex-col sm:flex-row space-y-2 sm:space-x-6 mt-4 sm:mt-0">
+          <div className="flex space-x-6 mt-4 sm:mt-0">
             <button
               onClick={onOpenPrivacy}
               className="text-gray-400 hover:text-green-400 text-sm transition-colors flex items-center gap-1"
