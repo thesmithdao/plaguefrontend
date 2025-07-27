@@ -1,76 +1,53 @@
 import { type NextRequest, NextResponse } from "next/server"
+import { z } from "zod"
 import { supabaseAdmin } from "@/lib/supabase"
 import { checkRateLimit } from "@/lib/rate-limit"
-import { sendContactNotification, sendConfirmationEmail } from "@/lib/email"
-import { z } from "zod"
+import { sendNotificationEmail, sendConfirmationEmail } from "@/lib/email"
 
 // Validation schema
 const contactSchema = z.object({
-  name: z.string().min(1, "Name is required").max(100, "Name too long"),
-  email: z.string().email("Invalid email format").max(255, "Email too long"),
-  subject: z.string().min(1, "Subject is required").max(200, "Subject too long"),
-  message: z.string().min(10, "Message must be at least 10 characters").max(2000, "Message too long"),
+  name: z.string().min(1, "Name is required").max(100, "Name must be less than 100 characters"),
+  email: z.string().email("Invalid email address").max(255, "Email must be less than 255 characters"),
+  subject: z.string().min(1, "Subject is required").max(200, "Subject must be less than 200 characters"),
+  message: z
+    .string()
+    .min(10, "Message must be at least 10 characters")
+    .max(2000, "Message must be less than 2000 characters"),
 })
 
 function getClientIP(request: NextRequest): string {
-  const forwarded = request.headers.get("x-forwarded-for")
+  // Try various headers to get the real client IP
+  const forwardedFor = request.headers.get("x-forwarded-for")
   const realIP = request.headers.get("x-real-ip")
-  const remoteAddr = request.headers.get("x-vercel-forwarded-for")
+  const vercelForwardedFor = request.headers.get("x-vercel-forwarded-for")
+  const cfConnectingIP = request.headers.get("cf-connecting-ip")
 
-  if (forwarded) {
-    const ip = forwarded.split(",")[0].trim()
-    // Validate IP format
-    if (isValidIP(ip)) return ip
-  }
+  let ip = forwardedFor?.split(",")[0]?.trim() || realIP || vercelForwardedFor || cfConnectingIP || "unknown"
 
-  if (realIP && isValidIP(realIP)) {
-    return realIP
-  }
-
-  if (remoteAddr && isValidIP(remoteAddr)) {
-    return remoteAddr
-  }
-
-  return "unknown"
-}
-
-function isValidIP(ip: string): boolean {
-  // Simple IP validation (IPv4 and IPv6)
+  // Basic IP validation
   const ipv4Regex = /^(\d{1,3}\.){3}\d{1,3}$/
   const ipv6Regex = /^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/
 
-  if (ipv4Regex.test(ip)) {
-    // Check if each octet is valid (0-255)
-    const octets = ip.split(".")
-    return octets.every((octet) => {
-      const num = Number.parseInt(octet, 10)
-      return num >= 0 && num <= 255
-    })
+  if (!ipv4Regex.test(ip) && !ipv6Regex.test(ip)) {
+    ip = "unknown"
   }
 
-  return ipv6Regex.test(ip)
+  return ip
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const clientIP = getClientIP(request)
-    const userAgent = request.headers.get("user-agent") || "unknown"
+    // Check rate limiting
+    const { rateLimited, remaining } = await checkRateLimit(request)
 
-    // Check rate limit
-    const rateLimitResult = await checkRateLimit(clientIP, 5, 15 * 60 * 1000) // 5 requests per 15 minutes
-
-    if (!rateLimitResult.success) {
+    if (rateLimited) {
       return NextResponse.json(
-        {
-          error: "Too many requests. Please try again later.",
-          retryAfter: rateLimitResult.resetTime.toISOString(),
-        },
+        { error: "Too many requests. Please wait before trying again." },
         {
           status: 429,
           headers: {
-            "X-RateLimit-Limit": rateLimitResult.limit.toString(),
-            "X-RateLimit-Remaining": rateLimitResult.remaining.toString(),
-            "X-RateLimit-Reset": rateLimitResult.resetTime.getTime().toString(),
+            "X-RateLimit-Remaining": remaining.toString(),
+            "X-RateLimit-Reset": new Date(Date.now() + 15 * 60 * 1000).toISOString(),
           },
         },
       )
@@ -84,10 +61,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: "Validation failed",
-          details: validationResult.error.errors.map((err) => ({
-            field: err.path.join("."),
-            message: err.message,
-          })),
+          details: validationResult.error.errors,
         },
         { status: 400 },
       )
@@ -95,7 +69,11 @@ export async function POST(request: NextRequest) {
 
     const { name, email, subject, message } = validationResult.data
 
-    // Store in database
+    // Get client information
+    const ip = getClientIP(request)
+    const userAgent = request.headers.get("user-agent") || "unknown"
+
+    // Save to database
     const { data: submission, error: dbError } = await supabaseAdmin
       .from("contact_submissions")
       .insert({
@@ -103,7 +81,7 @@ export async function POST(request: NextRequest) {
         email,
         subject,
         message,
-        ip_address: clientIP,
+        ip_address: ip,
         user_agent: userAgent,
         status: "new",
       })
@@ -112,18 +90,18 @@ export async function POST(request: NextRequest) {
 
     if (dbError) {
       console.error("Database error:", dbError)
-      return NextResponse.json({ error: "Failed to save submission. Please try again." }, { status: 500 })
+      return NextResponse.json({ error: "Failed to save submission" }, { status: 500 })
     }
 
     // Send notification email to Plague Labs
-    const notificationResult = await sendContactNotification({
+    const notificationResult = await sendNotificationEmail({
       name,
       email,
       subject,
       message,
     })
 
-    // Send confirmation email to user (don't fail if this fails)
+    // Send confirmation email to user
     const confirmationResult = await sendConfirmationEmail({
       name,
       email,
@@ -131,17 +109,15 @@ export async function POST(request: NextRequest) {
       message,
     })
 
-    // Update submission status based on email results
-    let status = "submitted"
-    if (notificationResult.success && confirmationResult.success) {
-      status = "emails_sent"
-    } else if (notificationResult.success) {
-      status = "notification_sent"
+    // Log email results (don't fail the request if emails fail)
+    if (!notificationResult.success) {
+      console.error("Failed to send notification email:", notificationResult.error)
     }
 
-    await supabaseAdmin.from("contact_submissions").update({ status }).eq("id", submission.id)
+    if (!confirmationResult.success) {
+      console.error("Failed to send confirmation email:", confirmationResult.error)
+    }
 
-    // Return success even if confirmation email fails
     return NextResponse.json(
       {
         message: "Message sent successfully! We'll get back to you within 24 hours.",
@@ -150,14 +126,12 @@ export async function POST(request: NextRequest) {
       {
         status: 200,
         headers: {
-          "X-RateLimit-Limit": rateLimitResult.limit.toString(),
-          "X-RateLimit-Remaining": rateLimitResult.remaining.toString(),
-          "X-RateLimit-Reset": rateLimitResult.resetTime.getTime().toString(),
+          "X-RateLimit-Remaining": remaining.toString(),
         },
       },
     )
   } catch (error) {
     console.error("Contact form error:", error)
-    return NextResponse.json({ error: "Internal server error. Please try again later." }, { status: 500 })
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
