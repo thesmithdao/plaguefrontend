@@ -1,7 +1,5 @@
 "use client"
 
-import type React from "react"
-
 import { useState, useEffect } from "react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
@@ -60,33 +58,6 @@ export default function PlagueMain() {
     window.scrollTo({ top: 0, behavior: "smooth" }) // Scrolls to the top of the page smoothly
   }
 
-  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    // Form data is available for user to copy/reference
-    // Modal stays open so user can choose email option
-  }
-
-  const detectEmailPreference = () => {
-    const userAgent = navigator.userAgent.toLowerCase()
-    const isMobile = /android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent)
-
-    // For mobile devices, use mailto which works universally
-    if (isMobile) {
-      return {
-        name: "Email App",
-        url: "mailto:helloplaguelabs@gmail.com",
-        icon: ExternalLink,
-      }
-    }
-
-    // For desktop, try Gmail first (most common), with fallback to mailto
-    return {
-      name: "Gmail",
-      url: "https://mail.google.com/mail/?view=cm&fs=1&to=helloplaguelabs@gmail.com",
-      icon: ExternalLink,
-    }
-  }
-
   const [submitState, submitAction, isPending] = useActionState(async (prevState: any, formData: FormData) => {
     try {
       const response = await fetch("/api/contact", {
@@ -102,13 +73,28 @@ export default function PlagueMain() {
         }),
       })
 
+      const data = await response.json()
+
       if (!response.ok) {
-        throw new Error("Failed to send message")
+        if (response.status === 429) {
+          return {
+            success: false,
+            message: "Too many requests. Please wait a few minutes before trying again.",
+          }
+        }
+
+        if (data.details) {
+          const errorMessages = data.details.map((detail: any) => detail.message).join(", ")
+          return { success: false, message: errorMessages }
+        }
+
+        return { success: false, message: data.error || "Failed to send message" }
       }
 
-      return { success: true, message: "Message sent successfully!" }
+      return { success: true, message: data.message }
     } catch (error) {
-      return { success: false, message: "Failed to send message. Please try again." }
+      console.error("Form submission error:", error)
+      return { success: false, message: "Network error. Please check your connection and try again." }
     }
   }, null)
 

@@ -1,46 +1,139 @@
 import { type NextRequest, NextResponse } from "next/server"
+import { supabaseAdmin } from "@/lib/supabase"
+import { checkRateLimit } from "@/lib/rate-limit"
+import { sendContactNotification, sendConfirmationEmail } from "@/lib/email"
+import { z } from "zod"
+
+// Validation schema
+const contactSchema = z.object({
+  name: z.string().min(1, "Name is required").max(100, "Name too long"),
+  email: z.string().email("Invalid email format").max(255, "Email too long"),
+  subject: z.string().min(1, "Subject is required").max(200, "Subject too long"),
+  message: z.string().min(10, "Message must be at least 10 characters").max(2000, "Message too long"),
+})
+
+function getClientIP(request: NextRequest): string {
+  const forwarded = request.headers.get("x-forwarded-for")
+  const realIP = request.headers.get("x-real-ip")
+
+  if (forwarded) {
+    return forwarded.split(",")[0].trim()
+  }
+
+  if (realIP) {
+    return realIP
+  }
+
+  return "unknown"
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, email, subject, message } = await request.json()
+    const clientIP = getClientIP(request)
+    const userAgent = request.headers.get("user-agent") || "unknown"
 
-    // Validate required fields
-    if (!name || !email || !subject || !message) {
-      return NextResponse.json({ error: "All fields are required" }, { status: 400 })
+    // Check rate limit
+    const rateLimitResult = await checkRateLimit(clientIP, 5, 15 * 60 * 1000) // 5 requests per 15 minutes
+
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        {
+          error: "Too many requests. Please try again later.",
+          retryAfter: rateLimitResult.resetTime.toISOString(),
+        },
+        {
+          status: 429,
+          headers: {
+            "X-RateLimit-Limit": rateLimitResult.limit.toString(),
+            "X-RateLimit-Remaining": rateLimitResult.remaining.toString(),
+            "X-RateLimit-Reset": rateLimitResult.resetTime.getTime().toString(),
+          },
+        },
+      )
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email)) {
-      return NextResponse.json({ error: "Invalid email format" }, { status: 400 })
+    // Parse and validate request body
+    const body = await request.json()
+    const validationResult = contactSchema.safeParse(body)
+
+    if (!validationResult.success) {
+      return NextResponse.json(
+        {
+          error: "Validation failed",
+          details: validationResult.error.errors.map((err) => ({
+            field: err.path.join("."),
+            message: err.message,
+          })),
+        },
+        { status: 400 },
+      )
     }
 
-    // Store in database (using a simple in-memory store for now)
-    // In production, you'd want to use a proper database like Supabase
-    const contactData = {
-      id: Date.now().toString(),
+    const { name, email, subject, message } = validationResult.data
+
+    // Store in database
+    const { data: submission, error: dbError } = await supabaseAdmin
+      .from("contact_submissions")
+      .insert({
+        name,
+        email,
+        subject,
+        message,
+        ip_address: clientIP,
+        user_agent: userAgent,
+        status: "new",
+      })
+      .select()
+      .single()
+
+    if (dbError) {
+      console.error("Database error:", dbError)
+      return NextResponse.json({ error: "Failed to save submission. Please try again." }, { status: 500 })
+    }
+
+    // Send notification email to Plague Labs
+    const notificationResult = await sendContactNotification({
       name,
       email,
       subject,
       message,
-      createdAt: new Date().toISOString(),
-      status: "new",
+    })
+
+    // Send confirmation email to user (don't fail if this fails)
+    const confirmationResult = await sendConfirmationEmail({
+      name,
+      email,
+      subject,
+      message,
+    })
+
+    // Update submission status based on email results
+    let status = "submitted"
+    if (notificationResult.success && confirmationResult.success) {
+      status = "emails_sent"
+    } else if (notificationResult.success) {
+      status = "notification_sent"
     }
 
-    // Log the contact submission (in production, save to database)
-    console.log("New contact submission:", contactData)
+    await supabaseAdmin.from("contact_submissions").update({ status }).eq("id", submission.id)
 
-    // Here you would typically:
-    // 1. Save to database
-    // 2. Send email notification to helloplaguelabs@gmail.com
-    // 3. Send confirmation email to the user
-
-    // For now, we'll simulate success
-    // In production, you'd integrate with an email service like Resend, SendGrid, etc.
-
-    return NextResponse.json({ message: "Message sent successfully!" }, { status: 200 })
+    // Return success even if confirmation email fails
+    return NextResponse.json(
+      {
+        message: "Message sent successfully! We'll get back to you within 24 hours.",
+        id: submission.id,
+      },
+      {
+        status: 200,
+        headers: {
+          "X-RateLimit-Limit": rateLimitResult.limit.toString(),
+          "X-RateLimit-Remaining": rateLimitResult.remaining.toString(),
+          "X-RateLimit-Reset": rateLimitResult.resetTime.getTime().toString(),
+        },
+      },
+    )
   } catch (error) {
     console.error("Contact form error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    return NextResponse.json({ error: "Internal server error. Please try again later." }, { status: 500 })
   }
 }
