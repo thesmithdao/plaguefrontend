@@ -1,15 +1,36 @@
 "use client"
 
-import { useEffect, useRef, useState, useCallback } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  Play,
+  Pause,
+  RotateCcw,
+  Zap,
+  Users,
+  Activity,
+  TrendingUp,
+  Info,
+  BookOpen,
+  Shield,
+  FileText,
+  User,
+} from "lucide-react"
+import { GameObjects, Cell, Virus, Cure } from "./GameObjects"
+import { gameConfig } from "./constants"
 import { GAME_CONSTANTS, COLORS, IMAGES, FONTS } from "../constants"
 import { useWallet } from "@solana/wallet-adapter-react"
 import WalletConnection from "./WalletConnection"
 import AboutModal from "./AboutModal"
 import LoreModal from "./LoreModal"
-import NFTModal from "./NFTModal"
+import PrivacyModal from "./PrivacyModal"
 import Footer from "./Footer"
 import TermsModal from "./TermsModal"
 import Profile from "./Profile"
+import CookieConsent from "./CookieConsent"
 
 interface Obstacle {
   x: number
@@ -59,10 +80,23 @@ interface GameState {
   avalancheTimer: number
 }
 
+interface GameStats {
+  infectedCells: number
+  healthyCells: number
+  curedCells: number
+  totalCells: number
+  infectionRate: number
+  generation: number
+  virusStrength: number
+  cureEffectiveness: number
+}
+
 export default function SnowBored() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
   const animationFrameRef = useRef<number>()
+  const animationRef = useRef<number>()
+  const gameObjectsRef = useRef<GameObjects | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const [score, setScore] = useState(0)
   const [gameTime, setGameTime] = useState(0)
   const [gameOver, setGameOver] = useState(false)
@@ -73,11 +107,24 @@ export default function SnowBored() {
   const [firstTimeLoad, setFirstTimeLoad] = useState(true)
   const [gameStarted, setGameStarted] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const [isRunning, setIsRunning] = useState(false)
+  const [stats, setStats] = useState<GameStats>({
+    infectedCells: 0,
+    healthyCells: 0,
+    curedCells: 0,
+    totalCells: 0,
+    infectionRate: 0,
+    generation: 0,
+    virusStrength: 50,
+    cureEffectiveness: 30,
+  })
 
   const [showAbout, setShowAbout] = useState(false)
   const [showLore, setShowLore] = useState(false)
+  const [showPrivacy, setShowPrivacy] = useState(false)
   const [showNFT, setShowNFT] = useState(false)
   const [showTerms, setShowTerms] = useState(false)
+  const [showProfile, setShowProfile] = useState(false)
 
   const [activeTab, setActiveTab] = useState<"profile">("profile")
 
@@ -271,6 +318,149 @@ export default function SnowBored() {
       }
     }
   }, [mounted, handleKeyDown, handleKeyUp, handleInputStart, handleInputEnd])
+
+  const initializeGame = useCallback(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
+
+    // Set canvas size
+    canvas.width = gameConfig.canvasWidth
+    canvas.height = gameConfig.canvasHeight
+
+    // Initialize game objects
+    gameObjectsRef.current = new GameObjects(canvas.width, canvas.height)
+
+    // Create initial population
+    const totalCells = gameConfig.initialHealthyCells + gameConfig.initialInfectedCells
+
+    // Add healthy cells
+    for (let i = 0; i < gameConfig.initialHealthyCells; i++) {
+      const cell = new Cell(Math.random() * canvas.width, Math.random() * canvas.height, "healthy")
+      gameObjectsRef.current.addCell(cell)
+    }
+
+    // Add infected cells
+    for (let i = 0; i < gameConfig.initialInfectedCells; i++) {
+      const cell = new Cell(Math.random() * canvas.width, Math.random() * canvas.height, "infected")
+      gameObjectsRef.current.addCell(cell)
+    }
+
+    // Add initial viruses
+    for (let i = 0; i < gameConfig.initialViruses; i++) {
+      const virus = new Virus(Math.random() * canvas.width, Math.random() * canvas.height)
+      gameObjectsRef.current.addVirus(virus)
+    }
+
+    // Add initial cures
+    for (let i = 0; i < gameConfig.initialCures; i++) {
+      const cure = new Cure(Math.random() * canvas.width, Math.random() * canvas.height)
+      gameObjectsRef.current.addCure(cure)
+    }
+
+    updateStats()
+  }, [])
+
+  const updateStats = useCallback(() => {
+    if (!gameObjectsRef.current) return
+
+    const cells = gameObjectsRef.current.getCells()
+    const viruses = gameObjectsRef.current.getViruses()
+    const cures = gameObjectsRef.current.getCures()
+
+    const infectedCells = cells.filter((cell) => cell.state === "infected").length
+    const healthyCells = cells.filter((cell) => cell.state === "healthy").length
+    const curedCells = cells.filter((cell) => cell.state === "cured").length
+    const totalCells = cells.length
+
+    const infectionRate = totalCells > 0 ? (infectedCells / totalCells) * 100 : 0
+
+    setStats({
+      infectedCells,
+      healthyCells,
+      curedCells,
+      totalCells,
+      infectionRate,
+      generation: gameObjectsRef.current.getGeneration(),
+      virusStrength: Math.round(viruses.reduce((sum, v) => sum + v.strength, 0) / Math.max(viruses.length, 1)),
+      cureEffectiveness: Math.round(cures.reduce((sum, c) => sum + c.effectiveness, 0) / Math.max(cures.length, 1)),
+    })
+  }, [])
+
+  const gameLoop = useCallback(() => {
+    if (!gameObjectsRef.current || !canvasRef.current) return
+
+    const canvas = canvasRef.current
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
+
+    // Clear canvas
+    ctx.fillStyle = "#000000"
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+    // Update game state
+    gameObjectsRef.current.update()
+
+    // Render game objects
+    gameObjectsRef.current.render(ctx)
+
+    // Update stats
+    updateStats()
+
+    if (isRunning) {
+      animationRef.current = requestAnimationFrame(gameLoop)
+    }
+  }, [isRunning, updateStats])
+
+  useEffect(() => {
+    initializeGame()
+  }, [initializeGame])
+
+  useEffect(() => {
+    if (isRunning) {
+      animationRef.current = requestAnimationFrame(gameLoop)
+    } else {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+      }
+    }
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+      }
+    }
+  }, [isRunning, gameLoop])
+
+  const handlePlayPause = () => {
+    setIsRunning(!isRunning)
+  }
+
+  const handleReset = () => {
+    setIsRunning(false)
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current)
+    }
+    initializeGame()
+  }
+
+  const addVirus = () => {
+    if (!gameObjectsRef.current || !canvasRef.current) return
+
+    const virus = new Virus(Math.random() * canvasRef.current.width, Math.random() * canvasRef.current.height)
+    gameObjectsRef.current.addVirus(virus)
+    updateStats()
+  }
+
+  const addCure = () => {
+    if (!gameObjectsRef.current || !canvasRef.current) return
+
+    const cure = new Cure(Math.random() * canvasRef.current.width, Math.random() * canvasRef.current.height)
+    gameObjectsRef.current.addCure(cure)
+    updateStats()
+  }
 
   useEffect(() => {
     if (!mounted || (!gameStarted && firstTimeLoad)) return
@@ -653,331 +843,213 @@ export default function SnowBored() {
   }
 
   return (
-    <div className="mobile-container flex flex-col min-h-screen bg-gray-900 touch-optimized">
-      <div
-        className="fixed inset-0 z-0"
-        style={{
-          backgroundImage: `linear-gradient(to bottom, rgba(17, 24, 39, 0.8), rgba(17, 24, 39, 1)), url('https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Ice-RFivzrFYklghXcbtYkoYiMiESh5rh5.png')`,
-          backgroundRepeat: "repeat",
-        }}
-      />
-      <header className="relative z-10 w-full bg-gray-900/80 backdrop-blur-sm border-b border-gray-700">
-        <div className="max-w-7xl mx-auto flex justify-between items-center p-3 sm:p-4">
-          <button
-            onClick={() => {
-              if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current)
-              gameStateRef.current = createInitialGameState()
-              setScore(0)
-              setGameTime(0)
-              setGameOver(false)
-              setLives(3)
-              setFirstTimeLoad(true)
-              setGameStarted(false)
-              setGameKey((prev) => prev + 1)
-            }}
-            className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity"
-          >
-            <img src="/plague-logo.png" alt="PLAGUE Logo" className="w-8 h-8 sm:w-10 sm:h-10 rounded" />
-            <h1 className="text-sm sm:text-lg font-bold text-white pixel-font">PLAGUE</h1>
-          </button>
-          <nav className="hidden sm:flex items-center gap-4">
-            <button
-              onClick={() => setShowAbout(true)}
-              className="text-gray-400 hover:text-orange-400 text-sm pixel-font transition-colors"
-            >
-              ABOUT
-            </button>
-            <button
-              onClick={() => setShowLore(true)}
-              className="text-gray-400 hover:text-orange-400 text-sm pixel-font transition-colors"
-            >
-              LORE
-            </button>
-            <button
-              onClick={() => setShowNFT(true)}
-              className="text-gray-400 hover:text-orange-400 text-sm pixel-font transition-colors"
-            >
-              NFTs
-            </button>
-          </nav>
-          <WalletConnection />
-        </div>
-        <div className="sm:hidden border-t border-gray-700 px-3 py-2">
-          <div className="flex justify-center gap-6">
-            <button
-              onClick={() => setShowAbout(true)}
-              className="text-gray-400 hover:text-orange-400 text-xs pixel-font transition-colors"
-            >
-              ABOUT
-            </button>
-            <button
-              onClick={() => setShowLore(true)}
-              className="text-gray-400 hover:text-orange-400 text-xs pixel-font transition-colors"
-            >
-              LORE
-            </button>
-            <button
-              onClick={() => setShowNFT(true)}
-              className="text-gray-400 hover:text-orange-400 text-xs pixel-font transition-colors"
-            >
-              NFTs
-            </button>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
+      {/* Header */}
+      <header className="border-b border-gray-700 bg-gray-900/80 backdrop-blur-sm sticky top-0 z-20">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-green-600 rounded-lg flex items-center justify-center">
+                  <Activity className="h-5 w-5 text-white" />
+                </div>
+                <h1 className="text-xl font-bold bg-gradient-to-r from-green-400 to-green-600 bg-clip-text text-transparent">
+                  PLAGUE
+                </h1>
+              </div>
+              <Badge variant="outline" className="border-green-500 text-green-400">
+                Simulation
+              </Badge>
+            </div>
+            <WalletConnection />
           </div>
         </div>
       </header>
-      <main className="relative z-10 flex-1 flex flex-col lg:flex-row items-start justify-center gap-4 sm:gap-6 lg:gap-8 p-3 sm:p-4 lg:p-6 max-w-7xl mx-auto w-full landscape:py-2 lg:py-8">
-        <div className="w-full lg:w-auto flex flex-col items-center order-1 lg:order-1 lg:flex-shrink-0">
-          <h2
-            className={`text-base sm:text-xl lg:text-2xl font-bold mb-3 lg:mb-4 text-center pixel-font ${gameOver ? "text-red-400" : firstTimeLoad || !gameStarted ? "text-orange-400" : "text-green-400"}`}
-          >
-            {gameOver ? "GAME OVER" : firstTimeLoad || !gameStarted ? "RUN GORILLA, RUN!" : "SNOWBOARDING"}
-          </h2>
-          <div
-            ref={containerRef}
-            className="relative shadow-2xl shadow-orange-900/20 rounded-lg bg-gray-800/50"
-            style={{
-              width: "800px",
-              maxWidth: isMobile ? (window.innerHeight > window.innerWidth ? "100%" : "85vw") : "100%",
-              aspectRatio: `${GAME_CONSTANTS.CANVAS_WIDTH} / ${GAME_CONSTANTS.CANVAS_HEIGHT}`,
-              maxHeight: isMobile ? "70vh" : "none",
-            }}
-          >
-            <canvas
-              ref={canvasRef}
-              className="border-2 border-gray-600 rounded-lg w-full h-full touch-optimized block"
-              style={{
-                width: "100%",
-                height: "100%",
-                aspectRatio: `${GAME_CONSTANTS.CANVAS_WIDTH} / ${GAME_CONSTANTS.CANVAS_HEIGHT}`,
-                display: "block",
-              }}
-            />
-            {firstTimeLoad && (
-              <div className="absolute inset-0 flex items-center justify-center rounded-lg backdrop-blur-sm select-none">
-                <div
-                  className="absolute inset-0 rounded-lg"
-                  style={{
-                    backgroundImage: `url('https://i.postimg.cc/d16khCd7/backgroundape.png')`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    backgroundRepeat: "no-repeat",
-                    width: "100%",
-                    height: "100%",
-                    zIndex: 1,
-                  }}
-                />
-                <div className="relative z-20 text-white text-center space-y-3 p-3 max-w-xs bg-black/40 rounded-lg backdrop-blur-sm px-5">
-                  <h3 className="text-xs sm:text-base font-bold text-orange-400 pixel-font">HOW TO PLAY</h3>
-                  <div className="space-y-1 text-[0.65rem] sm:text-xs pixel-font">
-                    <p className="text-white font-bold">TAP or CLICK to move up</p>
-                    <p className="text-white font-bold">Release to move down</p>
-                    <p className="text-white font-bold">Avoid obstacles</p>
-                    <p className="text-white font-bold">You have 3 lives ❤️</p>
-                    <p className="text-yellow-300 font-bold">Outrun the avalanche!</p>
-                  </div>
-                  <div
-                    onClick={handleStartScreenClick}
-                    onMouseDown={(e) => {
-                      e.preventDefault()
-                      handleStartScreenClick(e)
-                    }}
-                    onTouchStart={handleStartScreenClick}
-                    onPointerDown={handleStartScreenClick}
-                    className="pulse-glow bg-orange-600 text-white px-3 py-1.5 rounded-lg cursor-pointer hover:bg-orange-500 active:bg-orange-700 transition-colors"
-                  >
-                    <p className="text-[0.65rem] sm:text-xs font-bold pixel-font">TAP TO START</p>
-                  </div>
-                </div>
-              </div>
-            )}
-            {gameOver && (
-              <div
-                className="absolute inset-0 flex items-center justify-center rounded-lg backdrop-blur-sm"
-                style={{ background: "linear-gradient(135deg, rgba(0,0,0,0.85) 0%, rgba(17,24,39,0.9) 100%)" }}
-              >
-                <div className="text-white text-center space-y-2 p-2 w-full max-w-[300px] sm:max-w-xs">
-                  <div className="space-y-0">
-                    <p className="font-bold text-white pixel-font text-xs sm:text-sm">Final Score: {score}</p>
-                    <p className="text-[10px] sm:text-xs text-gray-400 pixel-font">
-                      Time: {Math.floor(gameTime / 60)}:{(gameTime % 60).toString().padStart(2, "0")}
-                    </p>
-                  </div>
-                  <button
-                    onClick={resetGame}
-                    className="w-full bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-bold py-2 px-3 rounded-lg text-xs border-2 border-orange-500 hover:border-orange-400 transition-all pixel-font shadow-lg"
-                  >
-                    PLAY AGAIN
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-          {gameStarted && !gameOver && (
-            <div className="mt-3 lg:mt-4 text-center">
-              <p className="text-gray-400 text-xs sm:text-sm lg:text-base pixel-font">
-                {isMobile ? "TAP & HOLD to move up" : "CLICK & HOLD to move up"}
-              </p>
-            </div>
-          )}
-          <a
-            href="https://x.com/plague_labs"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-orange-400 hover:text-orange-300 text-xs sm:text-sm lg:text-base pixel-font mt-4 lg:mt-6 transition-colors"
-          >
-            Points unlock exclusive perks.
-          </a>
-          {/* Mobile Profile */}
-          <div className="w-full mt-6 lg:hidden" style={{ maxWidth: "800px" }}>
-            <div className="flex justify-center mb-3 gap-2">
-              <button
-                onClick={() => setActiveTab("profile")}
-                className="px-4 py-1.5 text-xs pixel-font rounded-lg transition-all bg-orange-500 text-white border-2 border-orange-400"
-              >
-                PROFILE
-              </button>
-            </div>
-            <Profile />
-          </div>
-        </div>
-        {/* Desktop Profile */}
-        <div
-          className="hidden lg:block w-full lg:w-auto lg:flex-shrink-0 lg:self-start order-2 lg:order-2"
-          style={{ width: "400px", maxWidth: "100%" }}
-        >
-          <div className="flex justify-center mb-4 gap-2">
-            <button
-              onClick={() => setActiveTab("profile")}
-              className="px-5 py-2 text-sm pixel-font rounded-lg transition-all bg-orange-500 text-white border-2 border-orange-400 shadow-lg"
-            >
-              PROFILE
-            </button>
-          </div>
-          <Profile />
-        </div>
-      </main>
-      <section className="relative z-10 w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 pb-6 lg:pb-8 mt-8 lg:mt-6">
-        <div className="lg:hidden">
-          <div className="relative rounded-xl overflow-hidden shadow-2xl shadow-orange-900/20 bg-gradient-to-r from-orange-600/20 to-blue-600/20 backdrop-blur-sm border border-orange-500/30">
-            <div
-              className="absolute inset-0 opacity-30"
-              style={{
-                backgroundImage: `url('/images/coming-soon-banner.png')`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                backgroundRepeat: "no-repeat",
-              }}
-            />
-            <div className="relative z-10 p-6 text-center">
-              <div className="flex flex-col items-center gap-4">
-                <div className="relative">
-                  <div
-                    className="w-20 h-20 bg-gray-800 border-2 border-orange-500 rounded-none shadow-lg relative overflow-hidden"
-                    style={{
-                      imageRendering: "pixelated",
-                      clipPath:
-                        "polygon(0 4px, 4px 4px, 4px 0, calc(100% - 4px) 0, calc(100% - 4px) 4px, 100% 4px, 100% calc(100% - 4px), calc(100% - 4px) calc(100% - 4px), calc(100% - 4px) 100%, 4px 100%, 4px calc(100% - 4px), 0 calc(100% - 4px))",
-                    }}
-                  >
-                    <div className="absolute inset-1 bg-gradient-to-br from-orange-500/20 to-blue-500/20 rounded-none"></div>
-                    <img
-                      src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-cBmsGMqcvVflSojbhYBvFFj5RTv2tE.png"
-                      alt="Gorilla Silhouette"
-                      className="w-full h-full object-contain relative z-10 p-1"
-                      style={{ imageRendering: "pixelated" }}
-                    />
-                    <div className="absolute top-0 left-0 w-1 h-1 bg-orange-400"></div>
-                    <div className="absolute top-0 right-0 w-1 h-1 bg-orange-400"></div>
-                    <div className="absolute bottom-0 left-0 w-1 h-1 bg-orange-400"></div>
-                    <div className="absolute bottom-0 right-0 w-1 h-1 bg-orange-400"></div>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="text-xl sm:text-2xl font-bold text-orange-400 pixel-font mb-2">COMING SOON</h3>
-                  <p className="text-sm sm:text-base text-gray-300 pixel-font mb-4">
-                    New features, rewards, and adventures await!
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-                <div className="bg-gray-800/80 px-4 py-2 rounded-lg border border-gray-600">
-                  <p className="text-xs text-gray-400 pixel-font">🎮 Enhanced Gameplay</p>
-                </div>
-                <div className="bg-gray-800/80 px-4 py-2 rounded-lg border border-gray-600">
-                  <p className="text-xs text-gray-400 pixel-font">🏆 New Rewards</p>
-                </div>
-                <div className="bg-gray-800/80 px-4 py-2 rounded-lg border border-gray-600">
-                  <p className="text-xs text-gray-400 pixel-font">🎯 Special Events</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="hidden lg:block">
-          <div className="relative rounded-xl overflow-hidden shadow-2xl shadow-orange-900/20 bg-gradient-to-r from-orange-600/20 to-blue-600/20 backdrop-blur-sm border border-orange-500/30">
-            <div
-              className="absolute inset-0 opacity-40"
-              style={{
-                backgroundImage: `url('/images/coming-soon-banner.png')`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                backgroundRepeat: "no-repeat",
-              }}
-            />
-            <div className="relative z-10 p-8 lg:p-12">
-              <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-                <div className="text-center lg:text-left">
-                  <h3 className="text-3xl lg:text-4xl font-bold text-orange-400 pixel-font mb-4">COMING SOON</h3>
-                  <p className="text-lg lg:text-xl text-gray-300 pixel-font mb-6 max-w-2xl">
-                    Get ready for an epic expansion! New features, exclusive rewards, and thrilling adventures are on
-                    their way to enhance your PLAGUE experience.
-                  </p>
-                  <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
-                    <div className="bg-gray-800/80 px-6 py-3 rounded-lg border border-gray-600 hover:border-orange-500 transition-colors">
-                      <p className="text-sm text-gray-300 pixel-font">🎮 Enhanced Gameplay Mechanics</p>
-                    </div>
-                    <div className="bg-gray-800/80 px-6 py-3 rounded-lg border border-gray-600 hover:border-orange-500 transition-colors">
-                      <p className="text-sm text-gray-300 pixel-font">🏆 Exclusive NFT Rewards</p>
-                    </div>
-                    <div className="bg-gray-800/80 px-6 py-3 rounded-lg border border-gray-600 hover:border-orange-500 transition-colors">
-                      <p className="text-sm text-gray-300 pixel-font">🎯 Special Community Events</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex-shrink-0">
-                  <div className="relative">
-                    <div
-                      className="w-36 h-36 lg:w-44 lg:h-44 bg-gray-800 border-4 border-orange-500 rounded-none shadow-xl relative overflow-hidden"
-                      style={{
-                        imageRendering: "pixelated",
-                        clipPath:
-                          "polygon(0 8px, 8px 8px, 8px 0, calc(100% - 8px) 0, calc(100% - 8px) 8px, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 8px calc(100% - 8px), 0 calc(100% - 8px))",
-                      }}
+
+      <div className="container mx-auto px-4 py-6">
+        <Tabs defaultValue="simulation" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-6 bg-gray-800 border border-gray-700">
+            <TabsTrigger value="simulation" className="data-[state=active]:bg-green-600">
+              <Activity className="h-4 w-4 mr-2" />
+              Simulation
+            </TabsTrigger>
+            <TabsTrigger value="profile" className="data-[state=active]:bg-green-600">
+              <User className="h-4 w-4 mr-2" />
+              Profile
+            </TabsTrigger>
+            <TabsTrigger value="about" className="data-[state=active]:bg-green-600">
+              <Info className="h-4 w-4 mr-2" />
+              About
+            </TabsTrigger>
+            <TabsTrigger value="lore" className="data-[state=active]:bg-green-600">
+              <BookOpen className="h-4 w-4 mr-2" />
+              Lore
+            </TabsTrigger>
+            <TabsTrigger value="privacy" className="data-[state=active]:bg-green-600">
+              <Shield className="h-4 w-4 mr-2" />
+              Privacy
+            </TabsTrigger>
+            <TabsTrigger value="terms" className="data-[state=active]:bg-green-600">
+              <FileText className="h-4 w-4 mr-2" />
+              Terms
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="simulation" className="space-y-6">
+            {/* Game Controls */}
+            <Card className="bg-gray-800/50 border-gray-700">
+              <CardContent className="p-4">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      onClick={handlePlayPause}
+                      variant={isRunning ? "destructive" : "default"}
+                      className={isRunning ? "bg-red-600 hover:bg-red-700" : "bg-green-600 hover:bg-green-700"}
                     >
-                      <div className="absolute inset-2 bg-gradient-to-br from-orange-500/20 to-blue-500/20 rounded-none"></div>
-                      <img
-                        src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-cBmsGMqcvVflSojbhYBvFFj5RTv2tE.png"
-                        alt="Gorilla Silhouette"
-                        className="w-full h-full object-contain relative z-10 p-2"
-                        style={{ imageRendering: "pixelated" }}
-                      />
-                      <div className="absolute top-0 left-0 w-2 h-2 bg-orange-400"></div>
-                      <div className="absolute top-0 right-0 w-2 h-2 bg-orange-400"></div>
-                      <div className="absolute bottom-0 left-0 w-2 h-2 bg-orange-400"></div>
-                      <div className="absolute bottom-0 right-0 w-2 h-2 bg-orange-400"></div>
-                    </div>
+                      {isRunning ? <Pause className="h-4 w-4 mr-2" /> : <Play className="h-4 w-4 mr-2" />}
+                      {isRunning ? "Pause" : "Start"}
+                    </Button>
+                    <Button onClick={handleReset} variant="outline" className="border-gray-600 bg-transparent">
+                      <RotateCcw className="h-4 w-4 mr-2" />
+                      Reset
+                    </Button>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      onClick={addVirus}
+                      variant="outline"
+                      className="border-red-500 text-red-400 hover:bg-red-500/10 bg-transparent"
+                    >
+                      <Zap className="h-4 w-4 mr-2" />
+                      Add Virus
+                    </Button>
+                    <Button
+                      onClick={addCure}
+                      variant="outline"
+                      className="border-blue-500 text-blue-400 hover:bg-blue-500/10 bg-transparent"
+                    >
+                      <Activity className="h-4 w-4 mr-2" />
+                      Add Cure
+                    </Button>
                   </div>
                 </div>
-              </div>
+              </CardContent>
+            </Card>
+
+            {/* Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Card className="bg-gray-800/50 border-gray-700">
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-2">
+                    <Users className="h-5 w-5 text-green-400" />
+                    <div>
+                      <p className="text-sm text-gray-400">Healthy</p>
+                      <p className="text-xl font-bold text-green-400">{stats.healthyCells}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gray-800/50 border-gray-700">
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-2">
+                    <Activity className="h-5 w-5 text-red-400" />
+                    <div>
+                      <p className="text-sm text-gray-400">Infected</p>
+                      <p className="text-xl font-bold text-red-400">{stats.infectedCells}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gray-800/50 border-gray-700">
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-2">
+                    <Shield className="h-5 w-5 text-blue-400" />
+                    <div>
+                      <p className="text-sm text-gray-400">Cured</p>
+                      <p className="text-xl font-bold text-blue-400">{stats.curedCells}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gray-800/50 border-gray-700">
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-2">
+                    <TrendingUp className="h-5 w-5 text-yellow-400" />
+                    <div>
+                      <p className="text-sm text-gray-400">Infection Rate</p>
+                      <p className="text-xl font-bold text-yellow-400">{stats.infectionRate.toFixed(1)}%</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-          </div>
-        </div>
-      </section>
-      <Footer onTermsClick={() => setShowTerms(true)} />
-      <AboutModal isOpen={showAbout} onClose={() => setShowAbout(false)} />
-      <LoreModal isOpen={showLore} onClose={() => setShowLore(false)} />
-      <NFTModal isOpen={showNFT} onClose={() => setShowNFT(false)} />
-      <TermsModal isOpen={showTerms} onClose={() => setShowTerms(false)} />
+
+            {/* Game Canvas */}
+            <Card className="bg-gray-800/50 border-gray-700">
+              <CardContent className="p-4">
+                <div className="flex justify-center">
+                  <canvas
+                    ref={canvasRef}
+                    className="border border-gray-600 rounded-lg bg-black"
+                    style={{ maxWidth: "100%", height: "auto" }}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Additional Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card className="bg-gray-800/50 border-gray-700">
+                <CardContent className="p-4">
+                  <h3 className="text-lg font-semibold text-green-400 mb-2">Generation</h3>
+                  <p className="text-2xl font-bold">{stats.generation}</p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gray-800/50 border-gray-700">
+                <CardContent className="p-4">
+                  <h3 className="text-lg font-semibold text-red-400 mb-2">Virus Strength</h3>
+                  <p className="text-2xl font-bold">{stats.virusStrength}%</p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gray-800/50 border-gray-700">
+                <CardContent className="p-4">
+                  <h3 className="text-lg font-semibold text-blue-400 mb-2">Cure Effectiveness</h3>
+                  <p className="text-2xl font-bold">{stats.cureEffectiveness}%</p>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="profile">
+            <Profile onClose={() => {}} />
+          </TabsContent>
+
+          <TabsContent value="about">
+            <AboutModal onClose={() => {}} />
+          </TabsContent>
+
+          <TabsContent value="lore">
+            <LoreModal onClose={() => {}} />
+          </TabsContent>
+
+          <TabsContent value="privacy">
+            <PrivacyModal onClose={() => {}} />
+          </TabsContent>
+
+          <TabsContent value="terms">
+            <TermsModal onClose={() => {}} />
+          </TabsContent>
+        </Tabs>
+      </div>
+
+      <Footer />
+      <CookieConsent />
     </div>
   )
 }

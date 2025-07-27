@@ -2,44 +2,126 @@
 
 import { useWallet } from "@solana/wallet-adapter-react"
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 
 export default function WalletConnection() {
-  const { connected, connecting, publicKey } = useWallet()
+  const { wallet, connected, publicKey, disconnect, connect } = useWallet()
   const [mounted, setMounted] = useState(false)
+  const previousPublicKeyRef = useRef<string | null>(null)
+  const isReconnectingRef = useRef(false)
 
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  if (!mounted) {
-    return <div className="h-10 w-32 bg-gray-700 animate-pulse rounded-lg border-2 border-gray-600"></div>
-  }
+  // Handle wallet account changes (when user switches accounts in Phantom)
+  useEffect(() => {
+    if (!publicKey || !connected) {
+      previousPublicKeyRef.current = null
+      return
+    }
 
-  const truncateAddress = (address: string) => {
-    return `${address.slice(0, 4)}...${address.slice(-4)}`
+    const currentPublicKey = publicKey.toBase58()
+
+    // If the public key changed and we were previously connected to a different account
+    if (
+      previousPublicKeyRef.current &&
+      previousPublicKeyRef.current !== currentPublicKey &&
+      !isReconnectingRef.current
+    ) {
+      isReconnectingRef.current = true
+
+      // Disconnect and reconnect to refresh the connection with new account
+      disconnect().then(() => {
+        setTimeout(() => {
+          connect()
+            .catch(() => {
+              // Silent error handling
+            })
+            .finally(() => {
+              isReconnectingRef.current = false
+            })
+        }, 500)
+      })
+    }
+
+    previousPublicKeyRef.current = currentPublicKey
+  }, [publicKey, connected, disconnect, connect])
+
+  // Listen for Phantom account changes
+  useEffect(() => {
+    if (typeof window === "undefined") return
+
+    const phantom = (window as any).phantom?.solana
+    if (!phantom) return
+
+    const handleAccountChanged = (publicKey: any) => {
+      if (connected && !isReconnectingRef.current) {
+        isReconnectingRef.current = true
+
+        // Force a clean reconnection
+        disconnect().then(() => {
+          setTimeout(() => {
+            connect()
+              .catch(() => {
+                // Silent error handling
+              })
+              .finally(() => {
+                isReconnectingRef.current = false
+              })
+          }, 500)
+        })
+      }
+    }
+
+    // Listen for account changes in Phantom
+    phantom.on("accountChanged", handleAccountChanged)
+
+    return () => {
+      phantom.removeListener("accountChanged", handleAccountChanged)
+    }
+  }, [connected, disconnect, connect])
+
+  // Auto-connect when wallet is selected
+  useEffect(() => {
+    if (wallet && !connected && !isReconnectingRef.current) {
+      // Auto-connect immediately when a wallet is selected
+      connect().catch(() => {
+        // Silent error handling
+      })
+    }
+  }, [wallet, connected, connect])
+
+  useEffect(() => {
+    if (!mounted) return
+    const style = document.createElement("style")
+    style.textContent = `
+      header:has(.wallet-adapter-button) {
+        z-index: 30 !important;
+      }
+      .wallet-adapter-modal-wrapper, .wallet-adapter-dropdown-list {
+        z-index: 100000 !important;
+      }
+      .wallet-adapter-button {
+        -webkit-appearance: none !important;
+        appearance: none !important;
+      }
+    `
+    document.head.appendChild(style)
+    return () => {
+      if (document.head.contains(style)) {
+        document.head.removeChild(style)
+      }
+    }
+  }, [mounted])
+
+  if (!mounted) {
+    return <div className="h-10 w-36 animate-pulse rounded-lg bg-gray-700" />
   }
 
   return (
-    <div className="flex items-center">
-      <WalletMultiButton
-        className="!bg-orange-600 hover:!bg-orange-700 !text-white !font-bold !text-xs sm:!text-sm !px-3 sm:!px-4 !py-2 !rounded-lg !border-2 !border-orange-500 hover:!border-orange-400 !transition-all !shadow-lg !min-h-[40px] pixel-font"
-        startIcon={undefined}
-      >
-        {connecting ? (
-          <span className="flex items-center gap-2">
-            <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
-            Connecting...
-          </span>
-        ) : connected && publicKey ? (
-          <span className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-            {truncateAddress(publicKey.toString())}
-          </span>
-        ) : (
-          "Connect Wallet"
-        )}
-      </WalletMultiButton>
+    <div className="relative flex flex-col items-end">
+      <WalletMultiButton className="!bg-gradient-to-r !from-green-600 !to-green-700 hover:!from-green-700 hover:!to-green-800 !text-white !font-bold !text-xs sm:!text-sm !px-3 sm:!px-4 !py-2 !rounded-lg !border-2 !border-green-500 hover:!border-green-400 !transition-all !shadow-lg !min-h-[40px]" />
     </div>
   )
 }
