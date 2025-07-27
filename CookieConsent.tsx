@@ -30,9 +30,9 @@ export default function CookieConsent() {
   }
 
   return (
-    <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 sm:bottom-4 sm:right-4 sm:left-auto sm:transform-none bg-gray-900 border border-gray-700 rounded-xl p-4 z-50 max-w-sm w-full mx-4 sm:mx-0 shadow-2xl">
+    <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 sm:bottom-4 sm:right-4 sm:left-auto sm:transform-none bg-gray-900 border border-gray-700 rounded-xl p-3 sm:p-4 z-50 max-w-xs sm:max-w-sm w-full mx-3 sm:mx-0 shadow-2xl">
       <div className="flex flex-col gap-4">
-        <div className="flex-1 text-sm text-gray-300">
+        <div className="flex-1 text-xs sm:text-sm text-gray-300">
           <p>
             We use cookies to enhance your experience and analyze site usage.{" "}
             <button onClick={() => setShowPrivacy(true)} className="text-green-400 hover:text-green-300 underline">
@@ -45,11 +45,15 @@ export default function CookieConsent() {
             onClick={handleDeny}
             variant="outline"
             size="sm"
-            className="border-gray-600 text-gray-300 hover:bg-gray-800 bg-transparent"
+            className="border-gray-600 text-gray-300 hover:bg-gray-800 bg-transparent text-xs sm:text-sm py-1 sm:py-2 px-2 sm:px-3"
           >
             Deny
           </Button>
-          <Button onClick={handleAccept} size="sm" className="bg-green-600 hover:bg-green-700 text-white">
+          <Button
+            onClick={handleAccept}
+            size="sm"
+            className="bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm py-1 sm:py-2 px-2 sm:px-3"
+          >
             I Accept
           </Button>
         </div>
