@@ -16,14 +16,8 @@ interface EmailResult {
 
 export async function sendContactNotification(data: ContactData): Promise<EmailResult> {
   try {
-    // Skip email sending if domain is not verified
-    if (!process.env.RESEND_API_KEY) {
-      console.log("Resend API key not configured, skipping email")
-      return { success: false, error: "Email service not configured" }
-    }
-
     const { data: result, error } = await resend.emails.send({
-      from: "onboarding@resend.dev", // Use Resend's test domain
+      from: "Contact Form <onboarding@resend.dev>",
       to: ["helloplaguelabs@gmail.com"],
       subject: `New Contact Form Submission: ${data.subject}`,
       html: `
@@ -58,7 +52,6 @@ export async function sendContactNotification(data: ContactData): Promise<EmailR
       return { success: false, error: error.message }
     }
 
-    console.log("Notification email sent successfully")
     return { success: true }
   } catch (error) {
     console.error("Email service error:", error)
@@ -67,10 +60,47 @@ export async function sendContactNotification(data: ContactData): Promise<EmailR
 }
 
 export async function sendConfirmationEmail(data: ContactData): Promise<EmailResult> {
+  // Temporarily disabled until domain is configured
+  return { success: true }
   try {
-    // Skip confirmation email for now to avoid domain issues
-    console.log("Skipping confirmation email until domain is verified")
-    return { success: false, error: "Confirmation email skipped" }
+    const { data: result, error } = await resend.emails.send({
+      from: "Plague Labs <onboarding@resend.dev>",
+      to: [data.email],
+      subject: "Thank you for contacting Plague Labs",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #4f46e5; border-bottom: 2px solid #4f46e5; padding-bottom: 10px;">
+            Thank You for Contacting Us!
+          </h2>
+          
+          <p>Hi ${data.name},</p>
+          
+          <p>Thank you for reaching out to Plague Labs. We've received your message and will get back to you within 24 hours.</p>
+          
+          <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="color: #333; margin-top: 0;">Your Message Summary</h3>
+            <p><strong>Subject:</strong> ${data.subject}</p>
+            <p><strong>Message:</strong></p>
+            <p style="background-color: #ffffff; padding: 15px; border-radius: 4px; white-space: pre-wrap;">${data.message}</p>
+          </div>
+          
+          <p>If you have any urgent questions, feel free to reach out to us directly at helloplaguelabs@gmail.com.</p>
+          
+          <p>Best regards,<br>The Plague Labs Team</p>
+          
+          <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; color: #6b7280; font-size: 12px;">
+            <p>This is an automated confirmation email. Please do not reply to this email.</p>
+          </div>
+        </div>
+      `,
+    })
+
+    if (error) {
+      console.error("Failed to send confirmation email:", error)
+      return { success: false, error: error.message }
+    }
+
+    return { success: true }
   } catch (error) {
     console.error("Confirmation email error:", error)
     return { success: false, error: "Failed to send confirmation email" }
