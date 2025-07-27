@@ -121,33 +121,33 @@ export default function PlagueMain() {
 
         {/* Mobile Navigation */}
         <div className="md:hidden mt-4">
-          <div className="flex flex-wrap items-center justify-center gap-3">
+          <div className="flex items-center justify-center gap-6 overflow-x-auto px-4">
             <button
               onClick={() => openModal("about")}
-              className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 text-xs font-medium"
+              className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-2 text-sm font-medium whitespace-nowrap"
             >
-              <Info className="h-3 w-3" />
+              <Info className="h-4 w-4" />
               About
             </button>
             <button
               onClick={() => openModal("success")}
-              className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 text-xs font-medium"
+              className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-2 text-sm font-medium whitespace-nowrap"
             >
-              <TrendingUp className="h-3 w-3" />
+              <TrendingUp className="h-4 w-4" />
               Moonshots
             </button>
             <button
               onClick={() => openModal("team")}
-              className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 text-xs font-medium"
+              className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-2 text-sm font-medium whitespace-nowrap"
             >
-              <User className="h-3 w-3" />
+              <User className="h-4 w-4" />
               Team
             </button>
             <button
               onClick={() => openModal("profile")}
-              className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 text-xs font-medium"
+              className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-2 text-sm font-medium whitespace-nowrap"
             >
-              <User className="h-3 w-3" />
+              <User className="h-4 w-4" />
               Profile
             </button>
           </div>
