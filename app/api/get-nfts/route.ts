@@ -20,9 +20,6 @@ export async function GET(req: NextRequest) {
     // Use the provided Helius API key
     const HELIUS_API_KEY = process.env.HELIUS_API_KEY || "90a5d0fd-8930-477a-bb54-c1efab193ba7"
 
-    console.log("Fetching NFTs for wallet:", walletAddress)
-    console.log("Using Helius API key:", HELIUS_API_KEY ? "Present" : "Missing")
-
     const response = await fetch(`https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`, {
       method: "POST",
       headers: {
@@ -45,20 +42,16 @@ export async function GET(req: NextRequest) {
     })
 
     if (!response.ok) {
-      console.error("Helius API response not ok:", response.status, response.statusText)
       throw new Error(`Helius API failed with status: ${response.status}`)
     }
 
     const data = await response.json()
-    console.log("Helius API response:", data)
 
     if (data.error) {
-      console.error("Helius API error:", data.error)
       throw new Error(`Helius API error: ${data.error.message}`)
     }
 
     const allAssets = data.result?.items || []
-    console.log(`Total assets found: ${allAssets.length}`)
 
     // Filter for PLAGUE collection NFTs using multiple verification methods
     const collectionNfts = allAssets.filter((asset: any) => {
@@ -98,16 +91,8 @@ export async function GET(req: NextRequest) {
         asset.authorities?.some((auth: any) => auth.address === COLLECTION_CONFIG.VERIFIED_CREATOR) ||
         asset.compression?.creator_hash?.includes(COLLECTION_CONFIG.VERIFIED_CREATOR)
 
-      const isValidPlagueNft = hasVerifiedCreator || (isPlague && (hasPlaugeAuthority || asset.creators?.length > 0))
-
-      if (isValidPlagueNft) {
-        console.log("Found PLAGUE NFT:", asset.content?.metadata?.name, asset.id)
-      }
-
-      return isValidPlagueNft
+      return hasVerifiedCreator || (isPlague && (hasPlaugeAuthority || asset.creators?.length > 0))
     })
-
-    console.log(`PLAGUE NFTs found: ${collectionNfts.length}`)
 
     // Format the NFTs for the frontend
     const formattedNfts = collectionNfts.map((nft: any) => {
@@ -128,7 +113,7 @@ export async function GET(req: NextRequest) {
         imageUrl = nft.content.json_uri
       }
 
-      const formattedNft = {
+      return {
         mint: nft.id,
         name: nft.content?.metadata?.name || "PLAGUE Specimen",
         image: imageUrl,
@@ -136,9 +121,6 @@ export async function GET(req: NextRequest) {
         attributes: nft.content?.metadata?.attributes || [],
         collection: nft.grouping?.find((g: any) => g.group_key === "collection")?.group_value || null,
       }
-
-      console.log("Formatted NFT:", formattedNft.name, formattedNft.image)
-      return formattedNft
     })
 
     // Sort by NFT number for consistent ordering
@@ -150,15 +132,12 @@ export async function GET(req: NextRequest) {
       return getNumber(a.name) - getNumber(b.name)
     })
 
-    console.log(`Returning ${formattedNfts.length} formatted NFTs`)
-
     return NextResponse.json({
       nfts: formattedNfts,
       total: formattedNfts.length,
       success: true,
     })
   } catch (error: any) {
-    console.error("API Error:", error)
     return NextResponse.json(
       {
         error: error.message || "Failed to fetch NFTs",

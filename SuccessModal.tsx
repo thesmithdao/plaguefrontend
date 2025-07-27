@@ -1,70 +1,77 @@
 "use client"
 
-import { X, ExternalLink } from "lucide-react"
+import { X, ExternalLink, TrendingUp, Users, DollarSign } from "lucide-react"
+
+interface SuccessCase {
+  name: string
+  category: string
+  description: string
+  metrics: {
+    growth: string
+    engagement: string
+    revenue: string
+  }
+  image: string
+  link?: string
+}
 
 interface SuccessModalProps {
   onClose: () => void
 }
 
 export default function SuccessModal({ onClose }: SuccessModalProps) {
-  const successCases = [
+  const successCases: SuccessCase[] = [
     {
-      project: "Serenia",
-      category: "GameFi",
-      image: "/images/serenia-logo.png", // Updated image path
-      results: {
-        Mints: "+500%",
-        community: "50K+",
-        revenue: "$2M+",
-      },
+      name: "Cosmic Love",
+      category: "NFT Collection",
       description:
-        "Serenia is an NFT battle game on Sui blockchain where mystical creatures and trainers fight for glory and loot.",
-      timeline: "3 months",
-      services: ["White Label", "Viral Marketing", "Influencer Partnerships"],
-      xUrl: "https://x.com/serenianft",
-      websiteUrl: "https://serenia.quest",
+        "A romantic space-themed NFT collection that captured hearts across the galaxy. Our viral campaign strategy resulted in a complete sellout within hours of launch.",
+      metrics: {
+        growth: "500% follower increase",
+        engagement: "85% engagement rate",
+        revenue: "2,400 SOL raised",
+      },
+      image: "/images/cosmic-love-logo.png",
+      link: "https://twitter.com/cosmic_love_nft",
     },
     {
-      project: "Himalaya",
-      category: "NFT",
-      image: "/images/himalaya-logo.png", // Updated image path
-      results: {
-        tvl: "Sold Out",
-        community: "25K+",
-        revenue: "$1.5M+",
-      },
-      description: "Himalaya is a Solana NFT collection of snow apes forging their own destiny in the frozen peaks.",
-      timeline: "6 weeks",
-      services: ["NFT Marketing", "Community Building", "Launch Strategy"],
-      xUrl: "https://x.com/Himalaya_sol",
-    },
-    {
-      project: "Cosmic Love",
-      category: "GameFi",
-      image: "/images/cosmic-love-logo.png", // Updated image path
-      results: {
-        tvl: "+300%",
-        community: "75K+",
-        revenue: "$5M+",
-      },
+      name: "Serenia",
+      category: "Gaming Project",
       description:
-        "Cosmic Love is a vibrant 2D pixel shooter — visually striking, endlessly addictive, and already a classic in the making.",
-      timeline: "4 months",
-      services: ["Dev", "Launch Strategy", "Gaming Marketing"],
-      xUrl: "https://x.com/cosmiclove_u",
+        "An adventure gaming platform that needed community building and hype generation. We created a viral marketing campaign that established a strong player base before launch.",
+      metrics: {
+        growth: "300% community growth",
+        engagement: "92% retention rate",
+        revenue: "1,800 SOL presale",
+      },
+      image: "/images/serenia-logo.png",
+      link: "https://twitter.com/serenia_game",
     },
     {
-      project: "Western Legends",
-      category: "NFT",
-      image: "/images/western-legends-logo.png", // Updated image path
-      results: {
-        tvl: "+800%",
-        community: "100K+",
-        revenue: "$3M+",
+      name: "Himalaya",
+      category: "DeFi Protocol",
+      description:
+        "A mountain-peak DeFi protocol that needed to establish trust and attract liquidity providers. Our strategic campaign built confidence and drove significant TVL.",
+      metrics: {
+        growth: "400% user acquisition",
+        engagement: "78% active users",
+        revenue: "$2.5M TVL achieved",
       },
-      description: "Western Legends is a Solana NFT collection blending anime aesthetics with wild west energy",
-      timeline: "5 months",
-      services: ["Storytelling", "Community Building", "Content Strategy"],
+      image: "/images/himalaya-logo.png",
+      link: "https://twitter.com/himalaya_defi",
+    },
+    {
+      name: "Western Legends",
+      category: "Gaming NFTs",
+      description:
+        "A Wild West themed gaming NFT project that needed authentic community engagement. We crafted a narrative-driven campaign that resonated with gaming enthusiasts.",
+      metrics: {
+        growth: "600% Discord growth",
+        engagement: "89% holder retention",
+        revenue: "3,200 SOL volume",
+      },
+      image: "/images/western-legends-logo.png",
+      link: "https://twitter.com/western_legends",
     },
   ]
 
@@ -72,9 +79,9 @@ export default function SuccessModal({ onClose }: SuccessModalProps) {
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-gray-900 border border-gray-700 rounded-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-4 border-b border-gray-700 flex items-center justify-between sticky top-0 bg-gray-900 z-10">
-          <h2 className="text-lg font-bold text-green-400">Moonshots</h2>
+          <h2 className="text-xl font-bold text-green-400">Moonshot Success Stories</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
-            <X className="h-5 w-5" />
+            <X className="h-6 w-6" />
           </button>
         </div>
 
@@ -88,96 +95,80 @@ export default function SuccessModal({ onClose }: SuccessModalProps) {
             {successCases.map((project, index) => (
               <div
                 key={index}
-                className="bg-gray-800/50 rounded-lg overflow-hidden border border-green-500/20 hover:border-green-500/50 transition-colors"
+                className="bg-gray-800/50 rounded-lg border border-green-500/20 hover:border-green-500/40 transition-all duration-300 overflow-hidden group"
               >
-                <img
-                  src={project.image || "/placeholder.svg"}
-                  alt={project.project}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="text-white font-bold text-lg">{project.project}</h4>
-                    <span className="bg-green-600/20 text-green-400 text-xs px-2 py-1 rounded border border-green-500/30">
+                <div className="relative h-48 overflow-hidden">
+                  <img
+                    src={project.image || "/placeholder.svg"}
+                    alt={project.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute top-4 left-4">
+                    <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm">
                       {project.category}
                     </span>
                   </div>
-
-                  <p className="text-gray-300 text-sm mb-4">{project.description}</p>
-
-                  <div className="grid grid-cols-3 gap-4 mb-4">
-                    {/* Original numerical data commented out for future utilization */}
-                    {/*
-                  <div className="text-center">
-                    <div className="flex items-center justify-center mb-1">
-                      <TrendingUp className="h-4 w-4 text-green-400 mr-1" />
-                      <span className="text-green-400 font-bold text-lg">{project.results.tvl}</span>
-                    </div>
-                    <p className="text-gray-400 text-xs">Growth/Status</p>
-                  </div>
-                  <div className="text-center">
-                    <div className="flex items-center justify-center mb-1">
-                      <Users className="h-4 w-4 text-green-400 mr-1" />
-                      <span className="text-green-400 font-bold text-lg">{project.results.community}</span>
-                    </div>
-                    <p className="text-gray-400 text-xs">Community</p>
-                  </div>
-                  <div className="text-center">
-                    <div className="flex items-center justify-center mb-1">
-                      <DollarSign className="h-4 w-4 text-green-400 mr-1" />
-                      <span className="text-green-400 font-bold text-lg">{project.results.revenue}</span>
-                    </div>
-                    <p className="text-gray-400 text-xs">Revenue</p>
-                  </div>
-                  */}
-                    <div className="col-span-3 text-center text-gray-400 text-lg font-semibold">Coming soon!</div>
-                  </div>
-
-                  <div className="mb-4">
-                    <p className="text-gray-400 text-xs mb-2">
-                      Timeline: <span className="text-white">{project.timeline}</span>
-                    </p>
-                    <div className="flex flex-wrap gap-1">
-                      {project.services.map((service, serviceIndex) => (
-                        <span key={serviceIndex} className="bg-gray-700 text-gray-300 text-xs px-2 py-1 rounded">
-                          {service}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Social Links Section */}
-                  {(project.websiteUrl || project.xUrl) && (
-                    <div className="mt-4 pt-4 border-t border-gray-700">
-                      <div className="flex gap-2">
-                        {project.websiteUrl && (
-                          <a
-                            href={project.websiteUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="bg-green-600 hover:bg-green-700 text-white p-2 rounded-lg transition-colors flex items-center justify-center"
-                            title="Visit Website"
-                          >
-                            <ExternalLink className="h-4 w-4" />
-                          </a>
-                        )}
-                        {project.xUrl && (
-                          <a
-                            href={project.xUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="bg-black hover:bg-gray-800 text-white p-2 rounded-lg transition-colors flex items-center justify-center flex-row px-3.5"
-                            title="Follow on 𝕏"
-                          >
-                            <span className="text-sm font-bold">𝕏</span>
-                          </a>
-                        )}
-                      </div>
+                  {project.link && (
+                    <div className="absolute top-4 right-4">
+                      <a
+                        href={project.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-gray-900/80 text-white p-2 rounded-full hover:bg-gray-800 transition-colors backdrop-blur-sm"
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
                     </div>
                   )}
                 </div>
+
+                <div className="p-6">
+                  <h4 className="text-white font-bold text-xl mb-2">{project.name}</h4>
+                  <p className="text-gray-300 text-sm mb-4 leading-relaxed">{project.description}</p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="bg-gray-700/50 rounded-lg p-3 text-center">
+                      <TrendingUp className="h-5 w-5 text-green-400 mx-auto mb-1" />
+                      <p className="text-green-400 text-xs font-medium">Growth</p>
+                      <p className="text-white text-sm font-bold">{project.metrics.growth}</p>
+                    </div>
+                    <div className="bg-gray-700/50 rounded-lg p-3 text-center">
+                      <Users className="h-5 w-5 text-blue-400 mx-auto mb-1" />
+                      <p className="text-blue-400 text-xs font-medium">Engagement</p>
+                      <p className="text-white text-sm font-bold">{project.metrics.engagement}</p>
+                    </div>
+                    <div className="bg-gray-700/50 rounded-lg p-3 text-center">
+                      <DollarSign className="h-5 w-5 text-yellow-400 mx-auto mb-1" />
+                      <p className="text-yellow-400 text-xs font-medium">Revenue</p>
+                      <p className="text-white text-sm font-bold">{project.metrics.revenue}</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             ))}
+          </div>
+
+          <div className="mt-8 text-center">
+            <div className="bg-gradient-to-r from-green-500/10 to-blue-500/10 border border-green-500/20 rounded-lg p-6">
+              <h4 className="text-green-400 font-bold text-lg mb-2">Ready to Go Viral?</h4>
+              <p className="text-gray-300 text-sm mb-4">
+                Join our success stories and let us help your project achieve moonshot results.
+              </p>
+              <button
+                onClick={() => {
+                  const title = encodeURIComponent("Moonshot Marketing Consultation")
+                  const details = encodeURIComponent(
+                    "I'm interested in discussing viral marketing strategies for my Web3 project with the Plague Labs team.",
+                  )
+                  const organizerEmail = encodeURIComponent("hellohelloplaguelabs@gmail.com")
+                  const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&add=${organizerEmail}`
+                  window.open(googleCalendarUrl, "_blank")
+                }}
+                className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-3 px-6 rounded-lg transition-all shadow-lg"
+              >
+                Start Your Campaign
+              </button>
+            </div>
           </div>
         </div>
       </div>

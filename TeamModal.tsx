@@ -2,106 +2,141 @@
 
 import { X } from "lucide-react"
 
+interface TeamMember {
+  name: string
+  role: string
+  bio: string
+  avatar: string
+  specialization: string
+}
+
 interface TeamModalProps {
   onClose: () => void
 }
 
 export default function TeamModal({ onClose }: TeamModalProps) {
-  const teamMembers = [
+  const teamMembers: TeamMember[] = [
     {
       name: "Billy",
-      role: "The Mastermind",
+      role: "Chief Plague Officer",
+      bio: "Master of viral marketing strategies and memetic warfare. Billy leads our infection campaigns with surgical precision.",
       avatar: "/images/team/billy.jpg",
-      bio: "Strategic visionary leading Plague's memetic warfare operations. Master of viral campaign orchestration and community psychology.",
-      expertise: ["Strategic Planning", "Viral Marketing", "Leadership"],
+      specialization: "Viral Strategy",
     },
     {
       name: "Atlan",
-      role: "The Artist",
+      role: "Head of Contagion",
+      bio: "Expert in community spread and engagement amplification. Atlan ensures our campaigns reach epidemic proportions.",
       avatar: "/images/team/atlan.png",
-      bio: "Creative genius behind Plague's visual identity and artistic direction. Transforms concepts into compelling visual narratives.",
-      expertise: ["Visual Design", "Brand Identity", "Creative Direction"],
+      specialization: "Community Growth",
     },
     {
       name: "Danllan",
-      role: "The Motion",
+      role: "Mutation Specialist",
+      bio: "Creative director who adapts our messaging for maximum impact across different platforms and audiences.",
       avatar: "/images/team/danllan.png",
-      bio: "Animation and motion graphics specialist bringing Plague's campaigns to life with dynamic visual storytelling.",
-      expertise: ["Motion Graphics", "Animation", "Video Production"],
+      specialization: "Content Adaptation",
     },
     {
       name: "Montana",
-      role: "The Voice",
+      role: "Data Pathologist",
+      bio: "Analyzes infection patterns and campaign performance to optimize our viral coefficient and engagement rates.",
       avatar: "/images/team/montana.jpeg",
-      bio: "Communications expert and brand voice architect. Crafts the narrative that resonates across all Plague channels.",
-      expertise: ["Content Strategy", "Brand Voice", "Communications"],
+      specialization: "Analytics & Optimization",
     },
     {
       name: "WhiteHawk",
-      role: "The Engineer",
+      role: "Transmission Engineer",
+      bio: "Technical architect who builds the infrastructure for our viral campaigns and ensures seamless spread.",
       avatar: "/images/team/whitehawk.png",
-      bio: "Technical architect building the infrastructure that powers Plague's digital ecosystem and campaign delivery systems.",
-      expertise: ["Team Coordination", "Infra", "Technical Strategy"],
+      specialization: "Technical Implementation",
     },
     {
       name: "HellmansX",
-      role: "The Hacker",
+      role: "Epidemic Coordinator",
+      bio: "Project manager who orchestrates multi-platform campaigns and ensures all infection vectors are synchronized.",
       avatar: "/images/team/hellmansx.png",
-      bio: "Security specialist and blockchain expert ensuring Plague's operations remain secure and cutting-edge.",
-      expertise: ["Growth-hacker", "Blockchain", "Operations"],
+      specialization: "Campaign Management",
     },
     {
       name: "Vitalek",
-      role: "The Lawbringer",
+      role: "Strain Developer",
+      bio: "Innovation lead who develops new marketing methodologies and experimental growth techniques.",
       avatar: "/images/team/vitalek.png",
-      bio: "Legal counsel and compliance expert navigating the complex regulatory landscape of web3 marketing.",
-      expertise: ["Legal Compliance", "Regulatory Affairs", "Contract Law"],
+      specialization: "Innovation & R&D",
     },
     {
       name: "TheSmith",
-      role: "The Powerhouse",
+      role: "Quarantine Breaker",
+      bio: "Specialist in breaking through market resistance and establishing footholds in new communities.",
       avatar: "/images/team/thesmith.png",
-      bio: "Operations and execution specialist who turns Plague's strategic visions into reality with unstoppable force.",
-      expertise: ["Operations", "Project Execution", "Architecture"],
+      specialization: "Market Penetration",
     },
   ]
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-gray-900 border border-gray-700 rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-gray-900 border border-gray-700 rounded-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-4 border-b border-gray-700 flex items-center justify-between sticky top-0 bg-gray-900 z-10">
-          <h2 className="text-lg font-bold text-green-400">Plague Team</h2>
+          <h2 className="text-xl font-bold text-green-400">Laboratory Team</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
-            <X className="h-5 w-5" />
+            <X className="h-6 w-6" />
           </button>
         </div>
 
         <div className="p-6">
           <div className="text-center mb-8">
             <h3 className="text-xl font-bold text-white mb-2">Meet the Doctors</h3>
-            <p className="text-gray-400">Our team of web3 marketing experts, ready to spread your message</p>
+            <p className="text-gray-400">The brilliant minds behind our viral marketing laboratory</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {teamMembers.map((member, index) => (
               <div
                 key={index}
-                className="bg-gray-800/50 rounded-lg p-6 border border-green-500/20 hover:border-green-500/50 transition-colors"
+                className="bg-gray-800/50 rounded-lg p-4 border border-green-500/20 hover:border-green-500/40 transition-all duration-300 hover:transform hover:scale-105"
               >
-                <div className="flex items-start space-x-4">
-                  <img
-                    src={member.avatar || "/placeholder.svg"}
-                    alt={member.name}
-                    className="w-16 h-16 rounded-full border-2 border-green-500/30 object-cover"
-                  />
-                  <div className="flex-1">
-                    <h4 className="text-white font-bold text-lg">{member.name}</h4>
-                    <p className="text-green-400 font-medium text-sm mb-2">{member.role}</p>
-                    <p className="text-gray-300 text-sm mb-3">{member.bio}</p>
+                <div className="text-center mb-4">
+                  <div className="relative w-20 h-20 mx-auto mb-3">
+                    <img
+                      src={member.avatar || "/placeholder.svg"}
+                      alt={member.name}
+                      className="w-full h-full rounded-full object-cover border-2 border-green-500/30"
+                    />
+                    <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                      <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                    </div>
+                  </div>
+                  <h4 className="text-white font-bold text-lg">{member.name}</h4>
+                  <p className="text-green-400 text-sm font-medium">{member.role}</p>
+                  <div className="mt-2 px-2 py-1 bg-green-500/20 rounded-full">
+                    <p className="text-green-300 text-xs">{member.specialization}</p>
                   </div>
                 </div>
+                <p className="text-gray-300 text-sm leading-relaxed">{member.bio}</p>
               </div>
             ))}
+          </div>
+
+          <div className="mt-8 text-center">
+            <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-6">
+              <h4 className="text-green-400 font-bold text-lg mb-2">Join Our Laboratory</h4>
+              <p className="text-gray-300 text-sm mb-4">
+                We're always looking for talented individuals to join our viral marketing research team.
+              </p>
+              <button
+                onClick={() => {
+                  const subject = encodeURIComponent("Career Opportunity - Plague Labs")
+                  const body = encodeURIComponent(
+                    "Hello Plague Labs team,\n\nI'm interested in joining your viral marketing laboratory. Please let me know about current opportunities.\n\nBest regards,",
+                  )
+                  window.open(`mailto:hellohelloplaguelabs@gmail.com?subject=${subject}&body=${body}`, "_blank")
+                }}
+                className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg transition-colors"
+              >
+                Apply Now
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -38,20 +38,14 @@ export default function Profile({ onClose }: ProfileProps) {
       setLoading(true)
       setError(null)
 
-      console.log("Fetching NFTs for wallet:", publicKey.toString())
-
       const response = await fetch(`/api/get-nfts?walletAddress=${publicKey.toString()}`)
-
-      console.log("API Response status:", response.status)
 
       if (!response.ok) {
         const errorText = await response.text()
-        console.error("API Response Error:", errorText)
         throw new Error(`HTTP error! status: ${response.status} - ${errorText}`)
       }
 
       const data = await response.json()
-      console.log("API Response data:", data)
 
       if (data.error) {
         throw new Error(data.error)
@@ -61,10 +55,8 @@ export default function Profile({ onClose }: ProfileProps) {
         throw new Error("API returned unsuccessful response")
       }
 
-      console.log(`Successfully fetched ${data.nfts?.length || 0} NFTs`)
       setNfts(data.nfts || [])
     } catch (err) {
-      console.error("Error fetching NFTs:", err)
       setError(err instanceof Error ? err.message : "Failed to fetch NFTs")
     } finally {
       setLoading(false)
@@ -161,7 +153,6 @@ export default function Profile({ onClose }: ProfileProps) {
                 <Share2 className="h-4 w-4" />
                 Share Infection
               </button>
-              
             </div>
           </div>
 
@@ -221,11 +212,7 @@ export default function Profile({ onClose }: ProfileProps) {
                       crossOrigin="anonymous"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement
-                        console.log("Image failed to load:", target.src)
                         target.src = "/placeholder.svg?height=256&width=256&text=PLAGUE"
-                      }}
-                      onLoad={() => {
-                        console.log("Image loaded successfully:", nfts[currentIndex]?.image)
                       }}
                     />
                   </div>
