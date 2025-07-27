@@ -88,30 +88,22 @@ export default function PlagueMain() {
 
   const detectEmailPreference = () => {
     const userAgent = navigator.userAgent.toLowerCase()
-    const isAndroid = userAgent.includes("android")
-    const isIOS = userAgent.includes("iphone") || userAgent.includes("ipad")
-    const isWindows = userAgent.includes("windows")
-    const isMac = userAgent.includes("mac")
+    const isMobile = /android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent)
 
-    // Default to Gmail for most cases, Outlook for Windows
-    if (isWindows) {
+    // For mobile devices, use mailto which works universally
+    if (isMobile) {
       return {
-        name: "Outlook",
-        url: "https://outlook.live.com/mail/0/deeplink/compose?to=helloplaguelabs@gmail.com",
-        icon: ExternalLink,
-      }
-    } else if (isMac || isIOS) {
-      return {
-        name: "Mail",
+        name: "Email App",
         url: "mailto:helloplaguelabs@gmail.com",
         icon: ExternalLink,
       }
-    } else {
-      return {
-        name: "Gmail",
-        url: "https://mail.google.com/mail/?view=cm&fs=1&to=helloplaguelabs@gmail.com",
-        icon: ExternalLink,
-      }
+    }
+
+    // For desktop, try Gmail first (most common), with fallback to mailto
+    return {
+      name: "Gmail",
+      url: "https://mail.google.com/mail/?view=cm&fs=1&to=helloplaguelabs@gmail.com",
+      icon: ExternalLink,
     }
   }
 
@@ -508,15 +500,25 @@ export default function PlagueMain() {
                   <p className="text-white font-mono text-sm">helloplaguelabs@gmail.com</p>
                 </div>
 
-                <a
-                  href={detectEmailPreference().url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
-                >
-                  <ExternalLink className="h-4 w-4" />
-                  Open {detectEmailPreference().name}
-                </a>
+                <div className="space-y-2">
+                  <a
+                    href={detectEmailPreference().url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    Open {detectEmailPreference().name}
+                  </a>
+
+                  <a
+                    href="mailto:helloplaguelabs@gmail.com"
+                    className="w-full bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    Use Default Email App
+                  </a>
+                </div>
               </div>
             </form>
           </div>
