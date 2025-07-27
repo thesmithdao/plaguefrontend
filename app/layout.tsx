@@ -10,19 +10,19 @@ import CookieConsent from "../CookieConsent"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "PLAGUE Labs - Web3 Marketing Agency",
+  title: "Plague Labs - Web3 Marketing Agency",
   description:
     "A web3 marketing agency focused on memetic languages. Viral marketing, community management, and growth strategies for decentralized projects.",
   keywords: "web3, marketing, blockchain, NFT, Solana, viral marketing, community management, memetic",
-  authors: [{ name: "PLAGUE Labs" }],
-  creator: "PLAGUE Labs",
-  publisher: "PLAGUE Labs",
+  authors: [{ name: "Plague Labs" }],
+  creator: "Plague Labs",
+  publisher: "Plague Labs",
   openGraph: {
-    title: "PLAGUE Labs - Web3 Marketing Agency",
+    title: "Plague Labs - Web3 Marketing Agency",
     description:
       "A web3 marketing agency focused on memetic languages. Viral marketing, community management, and growth strategies for decentralized projects.",
-    url: "https://plague-labs.com",
-    siteName: "PLAGUE Labs",
+    url: "https://www.plaguelabs.xyz/",
+    siteName: "Plague Labs",
     images: [
       {
         url: "/images/logo-oficial.png",
