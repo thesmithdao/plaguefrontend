@@ -248,75 +248,24 @@ export default function Profile({ onClose }: ProfileProps) {
                   </div>
                 </div>
 
-                {/* Navigation */}
+                {/* Simple Navigation */}
                 {nfts.length > 1 && (
-                  <div className="flex justify-between items-center mt-4">
+                  <div className="flex justify-center items-center gap-4 mt-4">
                     <button
                       onClick={prevNFT}
-                      className="bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-lg transition-colors"
+                      className="bg-gray-700 hover:bg-gray-600 text-white p-3 rounded-lg transition-colors"
                     >
-                      <ChevronLeft className="h-5 w-5" />
+                      <ChevronLeft className="h-6 w-6" />
                     </button>
-
-                    <div className="flex space-x-1 max-w-xs overflow-hidden">
-                      {nfts
-                        .slice(Math.max(0, currentIndex - 5), Math.min(nfts.length, currentIndex + 6))
-                        .map((_, index) => {
-                          const actualIndex = Math.max(0, currentIndex - 5) + index
-                          return (
-                            <button
-                              key={actualIndex}
-                              onClick={() => setCurrentIndex(actualIndex)}
-                              className={`w-2 h-2 rounded-full transition-colors ${
-                                actualIndex === currentIndex ? "bg-green-400" : "bg-gray-600"
-                              }`}
-                            />
-                          )
-                        })}
-                    </div>
 
                     <button
                       onClick={nextNFT}
-                      className="bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-lg transition-colors"
+                      className="bg-gray-700 hover:bg-gray-600 text-white p-3 rounded-lg transition-colors"
                     >
-                      <ChevronRight className="h-5 w-5" />
+                      <ChevronRight className="h-6 w-6" />
                     </button>
                   </div>
                 )}
-              </div>
-
-              {/* Specimen Carousel */}
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <h5 className="text-green-400 font-semibold">Specimen Carousel</h5>
-                  <div className="text-gray-400 text-sm">{nfts.length} specimens total</div>
-                </div>
-
-                <div className="relative">
-                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
-                    {nfts.map((nft, index) => (
-                      <button
-                        key={nft.mint}
-                        onClick={() => setCurrentIndex(index)}
-                        className={`relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all hover:scale-105 ${
-                          index === currentIndex
-                            ? "border-green-400 ring-2 ring-green-400/50"
-                            : "border-gray-600 hover:border-green-500"
-                        }`}
-                      >
-                        <img
-                          src={nft.image || "/placeholder.svg?height=64&width=64&text=Plague"}
-                          alt={nft.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement
-                            target.src = "/placeholder.svg?height=64&width=64&text=Plague"
-                          }}
-                        />
-                      </button>
-                    ))}
-                  </div>
-                </div>
               </div>
             </div>
           )}
