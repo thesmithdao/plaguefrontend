@@ -279,7 +279,12 @@ export default function PlagueMain() {
           <div className="rounded-xl p-6 sm:p-8 backdrop-blur-sm mt-8 border-0 bg-transparent">
             <h3 className="text-2xl sm:text-3xl font-bold text-green-400 py-0 mt-0 mb-6">Infected Ecosystem</h3>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div className="bg-gray-800/50 rounded-lg p-6 border border-green-500/10">
+              <a
+                href="https://magiceden.io/marketplace/plagueproject"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-gray-800/50 rounded-lg p-6 border border-green-500/10 block hover:border-green-500/40 transition-colors"
+              >
                 <img
                   src="/images/collection-plague-new.png"
                   alt="Plague Collection Case Study Banner"
@@ -294,8 +299,13 @@ export default function PlagueMain() {
                   <span className="">Sold Out in 3 hours </span>
                   <span>6,666 Mints </span>
                 </div>
-              </div>
-              <div className="bg-gray-800/50 rounded-lg p-6 border border-green-500/10">
+              </a>
+              <a
+                href="https://magiceden.io/marketplace/goo_friends"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-gray-800/50 rounded-lg p-6 border border-green-500/10 block hover:border-green-500/40 transition-colors"
+              >
                 <img
                   src="/images/goo-friends-new.png"
                   alt="Goo Friends Logo"
@@ -310,7 +320,7 @@ export default function PlagueMain() {
                   <span>Sold Out in 1 Hour</span>
                   <span>6,666 Mints </span>
                 </div>
-              </div>
+              </a>
             </div>
           </div>
 
