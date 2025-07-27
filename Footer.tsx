@@ -24,7 +24,7 @@ export default function Footer({ onOpenPrivacy, onOpenTerms }: FooterProps) {
 
           {/* Connect */}
           <div className="md:text-right">
-            <h3 className="text-white font-semibold mb-4">Connect</h3>
+            <h3 className="text-white font-semibold mb-4">Socials</h3>
             <div className="flex items-center space-x-4 md:justify-end">
               <a
                 href="https://twitter.com/plague_labs"
