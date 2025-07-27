@@ -122,7 +122,7 @@ export default function Profile({ onClose }: ProfileProps) {
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
-      <div className="bg-gray-900 border border-gray-700 rounded-xl w-full h-full sm:max-w-3xl sm:w-full sm:max-h-[90vh] sm:h-auto overflow-y-auto">
+      <div className="bg-gray-900 border border-gray-700 rounded-xl w-full h-full sm:max-w-2xl sm:w-full sm:max-h-[80vh] sm:h-auto overflow-y-auto">
         <div className="p-4 border-b border-gray-700 flex items-center justify-between sticky top-0 bg-gray-900 z-10">
           <h2 className="text-lg font-bold text-green-400">Patient Profile</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
@@ -215,9 +215,10 @@ export default function Profile({ onClose }: ProfileProps) {
                 <div className="flex flex-col md:flex-row gap-4">
                   <div className="flex-shrink-0">
                     <img
+                      key={nfts[currentIndex]?.mint}
                       src={nfts[currentIndex]?.image || "/placeholder.svg?height=120&width=120&text=plaguelabs"}
                       alt={nfts[currentIndex]?.name}
-                      className="w-full md:w-48 h-48 object-cover rounded-lg border border-green-500/30 cursor-pointer hover:border-green-400 transition-colors"
+                      className="w-full md:w-32 h-32 object-cover rounded-lg border border-green-500/30 cursor-pointer hover:border-green-400 transition-colors"
                       crossOrigin="anonymous"
                       onClick={() => {
                         const imageUrl = nfts[currentIndex]?.image
