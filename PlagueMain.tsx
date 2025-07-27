@@ -204,7 +204,7 @@ export default function PlagueMain() {
               <button
                 className="bg-gray-800/80 hover:bg-gray-700/80 text-green-400 font-bold py-3 px-6 sm:px-8 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all backdrop-blur-sm flex items-center justify-center gap-2 text-sm sm:text-base"
                 onClick={() => {
-                  window.open("mailto:helloplaguelabs@gmail.com", "_blank")
+                  window.location.href = "mailto:helloplaguelabs@gmail.com"
                 }}
               >
                 <CalendarPlus className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -330,7 +330,7 @@ export default function PlagueMain() {
                 <button
                   className="bg-gray-800/80 hover:bg-gray-700/80 text-green-400 font-bold py-3 px-8 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all backdrop-blur-sm flex items-center justify-center gap-2 text-sm sm:text-base"
                   onClick={() => {
-                    window.open("mailto:helloplaguelabs@gmail.com", "_blank")
+                    window.location.href = "mailto:helloplaguelabs@gmail.com"
                   }}
                 >
                   <CalendarPlus className="h-4 w-4 sm:h-5 sm:w-5" />
