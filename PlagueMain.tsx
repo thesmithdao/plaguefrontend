@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
 import Image from "next/image"
-import { Info, User, TrendingUp, CalendarPlus, Users } from "lucide-react"
+import { Info, User, TrendingUp, CalendarPlus, Users, Rat, Syringe, TestTubeDiagonal, Radiation } from "lucide-react"
 import AboutModal from "./AboutModal"
 import Profile from "./Profile"
 import TermsModal from "./TermsModal"
@@ -218,8 +218,8 @@ export default function PlagueMain() {
             <h3 className="text-2xl sm:text-3xl font-bold text-green-400 mb-6">Our Services</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="flex items-start space-x-4">
-                <div className="w-16 h-16 rounded-lg bg-green-500/20 p-3 flex items-center justify-center text-4xl">
-                  {"🦠"}
+                <div className="w-16 h-16 rounded-lg bg-green-500/20 p-3 flex items-center justify-center group">
+                  <Rat className="h-8 w-8 text-white group-hover:text-green-400 transition-colors" />
                 </div>
                 <div>
                   <h4 className="text-lg font-semibold text-white mb-2">Viral Marketing</h4>
@@ -230,8 +230,8 @@ export default function PlagueMain() {
                 </div>
               </div>
               <div className="flex items-start space-x-4">
-                <div className="w-16 h-16 rounded-lg bg-green-500/20 p-3 flex items-center justify-center text-3xl">
-                  {"💚"}
+                <div className="w-16 h-16 rounded-lg bg-green-500/20 p-3 flex items-center justify-center group">
+                  <Syringe className="h-8 w-8 text-white group-hover:text-green-400 transition-colors" />
                 </div>
                 <div>
                   <h4 className="text-lg font-semibold text-white mb-2">Community Management</h4>
@@ -242,8 +242,8 @@ export default function PlagueMain() {
                 </div>
               </div>
               <div className="flex items-start space-x-4">
-                <div className="w-16 h-16 rounded-lg bg-green-500/20 p-3 flex items-center justify-center text-4xl">
-                  {"🧪"}
+                <div className="w-16 h-16 rounded-lg bg-green-500/20 p-3 flex items-center justify-center group">
+                  <TestTubeDiagonal className="h-8 w-8 text-white group-hover:text-green-400 transition-colors" />
                 </div>
                 <div>
                   <h4 className="text-lg font-semibold text-white mb-2">Content Creation</h4>
@@ -254,8 +254,8 @@ export default function PlagueMain() {
                 </div>
               </div>
               <div className="flex items-start space-x-4">
-                <div className="w-16 h-16 rounded-lg bg-green-500/20 p-3 flex items-center justify-center text-4xl">
-                  {"♻️"}
+                <div className="w-16 h-16 rounded-lg bg-green-500/20 p-3 flex items-center justify-center group">
+                  <Radiation className="h-8 w-8 text-white group-hover:text-green-400 transition-colors" />
                 </div>
                 <div>
                   <h4 className="text-lg font-semibold text-white mb-2">Web3 Growth</h4>
