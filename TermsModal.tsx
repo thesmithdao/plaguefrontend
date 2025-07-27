@@ -21,17 +21,14 @@ export default function TermsModal({ onClose }: TermsModalProps) {
           <div>
             <h3 className="text-white font-semibold mb-2">Acceptance of Terms</h3>
             <p>
-              By accessing and using PLAGUE Labs services, you accept and agree to be bound by the terms and provision
-              of this agreement. If you do not agree to abide by the above, please do not use this service.
+              By accessing and using Plague Labs services, you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
             </p>
           </div>
 
           <div>
             <h3 className="text-white font-semibold mb-2">Service Description</h3>
             <p>
-              PLAGUE Labs provides web3 marketing services, NFT collection management, and community building tools. Our
-              services are provided "as is" and we make no warranties regarding the availability or functionality of our
-              services.
+              Plague Labs provides web3 marketing services, NFT collection management, and community building tools. Our services are provided "as is" and we make no warranties regarding the availability or functionality of our services.
             </p>
           </div>
 
@@ -49,9 +46,7 @@ export default function TermsModal({ onClose }: TermsModalProps) {
           <div>
             <h3 className="text-white font-semibold mb-2">Intellectual Property</h3>
             <p>
-              The service and its original content, features, and functionality are and will remain the exclusive
-              property of PLAGUE Labs and its licensors. The service is protected by copyright, trademark, and other
-              laws.
+              The service and its original content, features, and functionality are and will remain the exclusive property of Plague Labs and its licensors. The service is protected by copyright, trademark, and other laws.
             </p>
           </div>
 
