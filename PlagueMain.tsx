@@ -90,7 +90,10 @@ export default function PlagueMain() {
           text: data.message || "Message sent successfully! We'll get back to you within 24 hours.",
         })
         // Reset form
-        e.currentTarget.reset()
+        if (e.currentTarget) {
+          // Add this check
+          e.currentTarget.reset()
+        }
       } else {
         if (response.status === 429) {
           setSubmitMessage({ type: "error", text: "Too many requests. Please wait a few minutes before trying again." })
