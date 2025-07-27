@@ -45,17 +45,17 @@ export default function CookieConsent() {
             privacy policy
           </button>
         </p>
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+        <div className="flex flex-row justify-center gap-2 sm:flex-row sm:gap-3">
           <Button
             onClick={handleAccept}
-            className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-2 sm:py-2 sm:px-3 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all text-xs sm:text-sm"
+            className="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-2 sm:py-2 sm:px-3 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all text-xs sm:text-sm"
           >
             Accept
           </Button>
           <Button
             onClick={handleDecline}
             variant="outline"
-            className="flex-1 bg-gray-800/80 hover:bg-gray-700/80 text-green-400 font-bold py-1 px-2 sm:py-2 sm:px-3 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all backdrop-blur-sm text-xs sm:text-sm"
+            className="bg-gray-800/80 hover:bg-gray-700/80 text-green-400 font-bold py-1 px-2 sm:py-2 sm:px-3 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all backdrop-blur-sm text-xs sm:text-sm"
           >
             Decline
           </Button>
