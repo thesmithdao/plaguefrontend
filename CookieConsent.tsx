@@ -30,7 +30,7 @@ export default function CookieConsent() {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 bg-gray-900 border border-gray-700 rounded-xl p-4 z-50 max-w-sm w-full mx-4 sm:mx-0 shadow-2xl">
+    <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 sm:bottom-4 sm:right-4 sm:left-auto sm:transform-none bg-gray-900 border border-gray-700 rounded-xl p-4 z-50 max-w-sm w-full mx-4 sm:mx-0 shadow-2xl">
       <div className="flex flex-col gap-4">
         <div className="flex-1 text-sm text-gray-300">
           <p>
@@ -40,7 +40,7 @@ export default function CookieConsent() {
             </button>
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
           <Button
             onClick={handleDeny}
             variant="outline"
