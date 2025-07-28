@@ -215,16 +215,19 @@ export default function Profile({ onClose }: ProfileProps) {
                 <div className="flex flex-col md:flex-row gap-4">
                   <div className="flex-shrink-0">
                     <img
-                      src={nfts[currentIndex]?.image || "/placeholder.svg?height=256&width=256&text=Plague"}
-                      alt={nfts[currentIndex]?.name || "Plague NFT"}
+                      src={nfts[currentIndex]?.image || "/placeholder.svg?height=120&width=120&text=plaguelabs"}
+                      alt={nfts[currentIndex]?.name}
                       className="w-full md:w-48 h-48 object-cover rounded-lg border border-green-500/30 cursor-pointer hover:border-green-400 transition-colors"
                       crossOrigin="anonymous"
                       onClick={() => {
                         const imageUrl = nfts[currentIndex]?.image
                         if (imageUrl) {
+                          // Convert to friendly IPFS link if it's an IPFS URL
                           const friendlyUrl = imageUrl.includes("ipfs://")
                             ? imageUrl.replace("ipfs://", "https://ipfs.io/ipfs/")
-                            : imageUrl
+                            : imageUrl.includes("gateway.pinata.cloud") || imageUrl.includes("cloudflare-ipfs.com")
+                              ? imageUrl
+                              : imageUrl
                           window.open(friendlyUrl, "_blank", "noopener,noreferrer")
                         }
                       }}
