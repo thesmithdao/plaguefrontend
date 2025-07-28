@@ -35,7 +35,7 @@ export default function AboutModal({ onClose }: AboutModalProps) {
               campaigns that don't just reach audiences—they infect them with your brand's message.
             </p>
 
-            <div className="bg-gray-800/50 rounded-lg p-4 border border-green-500/20">
+            <div className="bg-gray-800/50 rounded-lg p-4 border-green-500/20 border-0">
               <h4 className="text-green-400 font-semibold mb-2">Our Mission</h4>
               <p className="text-sm">
                 To help web3 projects achieve viral growth through strategic memetic marketing, community building, and
