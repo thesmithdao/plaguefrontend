@@ -191,7 +191,7 @@ export default function Profile({ onClose }: ProfileProps) {
             </div>
           ) : (
             <div className="space-y-4">
-              <h3 className="text-green-400 font-semibold text-lg">NFT  Gallery</h3>
+              <h3 className="text-green-400 font-semibold text-lg">NFT Gallery</h3>
 
               {/* Current NFT Display */}
               <div className="relative bg-gray-800/50 rounded-lg p-4 border border-green-500/20">
@@ -201,6 +201,14 @@ export default function Profile({ onClose }: ProfileProps) {
                     <span className="text-gray-400 text-sm">
                       {currentIndex + 1} of {nfts.length}
                     </span>
+                    <button
+                      onClick={fetchNFTs}
+                      disabled={loading}
+                      className="text-green-400 hover:text-green-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      title="Refresh NFTs"
+                    >
+                      <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+                    </button>
                     <a
                       href={`https://solscan.io/token/${nfts[currentIndex]?.mint}`}
                       target="_blank"
