@@ -3,14 +3,6 @@
 Next.js + Tailwind CSS + shadcn/ui site for **Plague Labs**, a memetic web3 agency.  
 Connect your Solana wallet, view NFTs, and reach out—all on one slick page.
 
-## Highlights
-- Video hero with CTAs  
-- Doctor’s Recipe service cards  
-- Case studies (Plague Collection, Goo Friends)  
-- Patient Profile NFT viewer (Solana Wallet Adapter)  
-- Contact form → Supabase + Resend  
-- SEO, cookie consent, modals (About, Terms, Privacy)
-
 ## Quick Start
 $ npm i  # or yarn  
 $ npm run dev  
