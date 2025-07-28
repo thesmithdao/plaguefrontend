@@ -34,7 +34,7 @@ export const metadata: Metadata = {
         url: "/images/collection-plague-meta.png",
         width: 1200,
         height: 630,
-        alt: "PLAGUE Labs Collection",
+        alt: "Plague Labs Collection",
       },
     ],
     locale: "en_US",
