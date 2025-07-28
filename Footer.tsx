@@ -1,6 +1,6 @@
 "use client"
 
-import { X, Mail, Youtube, Twitch } from "lucide-react"
+import { Mail, Youtube, Twitch } from "lucide-react"
 
 interface FooterProps {
   onOpenPrivacy: () => void
@@ -35,7 +35,7 @@ export default function Footer({ onOpenPrivacy, onOpenTerms }: FooterProps) {
                 className="text-gray-400 hover:text-green-400 transition-colors flex items-center justify-center w-8 h-8"
                 aria-label="Twitter"
               >
-                <X className="h-5 w-5" />
+                <span className="text-lg font-bold">𝕏</span>
               </a>
               {/*
               <a
@@ -86,14 +86,12 @@ export default function Footer({ onOpenPrivacy, onOpenTerms }: FooterProps) {
               onClick={onOpenPrivacy}
               className="text-gray-400 hover:text-green-400 text-sm transition-colors flex items-center gap-1"
             >
-              
               Privacy Policy
             </button>
             <button
               onClick={onOpenTerms}
               className="text-gray-400 hover:text-green-400 text-sm transition-colors flex items-center gap-1"
             >
-              
               Terms of Service
             </button>
           </div>
