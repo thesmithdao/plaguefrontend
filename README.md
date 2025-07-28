@@ -180,11 +180,6 @@ This project uses Resend for sending contact form notifications and confirmation
       "message": "I'd like to discuss a new project."
     }
     ```
-*   **Response:**
-    *   `200 OK`: `{ "message": "Message sent successfully!", "id": "...", "emailStatus": { "notification": true, "confirmation": true } }`
-    *   `400 Bad Request`: `{ "error": "Please check your form fields", "details": [...] }`
-    *   `429 Too Many Requests`: `{ "error": "Too many requests. Please try again in a minute." }`
-    *   `500 Internal Server Error`: `{ "error": "Something went wrong. Please try again." }`
 
 ## Deployment
 
@@ -194,7 +189,7 @@ This project is configured for seamless deployment to Vercel.
 2.  **Configure Environment Variables:** Ensure all necessary environment variables (listed above) are configured in your Vercel project settings.
 3.  **Deploy:** Vercel will automatically deploy your application on every push to the main branch.
 
-Your project is live at: [https://vercel.com/defismith/v0-plaguefrontend-mt](https://vercel.com/defismith/v0-plaguefrontend-mt)
+Your project is live in prod at: [https://plaguelabs.wrf](https://plaguelabs.wtf)
 
 ## Built With
 
