@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "PLAGUE Labs - Web3 Marketing Agency",
+    title: "Plague Labs - Web3 Marketing Agency",
     description:
       "A web3 marketing agency focused on memetic languages. Viral marketing, community management, and growth strategies for decentralized projects.",
     images: ["/images/logo-oficial.png"],
