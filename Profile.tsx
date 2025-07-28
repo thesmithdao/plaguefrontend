@@ -233,11 +233,6 @@ export default function Profile({ onClose }: ProfileProps) {
                         const target = e.target as HTMLImageElement
                         target.src = "/placeholder.svg?height=256&width=256&text=Plague"
                       }}
-                      onLoad={(e) => {
-                        const target = e.target as HTMLImageElement
-                        target.style.opacity = "1"
-                      }}
-                      style={{ opacity: 0, transition: "opacity 0.3s ease-in-out" }}
                     />
                   </div>
 
