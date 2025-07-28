@@ -267,40 +267,6 @@ export default function Profile({ onClose }: ProfileProps) {
                   </div>
                 )}
               </div>
-
-              {/* Specimen Carousel */}
-              <div className="space-y-4 hidden">
-                <div className="flex justify-between items-center">
-                  <h5 className="text-green-400 font-semibold">Specimen Carousel</h5>
-                  <div className="text-gray-400 text-sm">{nfts.length} specimens total</div>
-                </div>
-
-                <div className="relative">
-                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
-                    {nfts.map((nft, index) => (
-                      <button
-                        key={nft.mint}
-                        onClick={() => setCurrentIndex(index)}
-                        className={`relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all hover:scale-105 ${
-                          index === currentIndex
-                            ? "border-green-400 ring-2 ring-green-400/50"
-                            : "border-gray-600 hover:border-green-500"
-                        }`}
-                      >
-                        <img
-                          src={nft.image || "/placeholder.svg?height=64&width=64&text=Plague"}
-                          alt={nft.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement
-                            target.src = "/placeholder.svg?height=64&width=64&text=Plague"
-                          }}
-                        />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
             </div>
           )}
         </div>
