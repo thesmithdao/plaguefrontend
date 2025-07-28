@@ -147,34 +147,30 @@ export default function SuccessModal({ onClose }: SuccessModalProps) {
                   </div>
 
                   {/* Social Links Section */}
-                  {(project.websiteUrl || project.xUrl) && (
-                    <div className="mt-4 pt-4 border-t border-gray-700">
-                      <div className="flex gap-2">
-                        {project.websiteUrl && (
-                          <a
-                            href={project.websiteUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="bg-green-600 hover:bg-green-700 text-white p-2 rounded-lg transition-colors flex items-center justify-center"
-                            title="Visit Website"
-                          >
-                            <ExternalLink className="h-4 w-4" />
-                          </a>
-                        )}
-                        {project.xUrl && (
-                          <a
-                            href={project.xUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="bg-black hover:bg-gray-800 text-white p-2 rounded-lg transition-colors flex items-center justify-center"
-                            title="Follow on 𝕏"
-                          >
-                            <X className="h-4 w-4" />
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  )}
+                  <div className="flex gap-2">
+                    {project.websiteUrl && (
+                      <a
+                        href={project.websiteUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-400 hover:text-green-400 transition-colors flex items-center justify-center w-8 h-8"
+                        title="Visit Website"
+                      >
+                        <ExternalLink className="h-5 w-5" />
+                      </a>
+                    )}
+                    {project.xUrl && (
+                      <a
+                        href={project.xUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-400 hover:text-green-400 transition-colors flex items-center justify-center w-8 h-8"
+                        title="Follow on 𝕏"
+                      >
+                        <X className="h-5 w-5" />
+                      </a>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
