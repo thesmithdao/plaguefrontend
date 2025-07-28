@@ -167,7 +167,7 @@ export default function SuccessModal({ onClose }: SuccessModalProps) {
                         className="text-gray-400 hover:text-green-400 transition-colors flex items-center justify-center w-8 h-8"
                         title="Follow on 𝕏"
                       >
-                        <X className="h-5 w-5" />
+                        <span className="text-lg font-bold">𝕏</span>
                       </a>
                     )}
                   </div>
