@@ -132,8 +132,8 @@ export default function Profile({ onClose }: ProfileProps) {
 
         <div className="p-6">
           {/* Patient Info */}
-          <div className="mb-6 p-4 bg-gray-800/50 rounded-lg border-green-500/20 border-0">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="mb-6 p-4 bg-gray-800/50 rounded-lg border border-green-500/20">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <h3 className="text-green-400 font-semibold mb-2">Patient ID</h3>
                 <p className="text-gray-300 text-sm font-mono break-all">
@@ -144,22 +144,23 @@ export default function Profile({ onClose }: ProfileProps) {
                 <h3 className="text-green-400 font-semibold mb-2">Specimen Count</h3>
                 <p className="text-white text-2xl font-bold">{nfts.length}</p>
               </div>
-              <div className="flex items-center justify-center md:justify-end">
-                <button
-                  onClick={shareInfection}
-                  className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors"
-                >
-                  <Share2 className="h-4 w-4" />
-                  Share Infection
-                </button>
-              </div>
+            </div>
+
+            <div className="mt-4 flex justify-center gap-2">
+              <button
+                onClick={shareInfection}
+                className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors"
+              >
+                <Share2 className="h-4 w-4" />
+                Share Infection
+              </button>
             </div>
           </div>
 
           {/* NFT Gallery */}
           {loading ? (
             <div className="text-center py-8">
-              <div className="relative bg-gray-800/50 rounded-lg p-4 border-green-500/20 border-0"></div>
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-400"></div>
               <p className="text-gray-300 mt-2">Analyzing specimens...</p>
             </div>
           ) : error ? (
@@ -190,10 +191,10 @@ export default function Profile({ onClose }: ProfileProps) {
             </div>
           ) : (
             <div className="space-y-4">
-              <h3 className="text-green-400 font-semibold text-lg">NFT Gallery</h3>
+              <h3 className="text-green-400 font-semibold text-lg">NFT  Gallery</h3>
 
               {/* Current NFT Display */}
-              <div className="relative bg-gray-800/50 rounded-lg p-4 border-green-500/20 border-0">
+              <div className="relative bg-gray-800/50 rounded-lg p-4 border border-green-500/20">
                 <div className="flex items-center justify-between mb-4">
                   <h4 className="text-white font-semibold">{nfts[currentIndex]?.name || "Unknown Specimen"}</h4>
                   <div className="flex items-center gap-2">
@@ -255,15 +256,6 @@ export default function Profile({ onClose }: ProfileProps) {
                       className="bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-lg transition-colors"
                     >
                       <ChevronLeft className="h-5 w-5" />
-                    </button>
-
-                    <button
-                      onClick={fetchNFTs}
-                      disabled={loading}
-                      className="bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                      title="Refresh NFTs"
-                    >
-                      <RefreshCw className={`h-5 w-5 ${loading ? "animate-spin" : ""}`} />
                     </button>
 
                     <button

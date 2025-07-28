@@ -489,8 +489,10 @@ export default function PlagueMain() {
                 />
               </div>
 
-              <div className="border-gray-700 pt-4 border-t-0">
-                
+              <div className="border-t border-gray-700 pt-4">
+                <p className="text-sm text-gray-300 mb-4 text-center">
+                  Fill out the form above and we'll get back to you within 24 hours.
+                </p>
 
                 {submitMessage && (
                   <div
