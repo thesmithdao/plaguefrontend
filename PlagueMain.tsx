@@ -398,7 +398,7 @@ export default function PlagueMain() {
                   onClick={() => setShowContactForm(true)}
                 >
                   <CalendarPlus className="h-4 w-4 sm:h-5 sm:w-5" />
-                  Get in touch
+                  Contact
                 </button>
               </div>
             </div>
