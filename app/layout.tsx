@@ -1,6 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { DM_Sans } from 'next/font/google'
+import { DM_Sans } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
@@ -31,10 +31,10 @@ export const metadata: Metadata = {
     siteName: "Plague Labs",
     images: [
       {
-        url: "/images/logo-oficial.png",
+        url: "/images/collection-plague-meta.png",
         width: 1200,
         height: 630,
-        alt: "PLAGUE Labs Logo",
+        alt: "PLAGUE Labs Collection",
       },
     ],
     locale: "en_US",
@@ -42,10 +42,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Plague Labs - Web3 Marketing Agency",
+    title: "PLAGUE Labs - Web3 Marketing Agency",
     description:
       "A web3 marketing agency focused on memetic languages. Viral marketing, community management, and growth strategies for decentralized projects.",
-    images: ["/images/logo-oficial.png"],
+    images: ["/images/collection-plague-meta.png"],
   },
   robots: {
     index: true,
@@ -61,7 +61,7 @@ export const metadata: Metadata = {
   verification: {
     google: "your-google-verification-code",
   },
-    generator: 'v0.dev'
+  generator: "v0.dev",
 }
 
 export default function RootLayout({
