@@ -159,7 +159,7 @@ export default function Profile({ onClose }: ProfileProps) {
           {/* NFT Gallery */}
           {loading ? (
             <div className="text-center py-8">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-400"></div>
+              <div className="relative bg-gray-800/50 rounded-lg p-4 border-green-500/20 border-0"></div>
               <p className="text-gray-300 mt-2">Analyzing specimens...</p>
             </div>
           ) : error ? (
@@ -193,7 +193,7 @@ export default function Profile({ onClose }: ProfileProps) {
               <h3 className="text-green-400 font-semibold text-lg">NFT Gallery</h3>
 
               {/* Current NFT Display */}
-              <div className="relative bg-gray-800/50 rounded-lg p-4 border border-green-500/20">
+              <div className="relative bg-gray-800/50 rounded-lg p-4 border-green-500/20 border-0">
                 <div className="flex items-center justify-between mb-4">
                   <h4 className="text-white font-semibold">{nfts[currentIndex]?.name || "Unknown Specimen"}</h4>
                   <div className="flex items-center gap-2">
