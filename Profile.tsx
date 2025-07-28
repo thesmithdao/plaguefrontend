@@ -191,7 +191,7 @@ export default function Profile({ onClose }: ProfileProps) {
             </div>
           ) : (
             <div className="space-y-4">
-              <h3 className="text-green-400 font-semibold text-lg">NFT Gallery</h3>
+              <h3 className="text-green-400 font-semibold text-lg">Specimen Gallery</h3>
 
               {/* Current NFT Display */}
               <div className="relative bg-gray-800/50 rounded-lg p-4 border border-green-500/20">
@@ -236,7 +236,7 @@ export default function Profile({ onClose }: ProfileProps) {
                   </div>
 
                   <div className="flex-1">
-                    <h5 className="text-green-400 font-semibold mb-2">Attributes</h5>
+                    <h5 className="text-green-400 font-semibold mb-2">Specimen Attributes</h5>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {nfts[currentIndex]?.attributes?.map((attr, index) => (
                         <div key={index} className="bg-gray-700/50 p-2 rounded border border-gray-600">
