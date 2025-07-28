@@ -263,7 +263,7 @@ export default function PlagueMain() {
             <div className="flex flex-row gap-4 justify-center items-center mt-8 sm:mt-12">
               <button
                 onClick={() => openModal("success")}
-                className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all shadow-lg flex items-center justify-center gap-2 text-base px-7"
+                className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all shadow-lg flex items-center justify-center gap-2 text-base px-[18px]"
               >
                 <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
                 Moonshots

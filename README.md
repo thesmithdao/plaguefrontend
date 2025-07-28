@@ -28,17 +28,17 @@ Follow these steps to set up and run the project locally.
 ### Installation
 
 1.  **Clone the repository:**
-    ```bash
+    \`\`\`bash
     git clone https://github.com/defismith/v0-plaguefrontend-mt.git
     cd v0-plaguefrontend-mt
-    ```
+    \`\`\`
 
 2.  **Install dependencies:**
-    ```bash
+    \`\`\`bash
     npm install
     # or
     yarn install
-    ```
+    \`\`\`
 
 ### Environment Variables
 
@@ -65,7 +65,7 @@ This project uses environment variables for API keys and database connections. Y
 
 Example `.env.local` file:
 
-```dotenv
+\`\`\`dotenv
 NEXT_PUBLIC_SOLANA_RPC="YOUR_SOLANA_RPC_URL"
 HELIUS_API_KEY="YOUR_HELIUS_API_KEY"
 
@@ -85,17 +85,17 @@ SUPABASE_SERVICE_ROLE_KEY="your_supabase_service_role_key"
 SUPABASE_JWT_SECRET="your_supabase_jwt_secret"
 
 RESEND_API_KEY="re_YOUR_RESEND_API_KEY"
-```
+\`\`\`
 
 ### Running Locally
 
 To run the development server:
 
-```bash
+\`\`\`bash
 npm run dev
 # or
 yarn dev
-```
+\`\`\`
 
 Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
@@ -112,9 +112,9 @@ This project uses Supabase for storing contact form submissions.
     *   `scripts/002_fix_ip_address_column.sql`
 
     Alternatively, if you are using a local development environment with Supabase CLI, you might use:
-    ```bash
+    \`\`\`bash
     supabase db push
-    ```
+    \`\`\`
 
 ### Email Service Setup (Resend)
 
@@ -126,7 +126,7 @@ This project uses Resend for sending contact form notifications and confirmation
 
 ## Project Structure
 
-```
+\`\`\`
 .
 ├── public/                 # Static assets (images, videos)
 │   └── images/
@@ -151,7 +151,7 @@ This project uses Resend for sending contact form notifications and confirmation
 ├── Profile.tsx             # NFT Profile component
 ├── WalletProvider.tsx      # Solana wallet context provider
 └── ... (other modal components like AboutModal, TermsModal, etc.)
-```
+\`\`\`
 
 ## API Endpoints
 
@@ -162,24 +162,24 @@ This project uses Resend for sending contact form notifications and confirmation
 *   **Query Parameters:**
     *   `walletAddress`: The public key of the Solana wallet.
 *   **Example Usage (Client-side):**
-    ```javascript
+    \`\`\`javascript
     const response = await fetch(`/api/get-nfts?walletAddress=YOUR_WALLET_ADDRESS`);
     const data = await response.json();
-    ```
+    \`\`\`
 
 ### `/api/contact`
 
 *   **Method:** `POST`
 *   **Description:** Handles contact form submissions, stores them in Supabase, and sends email notifications.
 *   **Request Body (JSON):**
-    ```json
+    \`\`\`json
     {
       "name": "John Doe",
       "email": "john.doe@example.com",
       "subject": "Project Inquiry",
       "message": "I'd like to discuss a new project."
     }
-    ```
+    \`\`\`
 
 ## Deployment
 
@@ -201,5 +201,3 @@ Your project is live in prod at: [https://plaguelabs.wtf](https://plaguelabs.wtf
 *   [Supabase](https://supabase.com/) - Open source Firebase alternative (database)
 *   [Resend](https://resend.com/) - Email API for developers
 *   [Lucide React](https://lucide.dev/icons/) - Beautifully simple open-source icons
-
-
