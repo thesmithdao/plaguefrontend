@@ -22,6 +22,8 @@ export const metadata: Metadata = {
   publisher: "Plague Labs",
   icons: {
     icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
   },
   openGraph: {
     title: "Plague Labs - Web3 Marketing Agency",
