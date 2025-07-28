@@ -215,19 +215,16 @@ export default function Profile({ onClose }: ProfileProps) {
                 <div className="flex flex-col md:flex-row gap-4">
                   <div className="flex-shrink-0">
                     <img
-                      src={nfts[currentIndex]?.image || "/placeholder.svg?height=120&width=120&text=plaguelabs"}
-                      alt={nfts[currentIndex]?.name}
+                      src={nfts[currentIndex]?.image || "/placeholder.svg?height=256&width=256&text=Plague"}
+                      alt={nfts[currentIndex]?.name || "Plague NFT"}
                       className="w-full md:w-48 h-48 object-cover rounded-lg border border-green-500/30 cursor-pointer hover:border-green-400 transition-colors"
                       crossOrigin="anonymous"
                       onClick={() => {
                         const imageUrl = nfts[currentIndex]?.image
                         if (imageUrl) {
-                          // Convert to friendly IPFS link if it's an IPFS URL
                           const friendlyUrl = imageUrl.includes("ipfs://")
                             ? imageUrl.replace("ipfs://", "https://ipfs.io/ipfs/")
-                            : imageUrl.includes("gateway.pinata.cloud") || imageUrl.includes("cloudflare-ipfs.com")
-                              ? imageUrl
-                              : imageUrl
+                            : imageUrl
                           window.open(friendlyUrl, "_blank", "noopener,noreferrer")
                         }
                       }}
@@ -251,25 +248,45 @@ export default function Profile({ onClose }: ProfileProps) {
                   </div>
                 </div>
 
-                {/* Simple Navigation */}
+                {/* Navigation */}
                 {nfts.length > 1 && (
-                  <div className="flex justify-center items-center gap-4 mt-4">
+                  <div className="flex justify-between items-center mt-4">
                     <button
                       onClick={prevNFT}
-                      className="bg-gray-700 hover:bg-gray-600 text-white p-3 rounded-lg transition-colors"
+                      className="bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-lg transition-colors"
                     >
-                      <ChevronLeft className="h-6 w-6" />
+                      <ChevronLeft className="h-5 w-5" />
                     </button>
+
+                    <div className="flex space-x-1 max-w-xs overflow-hidden">
+                      {nfts
+                        .slice(Math.max(0, currentIndex - 5), Math.min(nfts.length, currentIndex + 6))
+                        .map((_, index) => {
+                          const actualIndex = Math.max(0, currentIndex - 5) + index
+                          return (
+                            <button
+                              key={actualIndex}
+                              onClick={() => setCurrentIndex(actualIndex)}
+                              className={`w-2 h-2 rounded-full transition-colors ${
+                                actualIndex === currentIndex ? "bg-green-400" : "bg-gray-600"
+                              }`}
+                            />
+                          )
+                        })}
+                    </div>
 
                     <button
                       onClick={nextNFT}
-                      className="bg-gray-700 hover:bg-gray-600 text-white p-3 rounded-lg transition-colors"
+                      className="bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-lg transition-colors"
                     >
-                      <ChevronRight className="h-6 w-6" />
+                      <ChevronRight className="h-5 w-5" />
                     </button>
                   </div>
                 )}
               </div>
+
+              {/* Specimen Carousel */}
+              
             </div>
           )}
         </div>
