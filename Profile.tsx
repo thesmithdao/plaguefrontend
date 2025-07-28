@@ -236,7 +236,7 @@ export default function Profile({ onClose }: ProfileProps) {
                   </div>
 
                   <div className="flex-1">
-                    <h5 className="text-green-400 font-semibold mb-2">Specimen Attributes</h5>
+                    <h5 className="text-green-400 font-semibold mb-2">Attributes</h5>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {nfts[currentIndex]?.attributes?.map((attr, index) => (
                         <div key={index} className="bg-gray-700/50 p-2 rounded border border-gray-600">
