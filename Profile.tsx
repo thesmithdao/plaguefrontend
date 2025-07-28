@@ -215,19 +215,16 @@ export default function Profile({ onClose }: ProfileProps) {
                 <div className="flex flex-col md:flex-row gap-4">
                   <div className="flex-shrink-0">
                     <img
-                      src={nfts[currentIndex]?.image || "/placeholder.svg?height=120&width=120&text=plaguelabs"}
+                      src={nfts[currentIndex]?.image || "/placeholder.svg?height=256&width=256&text=Plague"}
                       alt={nfts[currentIndex]?.name || "Plague NFT"}
                       className="w-full md:w-48 h-48 object-cover rounded-lg border border-green-500/30 cursor-pointer hover:border-green-400 transition-colors"
                       crossOrigin="anonymous"
                       onClick={() => {
                         const imageUrl = nfts[currentIndex]?.image
                         if (imageUrl) {
-                          // Convert to friendly IPFS link if it's an IPFS URL
                           const friendlyUrl = imageUrl.includes("ipfs://")
                             ? imageUrl.replace("ipfs://", "https://ipfs.io/ipfs/")
-                            : imageUrl.includes("gateway.pinata.cloud") || imageUrl.includes("cloudflare-ipfs.com")
-                              ? imageUrl
-                              : imageUrl
+                            : imageUrl
                           window.open(friendlyUrl, "_blank", "noopener,noreferrer")
                         }
                       }}
@@ -252,20 +249,56 @@ export default function Profile({ onClose }: ProfileProps) {
                 </div>
 
                 {/* Navigation */}
-                <div className="flex justify-center items-center gap-4 mt-4">
-                  <button
-                    onClick={prevNFT}
-                    className="bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-lg transition-colors"
-                  >
-                    <ChevronLeft className="h-5 w-5" />
-                  </button>
+                {nfts.length > 1 && (
+                  <div className="flex justify-center items-center gap-4 mt-4">
+                    <button
+                      onClick={prevNFT}
+                      className="bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-lg transition-colors"
+                    >
+                      <ChevronLeft className="h-5 w-5" />
+                    </button>
 
-                  <button
-                    onClick={nextNFT}
-                    className="bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-lg transition-colors"
-                  >
-                    <ChevronRight className="h-5 w-5" />
-                  </button>
+                    <button
+                      onClick={nextNFT}
+                      className="bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-lg transition-colors"
+                    >
+                      <ChevronRight className="h-5 w-5" />
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Specimen Carousel */}
+              <div className="space-y-4 hidden">
+                <div className="flex justify-between items-center">
+                  <h5 className="text-green-400 font-semibold">Specimen Carousel</h5>
+                  <div className="text-gray-400 text-sm">{nfts.length} specimens total</div>
+                </div>
+
+                <div className="relative">
+                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+                    {nfts.map((nft, index) => (
+                      <button
+                        key={nft.mint}
+                        onClick={() => setCurrentIndex(index)}
+                        className={`relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all hover:scale-105 ${
+                          index === currentIndex
+                            ? "border-green-400 ring-2 ring-green-400/50"
+                            : "border-gray-600 hover:border-green-500"
+                        }`}
+                      >
+                        <img
+                          src={nft.image || "/placeholder.svg?height=64&width=64&text=Plague"}
+                          alt={nft.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement
+                            target.src = "/placeholder.svg?height=64&width=64&text=Plague"
+                          }}
+                        />
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
