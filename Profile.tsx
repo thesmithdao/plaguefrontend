@@ -132,7 +132,7 @@ export default function Profile({ onClose }: ProfileProps) {
 
         <div className="p-6">
           {/* Patient Info */}
-          <div className="mb-6 p-4 bg-gray-800/50 rounded-lg border border-green-500/20">
+          <div className="mb-6 p-4 bg-gray-800/50 rounded-lg border-green-500/20 border-[px]">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <h3 className="text-green-400 font-semibold mb-2">Patient ID</h3>
@@ -159,7 +159,7 @@ export default function Profile({ onClose }: ProfileProps) {
           {/* NFT Gallery */}
           {loading ? (
             <div className="text-center py-8">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-400"></div>
+              <div className="relative bg-gray-800/50 rounded-lg p-4 border-green-500/20 border-0"></div>
               <p className="text-gray-300 mt-2">Analyzing specimens...</p>
             </div>
           ) : error ? (
