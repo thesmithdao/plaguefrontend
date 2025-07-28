@@ -263,14 +263,14 @@ export default function PlagueMain() {
             <div className="flex flex-row gap-4 justify-center items-center mt-8 sm:mt-12">
               <button
                 onClick={() => openModal("success")}
-                className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 sm:px-8 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all shadow-lg flex items-center justify-center gap-2 text-sm sm:text-base"
+                className="py-3 px-8 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all shadow-lg flex items-center justify-center gap-2 text-base"
               >
                 <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
                 Moonshots
               </button>
 
               <button
-                className="bg-gray-800/80 hover:bg-gray-700/80 text-green-400 font-bold py-3 px-6 sm:px-8 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all backdrop-blur-sm flex items-center justify-center gap-2 text-sm sm:text-base"
+                className="py-3 px-8 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all backdrop-blur-sm flex items-center justify-center gap-2 text-base"
                 onClick={() => setShowContactForm(true)}
               >
                 <CalendarPlus className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -394,7 +394,7 @@ export default function PlagueMain() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <button
-                  className="bg-gray-800/80 hover:bg-gray-700/80 text-green-400 font-bold py-3 px-8 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all backdrop-blur-sm flex items-center justify-center gap-2 text-sm sm:text-base"
+                  className="bg-gray-800/80 hover:bg-gray-700/80 text-green-400 font-bold py-3 px-8 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all backdrop-blur-sm flex items-center justify-center gap-2 text-base"
                   onClick={() => setShowContactForm(true)}
                 >
                   <CalendarPlus className="h-4 w-4 sm:h-5 sm:w-5" />
