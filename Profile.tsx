@@ -95,8 +95,8 @@ export default function Profile({ onClose }: ProfileProps) {
   if (!publicKey) {
     return (
       <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div className="bg-gray-900 border border-gray-700 rounded-xl max-w-2xl max-h-[85vh] overflow-y-auto w-full px-6 py-1.5 mx-6">
-          <div className="flex items-center justify-between mb-4">
+        <div className="bg-gray-900 border border-gray-700 rounded-xl max-w-2xl max-h-[85vh] overflow-y-auto px-6 py-1.5 mx-6 w-[30%] h-6/12">
+          <div className="flex items-center justify-between mb-px">
             <h2 className="text-lg font-bold text-green-400">Patient Profile</h2>
             <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
               <X className="h-5 w-5" />
