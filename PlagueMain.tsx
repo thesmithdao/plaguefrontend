@@ -373,8 +373,7 @@ export default function PlagueMain() {
                 />
                 <h4 className="text-lg font-semibold text-white mb-2">Goo Friends </h4>
                 <p className="text-gray-400 text-sm mb-4">
-                  Goo Friends is a free Solana NFT collection celebrating community culture. Backed by major collabs
-                  like Okay Bear.
+                  {"Goo Friends is a free Solana NFT collection celebrating the solana community culture. Backed by major collabs like Okay Bears and many others."}
                 </p>
                 <div className="flex justify-between text-sm text-green-400">
                   <span>Mint Out in 1 Hour</span>
