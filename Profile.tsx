@@ -133,7 +133,7 @@ export default function Profile({ onClose }: ProfileProps) {
         <div className="p-6">
           {/* Patient Info */}
           <div className="mb-6 p-4 bg-gray-800/50 rounded-lg border border-green-500/20">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <h3 className="text-green-400 font-semibold mb-2">Patient ID</h3>
                 <p className="text-gray-300 text-sm font-mono break-all">
@@ -144,16 +144,15 @@ export default function Profile({ onClose }: ProfileProps) {
                 <h3 className="text-green-400 font-semibold mb-2">Specimen Count</h3>
                 <p className="text-white text-2xl font-bold">{nfts.length}</p>
               </div>
-            </div>
-
-            <div className="mt-4 flex justify-center gap-2">
-              <button
-                onClick={shareInfection}
-                className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors"
-              >
-                <Share2 className="h-4 w-4" />
-                Share Infection
-              </button>
+              <div className="flex items-center justify-center md:justify-end">
+                <button
+                  onClick={shareInfection}
+                  className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors"
+                >
+                  <Share2 className="h-4 w-4" />
+                  Share Infection
+                </button>
+              </div>
             </div>
           </div>
 
