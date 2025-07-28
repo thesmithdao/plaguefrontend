@@ -201,14 +201,6 @@ export default function Profile({ onClose }: ProfileProps) {
                     <span className="text-gray-400 text-sm">
                       {currentIndex + 1} of {nfts.length}
                     </span>
-                    <button
-                      onClick={fetchNFTs}
-                      disabled={loading}
-                      className="text-green-400 hover:text-green-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                      title="Refresh NFTs"
-                    >
-                      <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-                    </button>
                     <a
                       href={`https://solscan.io/token/${nfts[currentIndex]?.mint}`}
                       target="_blank"
@@ -264,6 +256,15 @@ export default function Profile({ onClose }: ProfileProps) {
                       className="bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-lg transition-colors"
                     >
                       <ChevronLeft className="h-5 w-5" />
+                    </button>
+
+                    <button
+                      onClick={fetchNFTs}
+                      disabled={loading}
+                      className="bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      title="Refresh NFTs"
+                    >
+                      <RefreshCw className={`h-5 w-5 ${loading ? "animate-spin" : ""}`} />
                     </button>
 
                     <button
