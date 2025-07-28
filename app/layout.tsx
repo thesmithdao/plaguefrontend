@@ -1,6 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { DM_Sans } from "next/font/google"
+import { DM_Sans } from 'next/font/google'
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
@@ -20,6 +20,9 @@ export const metadata: Metadata = {
   authors: [{ name: "Plague Labs" }],
   creator: "Plague Labs",
   publisher: "Plague Labs",
+  icons: {
+    icon: "/favicon.ico",
+  },
   openGraph: {
     title: "Plague Labs - Web3 Marketing Agency",
     description:
@@ -58,12 +61,7 @@ export const metadata: Metadata = {
   verification: {
     google: "your-google-verification-code",
   },
-  icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon.ico",
-    apple: "/favicon.ico",
-  },
-  generator: "v0.dev",
+    generator: 'v0.dev'
 }
 
 export default function RootLayout({
