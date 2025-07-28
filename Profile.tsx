@@ -191,7 +191,7 @@ export default function Profile({ onClose }: ProfileProps) {
             </div>
           ) : (
             <div className="space-y-4">
-              <h3 className="text-green-400 font-semibold text-lg">Specimen Gallery</h3>
+              <h3 className="text-green-400 font-semibold text-lg">NFT  Gallery</h3>
 
               {/* Current NFT Display */}
               <div className="relative bg-gray-800/50 rounded-lg p-4 border border-green-500/20">
@@ -236,7 +236,7 @@ export default function Profile({ onClose }: ProfileProps) {
                   </div>
 
                   <div className="flex-1">
-                    <h5 className="text-green-400 font-semibold mb-2">Specimen Attributes</h5>
+                    <h5 className="text-green-400 font-semibold mb-2">Attributes</h5>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {nfts[currentIndex]?.attributes?.map((attr, index) => (
                         <div key={index} className="bg-gray-700/50 p-2 rounded border border-gray-600">
@@ -266,6 +266,40 @@ export default function Profile({ onClose }: ProfileProps) {
                     </button>
                   </div>
                 )}
+              </div>
+
+              {/* Specimen Carousel */}
+              <div className="space-y-4 hidden">
+                <div className="flex justify-between items-center">
+                  <h5 className="text-green-400 font-semibold">Specimen Carousel</h5>
+                  <div className="text-gray-400 text-sm">{nfts.length} specimens total</div>
+                </div>
+
+                <div className="relative">
+                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+                    {nfts.map((nft, index) => (
+                      <button
+                        key={nft.mint}
+                        onClick={() => setCurrentIndex(index)}
+                        className={`relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all hover:scale-105 ${
+                          index === currentIndex
+                            ? "border-green-400 ring-2 ring-green-400/50"
+                            : "border-gray-600 hover:border-green-500"
+                        }`}
+                      >
+                        <img
+                          src={nft.image || "/placeholder.svg?height=64&width=64&text=Plague"}
+                          alt={nft.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement
+                            target.src = "/placeholder.svg?height=64&width=64&text=Plague"
+                          }}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           )}
