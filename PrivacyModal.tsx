@@ -69,7 +69,7 @@ export default function PrivacyModal({ onClose }: PrivacyModalProps) {
             <p>If you have any questions about this Privacy Policy, please contact us at helloplaguelabs@gmail.com</p>
           </div>
 
-          <div className="text-xs text-gray-400 pt-4 border-t border-gray-700">Last updated: January 2025</div>
+          <div className="text-xs text-gray-400 pt-4 border-t border-gray-700">Last updated: January 2024</div>
         </div>
       </div>
     </div>

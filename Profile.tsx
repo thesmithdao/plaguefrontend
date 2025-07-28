@@ -95,8 +95,8 @@ export default function Profile({ onClose }: ProfileProps) {
   if (!publicKey) {
     return (
       <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div className="bg-gray-900 border border-gray-700 rounded-xl max-w-2xl max-h-[85vh] overflow-y-auto px-6 py-1.5 mx-6 w-[30%] h-6/12">
-          <div className="flex items-center justify-between mb-px">
+        <div className="bg-gray-900 border border-gray-700 rounded-xl max-w-3xl max-h-[85vh] overflow-y-auto w-full px-6 py-1.5 mx-6">
+          <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-bold text-green-400">Patient Profile</h2>
             <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
               <X className="h-5 w-5" />
@@ -132,8 +132,8 @@ export default function Profile({ onClose }: ProfileProps) {
 
         <div className="p-6">
           {/* Patient Info */}
-          <div className="mb-6 p-4 bg-gray-800/50 rounded-lg border-green-500/20 border-0">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="mb-6 p-4 bg-gray-800/50 rounded-lg border border-green-500/20">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <h3 className="text-green-400 font-semibold mb-2">Patient ID</h3>
                 <p className="text-gray-300 text-sm font-mono break-all">
@@ -144,22 +144,23 @@ export default function Profile({ onClose }: ProfileProps) {
                 <h3 className="text-green-400 font-semibold mb-2">Specimen Count</h3>
                 <p className="text-white text-2xl font-bold">{nfts.length}</p>
               </div>
-              <div className="flex items-center justify-center md:justify-end">
-                <button
-                  onClick={shareInfection}
-                  className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors"
-                >
-                  <Share2 className="h-4 w-4" />
-                  Share Infection
-                </button>
-              </div>
+            </div>
+
+            <div className="mt-4 flex justify-center gap-2">
+              <button
+                onClick={shareInfection}
+                className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors"
+              >
+                <Share2 className="h-4 w-4" />
+                Share Infection
+              </button>
             </div>
           </div>
 
           {/* NFT Gallery */}
           {loading ? (
             <div className="text-center py-8">
-              <div className="relative bg-gray-800/50 rounded-lg p-4 border-green-500/20 border-0"></div>
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-400"></div>
               <p className="text-gray-300 mt-2">Analyzing specimens...</p>
             </div>
           ) : error ? (
@@ -193,7 +194,7 @@ export default function Profile({ onClose }: ProfileProps) {
               <h3 className="text-green-400 font-semibold text-lg">NFT Gallery</h3>
 
               {/* Current NFT Display */}
-              <div className="relative bg-gray-800/50 rounded-lg p-4 border-green-500/20 border-0">
+              <div className="relative bg-gray-800/50 rounded-lg p-4 border border-green-500/20">
                 <div className="flex items-center justify-between mb-4">
                   <h4 className="text-white font-semibold">{nfts[currentIndex]?.name || "Unknown Specimen"}</h4>
                   <div className="flex items-center gap-2">
@@ -214,12 +215,10 @@ export default function Profile({ onClose }: ProfileProps) {
                 <div className="flex flex-col md:flex-row gap-4">
                   <div className="flex-shrink-0">
                     <img
-                      key={`${nfts[currentIndex]?.mint}-${currentIndex}`}
                       src={nfts[currentIndex]?.image || "/placeholder.svg?height=256&width=256&text=Plague"}
                       alt={nfts[currentIndex]?.name || "Plague NFT"}
                       className="w-full md:w-48 h-48 object-cover rounded-lg border border-green-500/30 cursor-pointer hover:border-green-400 transition-colors"
                       crossOrigin="anonymous"
-                      loading="eager"
                       onClick={() => {
                         const imageUrl = nfts[currentIndex]?.image
                         if (imageUrl) {
@@ -298,7 +297,6 @@ export default function Profile({ onClose }: ProfileProps) {
                         }`}
                       >
                         <img
-                          key={`carousel-${nft.mint}-${index}`}
                           src={nft.image || "/placeholder.svg?height=64&width=64&text=Plague"}
                           alt={nft.name}
                           className="w-full h-full object-cover"

@@ -94,7 +94,7 @@ export default function TeamModal({ onClose }: TeamModalProps) {
             {teamMembers.map((member, index) => (
               <div
                 key={index}
-                className="bg-gray-800/50 rounded-lg p-4 border-green-500/20 hover:border-green-500/40 transition-all duration-300 hover:transform hover:scale-105 border-0"
+                className="bg-gray-800/50 rounded-lg p-4 border border-green-500/20 hover:border-green-500/40 transition-all duration-300 hover:transform hover:scale-105"
               >
                 <div className="text-center mb-4">
                   <div className="relative w-20 h-20 mx-auto mb-3">
