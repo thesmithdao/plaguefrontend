@@ -132,7 +132,7 @@ export default function Profile({ onClose }: ProfileProps) {
 
         <div className="p-6">
           {/* Patient Info */}
-          <div className="mb-6 p-4 bg-gray-800/50 rounded-lg border border-green-500/20">
+          <div className="mb-6 p-4 bg-gray-800/50 rounded-lg border-green-500/20 border-0">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <h3 className="text-green-400 font-semibold mb-2">Patient ID</h3>
