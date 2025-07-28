@@ -88,7 +88,7 @@ export default function SuccessModal({ onClose }: SuccessModalProps) {
             {successCases.map((project, index) => (
               <div
                 key={index}
-                className="bg-gray-800/50 rounded-lg overflow-hidden border border-green-500/20 hover:border-green-500/50 transition-colors"
+                className="bg-gray-800/50 rounded-lg overflow-hidden border-green-500/20 hover:border-green-500/50 transition-colors border-0"
               >
                 <img
                   src={project.image || "/placeholder.svg"}
