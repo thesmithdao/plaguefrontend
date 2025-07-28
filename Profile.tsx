@@ -214,10 +214,12 @@ export default function Profile({ onClose }: ProfileProps) {
                 <div className="flex flex-col md:flex-row gap-4">
                   <div className="flex-shrink-0">
                     <img
+                      key={`${nfts[currentIndex]?.mint}-${currentIndex}`}
                       src={nfts[currentIndex]?.image || "/placeholder.svg?height=256&width=256&text=Plague"}
                       alt={nfts[currentIndex]?.name || "Plague NFT"}
                       className="w-full md:w-48 h-48 object-cover rounded-lg border border-green-500/30 cursor-pointer hover:border-green-400 transition-colors"
                       crossOrigin="anonymous"
+                      loading="eager"
                       onClick={() => {
                         const imageUrl = nfts[currentIndex]?.image
                         if (imageUrl) {
@@ -231,6 +233,11 @@ export default function Profile({ onClose }: ProfileProps) {
                         const target = e.target as HTMLImageElement
                         target.src = "/placeholder.svg?height=256&width=256&text=Plague"
                       }}
+                      onLoad={(e) => {
+                        const target = e.target as HTMLImageElement
+                        target.style.opacity = "1"
+                      }}
+                      style={{ opacity: 0, transition: "opacity 0.3s ease-in-out" }}
                     />
                   </div>
 
@@ -296,6 +303,7 @@ export default function Profile({ onClose }: ProfileProps) {
                         }`}
                       >
                         <img
+                          key={`carousel-${nft.mint}-${index}`}
                           src={nft.image || "/placeholder.svg?height=64&width=64&text=Plague"}
                           alt={nft.name}
                           className="w-full h-full object-cover"
