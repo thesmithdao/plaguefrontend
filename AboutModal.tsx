@@ -43,7 +43,7 @@ export default function AboutModal({ onClose }: AboutModalProps) {
               </p>
             </div>
 
-            <div className="bg-gray-800/50 rounded-lg p-4 border-green-500/20 border-[px]">
+            <div className="bg-gray-800/50 rounded-lg p-4 border-green-500/20 border-0">
               <h4 className="text-green-400 font-semibold mb-2">Why Choose Plague Labs?</h4>
               <ul className="text-sm space-y-1">
                 <li>• Deep understanding of web3 culture and communities</li>
