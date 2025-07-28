@@ -189,7 +189,7 @@ This project is configured for seamless deployment to Vercel.
 2.  **Configure Environment Variables:** Ensure all necessary environment variables (listed above) are configured in your Vercel project settings.
 3.  **Deploy:** Vercel will automatically deploy your application on every push to the main branch.
 
-Your project is live in prod at: [https://plaguelabs.wrf](https://plaguelabs.wtf)
+Your project is live in prod at: [https://plaguelabs.wtf](https://plaguelabs.wtf)
 
 ## Built With
 
