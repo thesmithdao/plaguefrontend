@@ -249,44 +249,24 @@ export default function Profile({ onClose }: ProfileProps) {
                 </div>
 
                 {/* Navigation */}
-                {nfts.length > 1 && (
-                  <div className="flex justify-between items-center mt-4">
-                    <button
-                      onClick={prevNFT}
-                      className="bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-lg transition-colors"
-                    >
-                      <ChevronLeft className="h-5 w-5" />
-                    </button>
+                <div className="flex justify-center items-center gap-4 mt-4">
+                  <button
+                    onClick={prevNFT}
+                    className="bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-lg transition-colors"
+                  >
+                    <ChevronLeft className="h-5 w-5" />
+                  </button>
 
-                    <div className="flex space-x-1 max-w-xs overflow-hidden">
-                      {nfts
-                        .slice(Math.max(0, currentIndex - 5), Math.min(nfts.length, currentIndex + 6))
-                        .map((_, index) => {
-                          const actualIndex = Math.max(0, currentIndex - 5) + index
-                          return (
-                            <button
-                              key={actualIndex}
-                              onClick={() => setCurrentIndex(actualIndex)}
-                              className={`w-2 h-2 rounded-full transition-colors ${
-                                actualIndex === currentIndex ? "bg-green-400" : "bg-gray-600"
-                              }`}
-                            />
-                          )
-                        })}
-                    </div>
-
-                    <button
-                      onClick={nextNFT}
-                      className="bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-lg transition-colors"
-                    >
-                      <ChevronRight className="h-5 w-5" />
-                    </button>
-                  </div>
-                )}
+                  <button
+                    onClick={nextNFT}
+                    className="bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-lg transition-colors"
+                  >
+                    <ChevronRight className="h-5 w-5" />
+                  </button>
+                </div>
               </div>
 
               {/* Specimen Carousel */}
-              
             </div>
           )}
         </div>
