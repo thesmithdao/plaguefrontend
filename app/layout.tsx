@@ -28,10 +28,10 @@ export const metadata: Metadata = {
     siteName: "Plague Labs",
     images: [
       {
-        url: "/images/banner.png", // Updated to use banner.png
+        url: "/images/logo-oficial.png",
         width: 1200,
         height: 630,
-        alt: "PLAGUE Labs Banner", // Updated alt text
+        alt: "PLAGUE Labs Logo",
       },
     ],
     locale: "en_US",
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     title: "PLAGUE Labs - Web3 Marketing Agency",
     description:
       "A web3 marketing agency focused on memetic languages. Viral marketing, community management, and growth strategies for decentralized projects.",
-    images: ["/images/banner.png"], // Updated to use banner.png
+    images: ["/images/logo-oficial.png"],
   },
   robots: {
     index: true,
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
   verification: {
     google: "your-google-verification-code",
   },
-  generator: "v0.dev",
+    generator: 'v0.dev'
 }
 
 export default function RootLayout({

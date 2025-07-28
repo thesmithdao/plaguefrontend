@@ -1,267 +1,310 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect } from "react"
 import { useWallet } from "@solana/wallet-adapter-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
-import Image from "next/image"
-import { Share2Icon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
-import { useToast } from "@/components/ui/use-toast"
-import WalletConnection from "@/components/WalletConnection" // Declare the WalletConnection component
+import {
+  ChevronLeft,
+  ChevronRight,
+  X,
+  ExternalLink,
+  Share2,
+  RefreshCw,
+  AlertTriangle,
+  WormIcon as Virus,
+  Syringe,
+} from "lucide-react"
 
-interface NftData {
-  mint: string
+interface NFT {
   name: string
   image: string
-  attributes: { trait_type: string; value: string }[]
+  mint: string
+  attributes?: Array<{
+    trait_type: string
+    value: string
+  }>
 }
 
-export default function Profile() {
-  const { publicKey } = useWallet()
-  const [nfts, setNfts] = useState<NftData[]>([])
+interface ProfileProps {
+  onClose: () => void
+}
+
+export default function Profile({ onClose }: ProfileProps) {
+  const { publicKey, disconnect } = useWallet()
+  const [nfts, setNfts] = useState<NFT[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [currentIndex, setCurrentIndex] = useState(0)
-  const { toast } = useToast()
-
-  const fetchNfts = useCallback(async (walletAddress: string) => {
-    setLoading(true)
-    setError(null)
-    try {
-      const response = await fetch(`/api/get-nfts?walletAddress=${walletAddress}`)
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-      const data = await response.json()
-      setNfts(data.nfts)
-      setCurrentIndex(0) // Reset to first NFT when new NFTs are loaded
-    } catch (err) {
-      console.error("Failed to fetch NFTs:", err)
-      setError("Failed to load NFTs. Please try again later.")
-      setNfts([])
-    } finally {
-      setLoading(false)
-    }
-  }, [])
 
   useEffect(() => {
     if (publicKey) {
-      fetchNfts(publicKey.toBase58())
-    } else {
-      setNfts([])
-      setLoading(false)
+      fetchNFTs()
+    }
+  }, [publicKey])
+
+  const fetchNFTs = async () => {
+    if (!publicKey) return
+
+    try {
+      setLoading(true)
       setError(null)
-    }
-  }, [publicKey, fetchNfts])
 
-  const handleNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % nfts.length)
+      const response = await fetch(`/api/get-nfts?walletAddress=${publicKey.toString()}`)
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`)
+      }
+
+      const data = await response.json()
+
+      if (data.error) {
+        throw new Error(data.error)
+      }
+
+      if (!data.success) {
+        throw new Error("API returned unsuccessful response")
+      }
+
+      setNfts(data.nfts || [])
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch NFTs")
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handlePrevious = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + nfts.length) % nfts.length)
+  const nextNFT = () => {
+    setCurrentIndex((prev) => (prev + 1) % nfts.length)
   }
 
-  const handleShare = () => {
-    if (nfts.length > 0 && nfts[currentIndex]) {
-      const nft = nfts[currentIndex]
-      const tweetText = `Check out my ${nft.name} NFT from Plague Labs! #PlagueLabs #NFT #Solana`
-      const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(nft.image)}`
-      window.open(tweetUrl, "_blank")
-      toast({
-        title: "Sharing NFT",
-        description: "Opening Twitter to share your NFT!",
-      })
-    } else {
-      toast({
-        title: "No NFT to share",
-        description: "Connect your wallet and load an NFT to share.",
-        variant: "destructive",
-      })
-    }
+  const prevNFT = () => {
+    setCurrentIndex((prev) => (prev - 1 + nfts.length) % nfts.length)
+  }
+
+  const shareInfection = () => {
+    const text = `I'm infected with ${nfts.length} Plague specimens! 🦠 Check out my collection: ${window.location.href}`
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`
+    window.open(twitterUrl, "_blank")
+  }
+
+  const handleDisconnect = () => {
+    disconnect()
+    onClose()
   }
 
   if (!publicKey) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-100px)] p-4">
-        <Card className="w-full max-w-md text-center">
-          <CardHeader>
-            <CardTitle>Connect Your Wallet</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">Please connect your Solana wallet to view your specimens.</p>
-            <WalletConnection /> {/* Use the declared WalletConnection component */}
-          </CardContent>
-        </Card>
+      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="bg-gray-900 border border-gray-700 rounded-xl max-w-3xl max-h-[85vh] overflow-y-auto w-full px-6 py-1.5 mx-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-green-400">Patient Profile</h2>
+            <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+          <div className="text-center py-8">
+            <Syringe className="h-8 w-8 text-green-400 mx-auto mb-4" />
+            <p className="text-gray-300">Connect your wallet to see your Plague NFTs</p>
+            <p className="text-gray-400 text-sm mt-2">No wallet connected</p>
+            <a
+              href="https://magiceden.io/marketplace/plagueproject"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block mt-4 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+            >
+              Get Plague NFTs on Magic Eden
+            </a>
+          </div>
+        </div>
       </div>
     )
   }
-
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-100px)] p-4">
-        <Card className="w-full max-w-4xl">
-          <CardHeader>
-            <CardTitle>Loading Specimens...</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col items-center justify-center gap-4">
-            <div className="animate-pulse w-full h-64 bg-gray-800 rounded-lg" />
-            <div className="w-full h-8 bg-gray-800 rounded-md" />
-            <div className="w-full h-6 bg-gray-800 rounded-md" />
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
-              {[...Array(8)].map((_, i) => (
-                <div key={i} className="animate-pulse h-24 bg-gray-800 rounded-lg" />
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-100px)] p-4">
-        <Card className="w-full max-w-md text-center">
-          <CardHeader>
-            <CardTitle>Error</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-red-500">{error}</p>
-            <Button onClick={() => publicKey && fetchNfts(publicKey.toBase58())} className="mt-4">
-              Retry
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
-  if (nfts.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-100px)] p-4">
-        <Card className="w-full max-w-md text-center">
-          <CardHeader>
-            <CardTitle>No Specimens Found</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              It looks like you don't have any Plague Labs specimens in this wallet.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
-  const currentNft = nfts[currentIndex]
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-[calc(100vh-100px)] p-4 bg-gradient-to-b from-gray-900 to-black text-white">
-      <Card className="w-full max-w-4xl bg-gray-800/50 border border-green-500/30 shadow-lg">
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-2xl font-bold text-green-400">Specimen Gallery</CardTitle>
-          <Button variant="ghost" size="icon" onClick={handleShare} aria-label="Share NFT">
-            <Share2Icon className="h-5 w-5 text-green-400 hover:text-green-300" />
-          </Button>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-shrink-0 relative w-full md:w-64 h-64">
-              <Image
-                src={currentNft?.image || "/placeholder.svg?height=256&width=256&text=Plague"}
-                alt={currentNft?.name || "Plague NFT"}
-                layout="fill"
-                objectFit="cover"
-                className="rounded-lg border border-green-500/30 cursor-pointer hover:border-green-400 transition-colors"
-                priority
-              />
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
+      <div className="bg-gray-900 border border-gray-700 rounded-xl w-full h-full sm:max-w-3xl sm:w-full sm:max-h-[90vh] sm:h-auto overflow-y-auto">
+        <div className="p-4 border-b border-gray-700 flex items-center justify-between sticky top-0 bg-gray-900 z-10">
+          <h2 className="text-lg font-bold text-green-400">Patient Profile</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <div className="p-6">
+          {/* Patient Info */}
+          <div className="mb-6 p-4 bg-gray-800/50 rounded-lg border border-green-500/20">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <h3 className="text-green-400 font-semibold mb-2">Patient ID</h3>
+                <p className="text-gray-300 text-sm font-mono break-all">
+                  {publicKey.toString().slice(0, 8)}...{publicKey.toString().slice(-8)}
+                </p>
+              </div>
+              <div>
+                <h3 className="text-green-400 font-semibold mb-2">Specimen Count</h3>
+                <p className="text-white text-2xl font-bold">{nfts.length}</p>
+              </div>
             </div>
-            <div className="flex-grow space-y-4">
-              <h2 className="text-3xl font-extrabold text-green-300">{currentNft?.name}</h2>
-              <Separator className="bg-green-500/50" />
-              <div className="space-y-2">
-                <h3 className="text-xl font-semibold text-green-400">Specimen Attributes</h3>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  {currentNft?.attributes?.map((attr, index) => (
-                    <div key={index} className="flex justify-between">
-                      <span className="text-gray-300">{attr.trait_type}:</span>
-                      <span className="font-medium text-green-200">{attr.value}</span>
+
+            <div className="mt-4 flex justify-center gap-2">
+              <button
+                onClick={shareInfection}
+                className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors"
+              >
+                <Share2 className="h-4 w-4" />
+                Share Infection
+              </button>
+            </div>
+          </div>
+
+          {/* NFT Gallery */}
+          {loading ? (
+            <div className="text-center py-8">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-400"></div>
+              <p className="text-gray-300 mt-2">Analyzing specimens...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-8">
+              <AlertTriangle className="h-8 w-8 text-red-400 mx-auto mb-2" />
+              <p className="text-red-400 mb-4">Error: {error}</p>
+              <button
+                onClick={fetchNFTs}
+                className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2 mx-auto"
+              >
+                <RefreshCw className="h-4 w-4" />
+                Retry Analysis
+              </button>
+            </div>
+          ) : nfts.length === 0 ? (
+            <div className="text-center py-8">
+              <Virus className="h-8 w-8 text-green-400 mx-auto mb-2" />
+              <p className="text-gray-300 mb-2">No Plague specimens detected.</p>
+              <p className="text-gray-400 text-sm mb-4">Patient appears to be uninfected.</p>
+              <a
+                href="https://magiceden.io/marketplace/plagueproject"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+              >
+                Get Plague NFTs on Magic Eden
+              </a>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <h3 className="text-green-400 font-semibold text-lg">NFT  Gallery</h3>
+
+              {/* Current NFT Display */}
+              <div className="relative bg-gray-800/50 rounded-lg p-4 border border-green-500/20">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="text-white font-semibold">{nfts[currentIndex]?.name || "Unknown Specimen"}</h4>
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-400 text-sm">
+                      {currentIndex + 1} of {nfts.length}
+                    </span>
+                    <a
+                      href={`https://solscan.io/token/${nfts[currentIndex]?.mint}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-green-400 hover:text-green-300 transition-colors"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
+                  </div>
+                </div>
+
+                <div className="flex flex-col md:flex-row gap-4">
+                  <div className="flex-shrink-0">
+                    <img
+                      src={nfts[currentIndex]?.image || "/placeholder.svg?height=256&width=256&text=Plague"}
+                      alt={nfts[currentIndex]?.name || "Plague NFT"}
+                      className="w-full md:w-48 h-48 object-cover rounded-lg border border-green-500/30 cursor-pointer hover:border-green-400 transition-colors"
+                      crossOrigin="anonymous"
+                      onClick={() => {
+                        const imageUrl = nfts[currentIndex]?.image
+                        if (imageUrl) {
+                          const friendlyUrl = imageUrl.includes("ipfs://")
+                            ? imageUrl.replace("ipfs://", "https://ipfs.io/ipfs/")
+                            : imageUrl
+                          window.open(friendlyUrl, "_blank", "noopener,noreferrer")
+                        }
+                      }}
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement
+                        target.src = "/placeholder.svg?height=256&width=256&text=Plague"
+                      }}
+                    />
+                  </div>
+
+                  <div className="flex-1">
+                    <h5 className="text-green-400 font-semibold mb-2">Attributes</h5>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {nfts[currentIndex]?.attributes?.map((attr, index) => (
+                        <div key={index} className="bg-gray-700/50 p-2 rounded border border-gray-600">
+                          <div className="text-gray-400 text-xs">{attr.trait_type}</div>
+                          <div className="text-white text-sm font-medium">{attr.value}</div>
+                        </div>
+                      )) || <div className="text-gray-400 text-sm">No attributes available</div>}
                     </div>
-                  ))}
+                  </div>
+                </div>
+
+                {/* Navigation */}
+                {nfts.length > 1 && (
+                  <div className="flex justify-center items-center gap-4 mt-4">
+                    <button
+                      onClick={prevNFT}
+                      className="bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-lg transition-colors"
+                    >
+                      <ChevronLeft className="h-5 w-5" />
+                    </button>
+
+                    <button
+                      onClick={nextNFT}
+                      className="bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-lg transition-colors"
+                    >
+                      <ChevronRight className="h-5 w-5" />
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Specimen Carousel */}
+              <div className="space-y-4 hidden">
+                <div className="flex justify-between items-center">
+                  <h5 className="text-green-400 font-semibold">Specimen Carousel</h5>
+                  <div className="text-gray-400 text-sm">{nfts.length} specimens total</div>
+                </div>
+
+                <div className="relative">
+                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+                    {nfts.map((nft, index) => (
+                      <button
+                        key={nft.mint}
+                        onClick={() => setCurrentIndex(index)}
+                        className={`relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all hover:scale-105 ${
+                          index === currentIndex
+                            ? "border-green-400 ring-2 ring-green-400/50"
+                            : "border-gray-600 hover:border-green-500"
+                        }`}
+                      >
+                        <img
+                          src={nft.image || "/placeholder.svg?height=64&width=64&text=Plague"}
+                          alt={nft.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement
+                            target.src = "/placeholder.svg?height=64&width=64&text=Plague"
+                          }}
+                        />
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Navigation Buttons */}
-          <div className="flex justify-center gap-4">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handlePrevious}
-              disabled={nfts.length <= 1}
-              className="rounded-full border-green-500 text-green-500 hover:bg-green-900 hover:text-white bg-transparent"
-              aria-label="Previous NFT"
-            >
-              <ChevronLeftIcon className="h-6 w-6" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handleNext}
-              disabled={nfts.length <= 1}
-              className="rounded-full border-green-500 text-green-500 hover:bg-green-900 hover:text-white bg-transparent"
-              aria-label="Next NFT"
-            >
-              <ChevronRightIcon className="h-6 w-6" />
-            </Button>
-          </div>
-
-          {/* Specimen Carousel - Restored */}
-          <div className="space-y-4">
-            {" "}
-            {/* Removed 'hidden' class */}
-            <h3 className="text-xl font-semibold text-green-400">All Specimens</h3>
-            <Carousel
-              opts={{
-                align: "start",
-              }}
-              className="w-full"
-            >
-              <CarouselContent className="-ml-2">
-                {nfts.map((nft, index) => (
-                  <CarouselItem key={nft.mint} className="pl-2 basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6">
-                    <div className="p-1">
-                      <Card
-                        className={`cursor-pointer ${
-                          index === currentIndex ? "border-green-400 ring-2 ring-green-400" : "border-gray-700"
-                        } hover:border-green-500 transition-colors`}
-                        onClick={() => setCurrentIndex(index)}
-                      >
-                        <CardContent className="flex aspect-square items-center justify-center p-2">
-                          <Image
-                            src={nft.image || "/placeholder.svg?height=100&width=100&text=NFT"}
-                            alt={nft.name || "NFT Thumbnail"}
-                            width={100}
-                            height={100}
-                            objectFit="cover"
-                            className="rounded-md"
-                          />
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="left-0 top-1/2 -translate-y-1/2" />
-              <CarouselNext className="right-0 top-1/2 -translate-y-1/2" />
-            </Carousel>
-          </div>
-        </CardContent>
-      </Card>
-    </main>
+          )}
+        </div>
+      </div>
+    </div>
   )
 }
