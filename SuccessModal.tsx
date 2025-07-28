@@ -166,10 +166,10 @@ export default function SuccessModal({ onClose }: SuccessModalProps) {
                             href={project.xUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="bg-black hover:bg-gray-800 text-white p-2 rounded-lg transition-colors flex items-center justify-center flex-row px-3.5"
+                            className="bg-black hover:bg-gray-800 text-white p-2 rounded-lg transition-colors flex items-center justify-center"
                             title="Follow on 𝕏"
                           >
-                            <span className="text-sm font-bold">𝕏</span>
+                            <X className="h-4 w-4" />
                           </a>
                         )}
                       </div>
