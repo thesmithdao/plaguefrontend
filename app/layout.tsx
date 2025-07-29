@@ -20,6 +20,9 @@ export const metadata: Metadata = {
   authors: [{ name: "Plague Labs" }],
   creator: "Plague Labs",
   publisher: "Plague Labs",
+  icons: {
+    icon: "/favicon.ico",
+  },
   openGraph: {
     title: "Plague Labs - Web3 Marketing Agency",
     description:
@@ -28,10 +31,10 @@ export const metadata: Metadata = {
     siteName: "Plague Labs",
     images: [
       {
-        url: "/images/logo-oficial.png",
+        url: "/images/collection-plague-meta.png",
         width: 1200,
         height: 630,
-        alt: "PLAGUE Labs Logo",
+        alt: "Plague Labs Collection",
       },
     ],
     locale: "en_US",
@@ -39,10 +42,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "PLAGUE Labs - Web3 Marketing Agency",
+    title: "Plague Labs - Web3 Marketing Agency",
     description:
       "A web3 marketing agency focused on memetic languages. Viral marketing, community management, and growth strategies for decentralized projects.",
-    images: ["/images/logo-oficial.png"],
+    images: ["/images/collection-plague-meta.png"],
   },
   robots: {
     index: true,
@@ -58,7 +61,7 @@ export const metadata: Metadata = {
   verification: {
     google: "your-google-verification-code",
   },
-    generator: 'v0.dev'
+  generator: "v0.dev",
 }
 
 export default function RootLayout({
