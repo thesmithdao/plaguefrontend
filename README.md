@@ -12,11 +12,9 @@ Connect your Solana wallet, view NFTs, and reach out—all on one slick page.
 - SEO, cookie consent, modals (About, Terms, Privacy)
 
 ## Quick Start
-$ git clone https://github.com/defismith/v0-plaguefrontend-mt.git  
-$ cd v0-plaguefrontend-mt  
-$ npm i  # or yarn  
-$ npm run dev  
-# open http://localhost:3000  
+npm i  # or yarn  
+npm run dev  
+open http://localhost:3000  
 
 ## .env.local (minimum)
 NEXT_PUBLIC_SOLANA_RPC=  
