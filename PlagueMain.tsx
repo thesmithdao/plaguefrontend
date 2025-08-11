@@ -349,10 +349,7 @@ export default function PlagueMain() {
                   Launched a 6,6k+ NFT collection that sold out in 3 hours, generating 3,6k SOL in primary sales through
                   viral marketing strategies.
                 </p>
-                <div className="flex justify-between text-sm text-green-400">
-                  <span className="">Sold Out in 3 hours </span>
-                  <span>6,666 Mints </span>
-                </div>
+                
               </a>
               <a
                 href="https://magiceden.io/marketplace/goo_friends"
@@ -369,10 +366,7 @@ export default function PlagueMain() {
                 <p className="text-gray-400 text-sm mb-4">
                   {"Goo Friends is a free Solana NFT collection celebrating the solana community culture. Backed by major collabs like Okay Bears and many others."}
                 </p>
-                <div className="flex justify-between text-sm text-green-400">
-                  <span>Mint Out in 1 Hour</span>
-                  <span>6,666 Mints </span>
-                </div>
+                
               </a>
             </div>
           </div>
