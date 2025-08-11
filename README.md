@@ -25,4 +25,4 @@ SUPABASE_ANON_KEY=
 RESEND_API_KEY=  
 
 ## Deploy
-Production: https://plaguelabs.wtf  
+Production: https://plaguelabs.wtf

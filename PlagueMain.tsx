@@ -185,13 +185,7 @@ export default function PlagueMain() {
               <TrendingUp className="h-4 w-4" />
               Moonshots
             </button>
-            <button
-              onClick={() => openModal("team")}
-              className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-2 font-medium"
-            >
-              <Users className="h-4 w-4" />
-              Doctors
-            </button>
+            
             <button
               onClick={() => openModal("profile")}
               className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-2 font-medium"
