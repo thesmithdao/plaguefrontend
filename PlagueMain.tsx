@@ -241,9 +241,9 @@ export default function PlagueMain() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="mb-8 sm:mb-12 mr-0">
             <div className="mb-6 sm:mb-8 text-white leading-tight px-0 text-2xl sm:text-5xl md:text-6xl">
-              <div className="mb-2 px-0">A web3 marketing agency</div>
+              <div className="mb-2 px-0">Bring your ideas</div>
               <div className="px-3.5">
-                focused on <em className="italic font-normal">memetic</em> languages.
+                to <em className="italic font-normal">NFTs</em> & Web 3.
               </div>
             </div>
 
