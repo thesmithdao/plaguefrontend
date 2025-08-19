@@ -131,7 +131,7 @@ export default function PlagueMain() {
           }}
         >
           <source
-            src="https://filebin.net/s049fbooevd1n9au/videosite.mp4"
+            src="publichttps://hebbkx1anhila5yf.public.blob.vercel-storage.com/git-blob/prj_vTqQuXuVFNjebUAev08JBC8Hnkeh/Ev5e_gf-UN8fKrVSqM_m23/public/bgvideo.mp4"
             type="video/mp4"
           />
           Your browser does not support the video tag.
