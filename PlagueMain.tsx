@@ -226,13 +226,6 @@ export default function PlagueMain() {
               Moonshots
             </button>
             <button
-              onClick={() => openModal("team")}
-              className="text-gray-300 hover:text-green-400 transition-colors flex flex-col items-center gap-1 text-sm font-medium whitespace-nowrap"
-            >
-              <Users className="h-4 w-4" />
-              Doctors
-            </button>
-            <button
               onClick={() => openModal("profile")}
               className="text-gray-300 hover:text-green-400 transition-colors flex flex-col items-center gap-1 text-sm font-medium whitespace-nowrap"
             >
