@@ -131,7 +131,7 @@ export default function PlagueMain() {
           }}
         >
           <source
-            src="https://video.wixstatic.com/video/b013bf_89ed88f6b9454842aaf9274b8e305644/720p/mp4/file.mp4"
+            src="https://filebin.net/s049fbooevd1n9au/videosite.mp4"
             type="video/mp4"
           />
           Your browser does not support the video tag.
