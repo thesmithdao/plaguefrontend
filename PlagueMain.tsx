@@ -117,7 +117,7 @@ export default function PlagueMain() {
             transform: "scale(1.02)", // Slight scale to avoid edge artifacts on mobile
           }}
         >
-          <source src="publichttps://hebbkx1anhila5yf.public.blob.vercel-storage.com/git-blob/prj_vTqQuXuVFNjebUAev08JBC8Hnkeh/Ev5e_gf-UN8fKrVSqM_m23/public/bgvideo.mp4" type="video/mp4" />
+          <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/git-blob/prj_vTqQuXuVFNjebUAev08JBC8Hnkeh/Ev5e_gf-UN8fKrVSqM_m23/public/bgvideo.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
 
@@ -157,21 +157,17 @@ export default function PlagueMain() {
           <nav className="flex items-center space-x-2 sm:space-x-6">
             <button
               onClick={() => openModal("about")}
-              className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-base"
+              className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-sm"
             >
               <Info className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-base">
-                About
-              </span>
+              <span>About</span>
             </button>
             <button
               onClick={() => openModal("profile")}
-              className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-base"
+              className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-sm"
             >
               <User className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-base">
-                Profile
-              </span>
+              <span>Profile</span>
             </button>
           </nav>
 
@@ -258,9 +254,8 @@ export default function PlagueMain() {
                 <div>
                   <h4 className="text-lg font-semibold text-white mb-2">Web3 Growth</h4>
                   <p className="text-gray-400 text-sm">
-                    {
-                      "We build Initial hype for protocols with 360° activations — from storytelling to tokenization. Hyped engineered, crowd rallied, traction locked."
-                    }
+                    We build Initial hype for protocols with 360° activations — from storytelling to tokenization. Hyped
+                    engineered, crowd rallied, traction locked.
                   </p>
                 </div>
               </div>
@@ -282,7 +277,7 @@ export default function PlagueMain() {
                   alt="Plague Collection Case Study Banner"
                   className="w-full h-32 object-cover rounded-lg mb-4 bg-green-500/10"
                 />
-                <h4 className="text-lg font-semibold text-white mb-2">{"Plague Collection"}</h4>
+                <h4 className="text-lg font-semibold text-white mb-2">Plague Collection</h4>
                 <p className="text-gray-400 text-sm mb-4">
                   Launched a 6,6k+ NFT collection that sold out in 3 hours, generating 3,6k SOL in primary sales through
                   viral marketing strategies.
@@ -299,11 +294,10 @@ export default function PlagueMain() {
                   alt="Goo Friends Logo"
                   className="w-full h-32 object-cover rounded-lg mb-4 bg-green-500/10"
                 />
-                <h4 className="text-lg font-semibold text-white mb-2">Goo Friends </h4>
+                <h4 className="text-lg font-semibold text-white mb-2">Goo Friends</h4>
                 <p className="text-gray-400 text-sm mb-4">
-                  {
-                    "Goo Friends is a free Solana NFT collection celebrating the solana community culture. Backed by major collabs like Okay Bears and many others."
-                  }
+                  Goo Friends is a free Solana NFT collection celebrating the solana community culture. Backed by major
+                  collabs like Okay Bears and many others.
                 </p>
               </a>
             </div>
