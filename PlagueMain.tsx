@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from "react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
 import Image from "next/image"
-import { Info, User, CalendarPlus, Rat, Syringe, TestTubeDiagonal, Radiation } from "lucide-react"
+import { Info, User, CalendarPlus, Rat, Syringe, TestTubeDiagonal, Radiation, X, ExternalLink } from "lucide-react"
 import AboutModal from "./AboutModal"
 import Profile from "./Profile"
 import TermsModal from "./TermsModal"
@@ -138,7 +138,7 @@ export default function PlagueMain() {
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           {/* Logo */}
           <div
-            className="flex items-center space-x-3 px-4 sm:px-20 cursor-pointer"
+            className="flex items-center space-x-3 px-2 sm:px-20 cursor-pointer"
             onClick={handleLogoClick}
             role="button"
             tabIndex={0}
@@ -154,20 +154,20 @@ export default function PlagueMain() {
           </div>
 
           {/* Navigation - Desktop and Mobile */}
-          <nav className="flex items-center space-x-3 sm:space-x-6">
+          <nav className="flex items-center space-x-2 sm:space-x-6">
             <button
               onClick={() => openModal("about")}
               className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-sm"
             >
               <Info className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden xs:inline sm:inline">About</span>
+              <span>About</span>
             </button>
             <button
               onClick={() => openModal("profile")}
               className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-sm"
             >
               <User className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden xs:inline sm:inline">Profile</span>
+              <span>Profile</span>
             </button>
           </nav>
 
@@ -338,6 +338,113 @@ export default function PlagueMain() {
       {activeModal === "terms" && <TermsModal onClose={closeModal} />}
       {activeModal === "team" && <TeamModal onClose={closeModal} />}
       {activeModal === "privacy" && <PrivacyModal onClose={closeModal} />}
+
+      {/* Contact Form Modal */}
+      {showContactForm && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-md">
+            <div className="p-4 border-b border-gray-700 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-green-400">Get in Touch</h2>
+              <button
+                onClick={() => {
+                  setShowContactForm(false)
+                  setSubmitMessage(null)
+                }}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <form ref={formRef} className="p-6 space-y-4" onSubmit={handleFormSubmit}>
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">
+                  Name
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  required
+                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
+                  placeholder="Your name"
+                />
+              </div>
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  required
+                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
+                  placeholder="your@email.com"
+                />
+              </div>
+              <div>
+                <label htmlFor="subject" className="block text-sm font-medium text-gray-300 mb-1">
+                  Subject
+                </label>
+                <input
+                  type="text"
+                  id="subject"
+                  name="subject"
+                  required
+                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
+                  placeholder="Project inquiry, collaboration, etc."
+                />
+              </div>
+              <div>
+                <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-1">
+                  Message
+                </label>
+                <textarea
+                  id="message"
+                  name="message"
+                  required
+                  rows={4}
+                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors resize-none"
+                  placeholder="Tell us about your project..."
+                />
+              </div>
+
+              <div className="border-gray-700 pt-4 border-t-0">
+                {submitMessage && (
+                  <div
+                    className={`mb-3 p-3 rounded-lg text-sm ${
+                      submitMessage.type === "success"
+                        ? "bg-green-900/50 text-green-300 border border-green-500/30"
+                        : "bg-red-900/50 text-red-300 border border-red-500/30"
+                    }`}
+                  >
+                    {submitMessage.text}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <ExternalLink className="h-4 w-4" />
+                      Send Message
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
