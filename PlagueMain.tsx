@@ -157,17 +157,17 @@ export default function PlagueMain() {
           <nav className="flex items-center space-x-2 sm:space-x-6">
             <button
               onClick={() => openModal("about")}
-              className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-sm"
+              className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-base"
             >
               <Info className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span>About</span>
+              <span className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-base">About</span>
             </button>
             <button
               onClick={() => openModal("profile")}
-              className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-sm"
+              className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-base"
             >
               <User className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span>Profile</span>
+              <span className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-base">Profile</span>
             </button>
           </nav>
 
