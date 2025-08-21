@@ -174,7 +174,7 @@ export default function PlagueMain() {
           {/* Wallet Connection */}
           <div className="flex items-center space-x-4">
             <WalletMultiButton
-              className="!bg-green-600 hover:!bg-green-700 !text-white !font-bold !text-xs sm:!text-sm !px-1 sm:!px-3 !py-1 sm:!py-2 !rounded-lg !border-2 !border-green-500 hover:!border-green-400 !transition-all !shadow-lg !min-h-[28px] sm:!min-h-[40px] !max-w-[80px] sm:!max-w-none !overflow-hidden !whitespace-nowrap !text-ellipsis"
+              className="!bg-green-600 hover:!bg-green-700 !text-white !font-bold !text-[10px] sm:!text-sm !px-1 sm:!px-3 !py-1 sm:!py-2 !rounded-lg !border-2 !border-green-500 hover:!border-green-400 !transition-all !shadow-lg !min-h-[24px] sm:!min-h-[40px] !max-w-[60px] sm:!max-w-none !overflow-hidden !whitespace-nowrap !text-ellipsis"
               startIcon={undefined}
               onClick={(event) => {
                 // Let the default behavior handle wallet selection and connection
