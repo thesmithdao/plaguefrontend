@@ -153,21 +153,21 @@ export default function PlagueMain() {
             />
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
+          {/* Navigation - Desktop and Mobile */}
+          <nav className="flex items-center space-x-3 sm:space-x-6">
             <button
               onClick={() => openModal("about")}
-              className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-2 font-medium"
+              className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-sm"
             >
-              <Info className="h-4 w-4" />
-              About
+              <Info className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden xs:inline sm:inline">About</span>
             </button>
             <button
               onClick={() => openModal("profile")}
-              className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-2 font-medium"
+              className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-sm"
             >
-              <User className="h-4 w-4" />
-              Profile
+              <User className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden xs:inline sm:inline">Profile</span>
             </button>
           </nav>
 
@@ -181,26 +181,6 @@ export default function PlagueMain() {
                 // This will auto-connect after wallet selection
               }}
             />
-          </div>
-        </div>
-
-        {/* Mobile Navigation */}
-        <div className="md:hidden mt-3">
-          <div className="flex items-center justify-center gap-8 px-4">
-            <button
-              onClick={() => openModal("about")}
-              className="text-gray-300 hover:text-green-400 transition-colors flex flex-col items-center gap-1 text-sm font-medium whitespace-nowrap"
-            >
-              <Info className="h-4 w-4" />
-              About
-            </button>
-            <button
-              onClick={() => openModal("profile")}
-              className="text-gray-300 hover:text-green-400 transition-colors flex flex-col items-center gap-1 text-sm font-medium whitespace-nowrap"
-            >
-              <User className="h-4 w-4" />
-              Profile
-            </button>
           </div>
         </div>
       </header>
