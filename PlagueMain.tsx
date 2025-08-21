@@ -6,25 +6,12 @@ import { useState, useEffect, useRef } from "react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
 import Image from "next/image"
-import {
-  Info,
-  User,
-  TrendingUp,
-  CalendarPlus,
-  Users,
-  Rat,
-  Syringe,
-  TestTubeDiagonal,
-  Radiation,
-  X,
-  ExternalLink,
-} from "lucide-react"
+import { Info, User, CalendarPlus, Rat, Syringe, TestTubeDiagonal, Radiation } from "lucide-react"
 import AboutModal from "./AboutModal"
 import Profile from "./Profile"
 import TermsModal from "./TermsModal"
 import Footer from "./Footer"
 import TeamModal from "./TeamModal"
-import SuccessModal from "./SuccessModal"
 import PrivacyModal from "./PrivacyModal"
 import CookieConsent from "./CookieConsent"
 
@@ -130,10 +117,7 @@ export default function PlagueMain() {
             transform: "scale(1.02)", // Slight scale to avoid edge artifacts on mobile
           }}
         >
-          <source
-            src="publichttps://hebbkx1anhila5yf.public.blob.vercel-storage.com/git-blob/prj_vTqQuXuVFNjebUAev08JBC8Hnkeh/Ev5e_gf-UN8fKrVSqM_m23/public/bgvideo.mp4"
-            type="video/mp4"
-          />
+          <source src="publichttps://hebbkx1anhila5yf.public.blob.vercel-storage.com/git-blob/prj_vTqQuXuVFNjebUAev08JBC8Hnkeh/Ev5e_gf-UN8fKrVSqM_m23/public/bgvideo.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
 
@@ -179,14 +163,6 @@ export default function PlagueMain() {
               About
             </button>
             <button
-              onClick={() => openModal("success")}
-              className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-2 font-medium"
-            >
-              <TrendingUp className="h-4 w-4" />
-              Moonshots
-            </button>
-            
-            <button
               onClick={() => openModal("profile")}
               className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-2 font-medium"
             >
@@ -210,20 +186,13 @@ export default function PlagueMain() {
 
         {/* Mobile Navigation */}
         <div className="md:hidden mt-3">
-          <div className="flex items-center justify-between gap-4 px-4">
+          <div className="flex items-center justify-center gap-8 px-4">
             <button
               onClick={() => openModal("about")}
               className="text-gray-300 hover:text-green-400 transition-colors flex flex-col items-center gap-1 text-sm font-medium whitespace-nowrap"
             >
               <Info className="h-4 w-4" />
               About
-            </button>
-            <button
-              onClick={() => openModal("success")}
-              className="text-gray-300 hover:text-green-400 transition-colors flex flex-col items-center gap-1 text-sm font-medium whitespace-nowrap"
-            >
-              <TrendingUp className="h-4 w-4" />
-              Moonshots
             </button>
             <button
               onClick={() => openModal("profile")}
@@ -249,15 +218,7 @@ export default function PlagueMain() {
 
             <div className="flex flex-row gap-4 justify-center items-center mt-8 sm:mt-12">
               <button
-                onClick={() => openModal("success")}
-                className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all shadow-lg flex items-center justify-center gap-2 text-base px-[18px]"
-              >
-                <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
-                Moonshots
-              </button>
-
-              <button
-                className="bg-gray-800/80 hover:bg-gray-700/80 text-green-400 font-bold py-3 px-8 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all backdrop-blur-sm flex items-center justify-center gap-2 text-base"
+                className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all shadow-lg flex items-center justify-center gap-2 text-base"
                 onClick={() => setShowContactForm(true)}
               >
                 <CalendarPlus className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -342,7 +303,6 @@ export default function PlagueMain() {
                   Launched a 6,6k+ NFT collection that sold out in 3 hours, generating 3,6k SOL in primary sales through
                   viral marketing strategies.
                 </p>
-                
               </a>
               <a
                 href="https://magiceden.io/marketplace/goo_friends"
@@ -357,9 +317,10 @@ export default function PlagueMain() {
                 />
                 <h4 className="text-lg font-semibold text-white mb-2">Goo Friends </h4>
                 <p className="text-gray-400 text-sm mb-4">
-                  {"Goo Friends is a free Solana NFT collection celebrating the solana community culture. Backed by major collabs like Okay Bears and many others."}
+                  {
+                    "Goo Friends is a free Solana NFT collection celebrating the solana community culture. Backed by major collabs like Okay Bears and many others."
+                  }
                 </p>
-                
               </a>
             </div>
           </div>
@@ -396,117 +357,7 @@ export default function PlagueMain() {
       {activeModal === "profile" && <Profile onClose={closeModal} />}
       {activeModal === "terms" && <TermsModal onClose={closeModal} />}
       {activeModal === "team" && <TeamModal onClose={closeModal} />}
-      {activeModal === "success" && <SuccessModal onClose={closeModal} />}
       {activeModal === "privacy" && <PrivacyModal onClose={closeModal} />}
-
-      {/* Contact Form Modal */}
-      {showContactForm && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-md">
-            <div className="p-4 border-b border-gray-700 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-green-400">Get in Touch</h2>
-              <button
-                onClick={() => {
-                  setShowContactForm(false)
-                  setSubmitMessage(null)
-                }}
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <form ref={formRef} className="p-6 space-y-4" onSubmit={handleFormSubmit}>
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">
-                  Name
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  required
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
-                  placeholder="Your name"
-                />
-              </div>
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  required
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
-                  placeholder="your@email.com"
-                />
-              </div>
-              <div>
-                <label htmlFor="subject" className="block text-sm font-medium text-gray-300 mb-1">
-                  Subject
-                </label>
-                <input
-                  type="text"
-                  id="subject"
-                  name="subject"
-                  required
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
-                  placeholder="Project inquiry, collaboration, etc."
-                />
-              </div>
-              <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-1">
-                  Message
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  required
-                  rows={4}
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors resize-none"
-                  placeholder="Tell us about your project..."
-                />
-              </div>
-
-              <div className="border-gray-700 pt-4 border-t-0">
-                
-
-                {submitMessage && (
-                  <div
-                    className={`mb-3 p-3 rounded-lg text-sm ${
-                      submitMessage.type === "success"
-                        ? "bg-green-900/50 text-green-300 border border-green-500/30"
-                        : "bg-red-900/50 text-red-300 border border-red-500/30"
-                    }`}
-                  >
-                    {submitMessage.text}
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                      Sending...
-                    </>
-                  ) : (
-                    <>
-                      <ExternalLink className="h-4 w-4" />
-                      Send Message
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
