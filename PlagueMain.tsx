@@ -160,21 +160,25 @@ export default function PlagueMain() {
               className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-base"
             >
               <Info className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-base">About</span>
+              <span className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-base">
+                About
+              </span>
             </button>
             <button
               onClick={() => openModal("profile")}
               className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-base"
             >
               <User className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-base">Profile</span>
+              <span className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-base">
+                Profile
+              </span>
             </button>
           </nav>
 
           {/* Wallet Connection */}
           <div className="flex items-center space-x-4">
             <WalletMultiButton
-              className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-sm"
+              className="!bg-green-600 hover:!bg-green-700 !text-white !font-bold !text-[8px] sm:!text-sm !px-0.5 sm:!px-3 !py-0.5 sm:!py-2 !rounded-md !border-2 !border-green-500 hover:!border-green-400 !transition-all !shadow-lg !min-h-[20px] sm:!min-h-[40px] !max-w-[50px] sm:!max-w-none !overflow-hidden !whitespace-nowrap !text-ellipsis"
               startIcon={undefined}
               onClick={(event) => {
                 // Let the default behavior handle wallet selection and connection
