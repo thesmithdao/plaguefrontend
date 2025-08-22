@@ -34,6 +34,40 @@ export default function WalletConnection() {
       .wallet-adapter-button {
         -webkit-appearance: none !important;
         appearance: none !important;
+        background: #16a34a !important;
+        border: 2px solid #22c55e !important;
+        color: white !important;
+        font-weight: bold !important;
+        padding: 12px 24px !important;
+        border-radius: 8px !important;
+        font-size: 14px !important;
+        min-height: 44px !important;
+        min-width: 120px !important;
+        transition: all 0.2s ease !important;
+      }
+      .wallet-adapter-button:hover {
+        background: #15803d !important;
+        border-color: #16a34a !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3) !important;
+      }
+      .wallet-adapter-button:active {
+        transform: translateY(0) !important;
+      }
+      .wallet-adapter-button:disabled {
+        background: #6b7280 !important;
+        border-color: #9ca3af !important;
+        cursor: not-allowed !important;
+        transform: none !important;
+        box-shadow: none !important;
+      }
+      @media (max-width: 640px) {
+        .wallet-adapter-button {
+          padding: 10px 16px !important;
+          font-size: 12px !important;
+          min-height: 40px !important;
+          min-width: 100px !important;
+        }
       }
     `
     document.head.appendChild(style)
@@ -45,12 +79,12 @@ export default function WalletConnection() {
   }, [mounted])
 
   if (!mounted) {
-    return <div className="h-10 w-36 animate-pulse rounded-lg bg-gray-700" />
+    return <div className="h-11 w-30 animate-pulse rounded-lg bg-gray-700" />
   }
 
   return (
     <div className="relative flex flex-col items-end">
-      <WalletMultiButton className="!bg-gradient-to-r !from-green-600 !to-green-700 hover:!from-green-700 hover:!to-green-800 !text-white !font-bold !text-xs sm:!text-sm !px-3 sm:!px-4 !py-2 !rounded-lg !border-2 !border-green-500 hover:!border-green-400 !transition-all !shadow-lg !min-h-[40px]" />
+      <WalletMultiButton />
     </div>
   )
 }
