@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useState, useEffect } from "react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import {
@@ -34,8 +36,7 @@ export default function Profile({ onClose }: ProfileProps) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [imageLoaded, setImageLoaded] = useState<{ [key: string]: boolean }>({})
-  const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>({})
+  const [imageLoading, setImageLoading] = useState<{ [key: string]: boolean }>({})
 
   useEffect(() => {
     if (publicKey) {
@@ -43,33 +44,12 @@ export default function Profile({ onClose }: ProfileProps) {
     }
   }, [publicKey])
 
-  // Preload images when NFTs are loaded
-  useEffect(() => {
-    if (nfts.length > 0) {
-      nfts.forEach((nft, index) => {
-        if (nft.image && !imageLoaded[nft.mint] && !imageErrors[nft.mint]) {
-          const img = new Image()
-          img.crossOrigin = "anonymous"
-          img.onload = () => {
-            setImageLoaded((prev) => ({ ...prev, [nft.mint]: true }))
-          }
-          img.onerror = () => {
-            setImageErrors((prev) => ({ ...prev, [nft.mint]: true }))
-          }
-          img.src = nft.image.includes("ipfs://") ? nft.image.replace("ipfs://", "https://ipfs.io/ipfs/") : nft.image
-        }
-      })
-    }
-  }, [nfts, imageLoaded, imageErrors])
-
   const fetchNFTs = async () => {
     if (!publicKey) return
 
     try {
       setLoading(true)
       setError(null)
-      setImageLoaded({})
-      setImageErrors({})
 
       const response = await fetch(`/api/get-nfts?walletAddress=${publicKey.toString()}`)
 
@@ -89,6 +69,13 @@ export default function Profile({ onClose }: ProfileProps) {
       }
 
       setNfts(data.nfts || [])
+
+      // Initialize loading state for all images
+      const loadingState: { [key: string]: boolean } = {}
+      data.nfts?.forEach((nft: NFT) => {
+        loadingState[nft.mint] = true
+      })
+      setImageLoading(loadingState)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch NFTs")
     } finally {
@@ -116,23 +103,30 @@ export default function Profile({ onClose }: ProfileProps) {
   }
 
   const handleImageLoad = (mint: string) => {
-    setImageLoaded((prev) => ({ ...prev, [mint]: true }))
+    setImageLoading((prev) => ({ ...prev, [mint]: false }))
   }
 
-  const handleImageError = (mint: string) => {
-    setImageErrors((prev) => ({ ...prev, [mint]: true }))
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>, mint: string) => {
+    const target = e.target as HTMLImageElement
+    target.src = "/placeholder.svg?height=256&width=256&text=Plague"
+    setImageLoading((prev) => ({ ...prev, [mint]: false }))
   }
 
-  const getImageSrc = (nft: NFT) => {
-    if (imageErrors[nft.mint]) {
-      return "/placeholder.svg?height=256&width=256&text=Plague"
+  const getImageUrl = (imageUrl: string) => {
+    if (!imageUrl) return "/placeholder.svg?height=256&width=256&text=Plague"
+
+    // Handle IPFS URLs
+    if (imageUrl.includes("ipfs://")) {
+      return imageUrl.replace("ipfs://", "https://ipfs.io/ipfs/")
     }
 
-    if (nft.image?.includes("ipfs://")) {
-      return nft.image.replace("ipfs://", "https://ipfs.io/ipfs/")
+    // Handle Arweave URLs
+    if (imageUrl.includes("arweave.net")) {
+      return imageUrl
     }
 
-    return nft.image || "/placeholder.svg?height=256&width=256&text=Plague"
+    // Handle other URLs
+    return imageUrl
   }
 
   if (!publicKey) {
@@ -262,30 +256,26 @@ export default function Profile({ onClose }: ProfileProps) {
 
                 <div className="flex flex-col md:flex-row gap-4">
                   <div className="flex-shrink-0 relative">
-                    {/* Loading placeholder */}
-                    {!imageLoaded[nfts[currentIndex]?.mint] && !imageErrors[nfts[currentIndex]?.mint] && (
-                      <div className="absolute inset-0 w-full md:w-48 h-48 bg-gray-700 rounded-lg animate-pulse flex items-center justify-center">
-                        <div className="text-gray-500 text-sm">Loading...</div>
+                    {/* Loading overlay */}
+                    {imageLoading[nfts[currentIndex]?.mint] && (
+                      <div className="absolute inset-0 w-full md:w-48 h-48 bg-gray-700 rounded-lg flex items-center justify-center z-10">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-400"></div>
                       </div>
                     )}
 
                     <img
-                      key={`${nfts[currentIndex]?.mint}-${currentIndex}`}
-                      src={getImageSrc(nfts[currentIndex]) || "/placeholder.svg"}
+                      key={`nft-${nfts[currentIndex]?.mint}-${currentIndex}`}
+                      src={getImageUrl(nfts[currentIndex]?.image) || "/placeholder.svg"}
                       alt={nfts[currentIndex]?.name || "Plague NFT"}
-                      className={`w-full md:w-48 h-48 object-cover rounded-lg border border-green-500/30 cursor-pointer hover:border-green-400 transition-all duration-300 ${
-                        imageLoaded[nfts[currentIndex]?.mint] ? "opacity-100" : "opacity-0"
-                      }`}
+                      className="w-full md:w-48 h-48 object-cover rounded-lg border border-green-500/30 cursor-pointer hover:border-green-400 transition-colors"
                       crossOrigin="anonymous"
                       loading="eager"
                       onLoad={() => handleImageLoad(nfts[currentIndex]?.mint)}
-                      onError={() => handleImageError(nfts[currentIndex]?.mint)}
+                      onError={(e) => handleImageError(e, nfts[currentIndex]?.mint)}
                       onClick={() => {
                         const imageUrl = nfts[currentIndex]?.image
                         if (imageUrl) {
-                          const friendlyUrl = imageUrl.includes("ipfs://")
-                            ? imageUrl.replace("ipfs://", "https://ipfs.io/ipfs/")
-                            : imageUrl
+                          const friendlyUrl = getImageUrl(imageUrl)
                           window.open(friendlyUrl, "_blank", "noopener,noreferrer")
                         }
                       }}
