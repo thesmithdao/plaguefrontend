@@ -34,20 +34,20 @@ export default function WalletConnection() {
       .wallet-adapter-button {
         -webkit-appearance: none !important;
         appearance: none !important;
-        background: #16a34a !important;           /* 🎨 BUTTON COLOR - Change this for different green */
-        border: 2px solid #22c55e !important;    /* 🎨 BORDER COLOR */
+        background: #16a34a !important;
+        border: 2px solid #22c55e !important;
         color: white !important;
         font-weight: bold !important;
-        padding: 10px 22px !important;           /* 📏 BUTTON SIZE - Increase padding for bigger button */
-        border-radius: 2px !important;
-        font-size: 10px !important;              /* 📝 TEXT SIZE */
-        min-height: 50px !important;             /* 📏 MINIMUM HEIGHT */
-        min-width: 100px !important;             /* 📏 MINIMUM WIDTH */
+        padding: 5px 11px !important;
+        border-radius: 6px !important;
+        font-size: 8px !important;
+        min-height: 25px !important;
+        min-width: 50px !important;
         transition: all 0.2s ease !important;
       }
       .wallet-adapter-button:hover {
-        background: #15803d !important;           /* 🎨 HOVER COLOR */
-        border-color: #16a34a !important;        /* 🎨 HOVER BORDER */
+        background: #15803d !important;
+        border-color: #16a34a !important;
         transform: translateY(-1px) !important;
         box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3) !important;
       }
@@ -63,10 +63,10 @@ export default function WalletConnection() {
       }
       @media (max-width: 640px) {
         .wallet-adapter-button {
-          padding: 10px 16px !important;
-          font-size: 12px !important;
-          min-height: 40px !important;
-          min-width: 100px !important;
+          padding: 4px 8px !important;
+          font-size: 7px !important;
+          min-height: 20px !important;
+          min-width: 40px !important;
         }
       }
     `
@@ -79,7 +79,7 @@ export default function WalletConnection() {
   }, [mounted])
 
   if (!mounted) {
-    return <div className="h-11 w-30 animate-pulse rounded-lg bg-gray-700" />
+    return <div className="h-6 w-12 animate-pulse rounded-lg bg-gray-700" />
   }
 
   return (
