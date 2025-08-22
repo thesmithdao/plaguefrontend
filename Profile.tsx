@@ -1,122 +1,73 @@
 "use client"
 
-import type React from "react"
-
 import { useState, useEffect } from "react"
 import { useWallet } from "@solana/wallet-adapter-react"
-import {
-  ChevronLeft,
-  ChevronRight,
-  X,
-  ExternalLink,
-  Share2,
-  RefreshCw,
-  AlertTriangle,
-  Citrus as Virus,
-  Syringe,
-} from "lucide-react"
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
+import { X, Share2, ExternalLink, Loader2 } from "lucide-react"
+import Image from "next/image"
 
 interface NFT {
+  id: string
   name: string
   image: string
-  mint: string
-  attributes?: Array<{
+  attributes: Array<{
     trait_type: string
     value: string
   }>
+  external_url?: string
 }
 
-interface ProfileProps {
-  onClose: () => void
-}
-
-export default function Profile({ onClose }: ProfileProps) {
-  const { publicKey, disconnect } = useWallet()
+export default function Profile({ onClose }: { onClose: () => void }) {
+  const { connected, publicKey } = useWallet()
   const [nfts, setNfts] = useState<NFT[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [currentIndex, setCurrentIndex] = useState(0)
   const [imageLoading, setImageLoading] = useState<{ [key: string]: boolean }>({})
-
-  useEffect(() => {
-    if (publicKey) {
-      fetchNFTs()
-    }
-  }, [publicKey])
 
   const fetchNFTs = async () => {
     if (!publicKey) return
 
+    setLoading(true)
+    setError(null)
+
     try {
-      setLoading(true)
-      setError(null)
-
-      const response = await fetch(`/api/get-nfts?walletAddress=${publicKey.toString()}`)
-
-      if (!response.ok) {
-        const errorText = await response.text()
-        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`)
-      }
-
+      const response = await fetch(`/api/get-nfts?wallet=${publicKey.toString()}`)
       const data = await response.json()
 
-      if (data.error) {
-        throw new Error(data.error)
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to fetch NFTs")
       }
 
-      if (!data.success) {
-        throw new Error("API returned unsuccessful response")
-      }
+      // Filter for Plague NFTs and preload images
+      const plagueNFTs = data.nfts.filter((nft: any) => nft.name && nft.name.toLowerCase().includes("plague"))
 
-      setNfts(data.nfts || [])
-
-      // Initialize loading state for all images
+      // Set initial loading state for all images
       const loadingState: { [key: string]: boolean } = {}
-      data.nfts?.forEach((nft: NFT) => {
-        loadingState[nft.mint] = true
+      plagueNFTs.forEach((nft: NFT) => {
+        loadingState[nft.id] = true
       })
       setImageLoading(loadingState)
+
+      setNfts(plagueNFTs)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch NFTs")
+      console.error("Error fetching NFTs:", err)
+      setError(err instanceof Error ? err.message : "Failed to load NFTs")
     } finally {
       setLoading(false)
     }
   }
 
-  const nextNFT = () => {
-    setCurrentIndex((prev) => (prev + 1) % nfts.length)
-  }
+  useEffect(() => {
+    if (connected && publicKey) {
+      fetchNFTs()
+    }
+  }, [connected, publicKey])
 
-  const prevNFT = () => {
-    setCurrentIndex((prev) => (prev - 1 + nfts.length) % nfts.length)
-  }
-
-  const shareInfection = () => {
-    const text = `I'm infected with ${nfts.length} Plague specimens! 🦠 Check out my collection: ${window.location.href}`
-    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`
-    window.open(twitterUrl, "_blank")
-  }
-
-  const handleDisconnect = () => {
-    disconnect()
-    onClose()
-  }
-
-  const handleImageLoad = (mint: string) => {
-    setImageLoading((prev) => ({ ...prev, [mint]: false }))
-  }
-
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>, mint: string) => {
-    const target = e.target as HTMLImageElement
-    target.src = "/placeholder.svg?height=256&width=256&text=Plague"
-    setImageLoading((prev) => ({ ...prev, [mint]: false }))
-  }
-
-  const getImageUrl = (imageUrl: string) => {
-    if (!imageUrl) return "/placeholder.svg?height=256&width=256&text=Plague"
+  const getImageUrl = (imageUrl: string): string => {
+    if (!imageUrl) return "/placeholder.jpg"
 
     // Handle IPFS URLs
-    if (imageUrl.includes("ipfs://")) {
+    if (imageUrl.startsWith("ipfs://")) {
       return imageUrl.replace("ipfs://", "https://ipfs.io/ipfs/")
     }
 
@@ -129,28 +80,59 @@ export default function Profile({ onClose }: ProfileProps) {
     return imageUrl
   }
 
-  if (!publicKey) {
+  const handleImageLoad = (nftId: string) => {
+    setImageLoading((prev) => ({
+      ...prev,
+      [nftId]: false,
+    }))
+  }
+
+  const handleImageError = (nftId: string) => {
+    setImageLoading((prev) => ({
+      ...prev,
+      [nftId]: false,
+    }))
+  }
+
+  const handleShare = async () => {
+    const shareText = `Check out my Plague NFT collection! Patient ID: ${publicKey?.toString().slice(0, 8)}...${publicKey?.toString().slice(-8)}`
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "My Plague NFT Collection",
+          text: shareText,
+          url: window.location.href,
+        })
+      } catch (err) {
+        // Fallback to clipboard
+        navigator.clipboard.writeText(`${shareText} ${window.location.href}`)
+      }
+    } else {
+      // Fallback to clipboard
+      navigator.clipboard.writeText(`${shareText} ${window.location.href}`)
+    }
+  }
+
+  if (!connected) {
     return (
       <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div className="bg-gray-900 border border-gray-700 rounded-xl max-w-md max-h-[85vh] overflow-y-auto w-full px-6 py-1.5 mx-6">
-          <div className="flex items-center justify-between mb-4">
+        <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-sm">
+          <div className="p-4 border-b border-gray-700 flex items-center justify-between">
             <h2 className="text-lg font-bold text-green-400">Patient Profile</h2>
             <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
               <X className="h-5 w-5" />
             </button>
           </div>
-          <div className="text-center py-8">
-            <Syringe className="h-8 w-8 text-green-400 mx-auto mb-4" />
-            <p className="text-gray-300">Connect your wallet to see your Plague NFTs</p>
-            <p className="text-gray-400 text-sm mt-2">No wallet connected</p>
-            <a
-              href="https://magiceden.io/marketplace/plagueproject"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block mt-4 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"
-            >
-              Get Plague NFTs on Magic Eden
-            </a>
+          <div className="p-6 text-center">
+            <div className="mb-4">
+              <div className="w-16 h-16 bg-gray-800 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <div className="w-8 h-8 bg-gray-600 rounded-full"></div>
+              </div>
+              <h3 className="text-white font-semibold mb-2">Wallet Not Connected</h3>
+              <p className="text-gray-400 text-sm mb-6">Connect your wallet to view your Plague NFT collection</p>
+            </div>
+            <WalletMultiButton className="!bg-green-600 hover:!bg-green-700 !text-white !font-bold !px-6 !py-3 !rounded-lg !border-2 !border-green-500 hover:!border-green-400 !transition-all !w-full" />
           </div>
         </div>
       </div>
@@ -158,173 +140,137 @@ export default function Profile({ onClose }: ProfileProps) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
-      <div className="bg-gray-900 border border-gray-700 rounded-xl w-full h-full sm:max-w-3xl sm:w-full sm:max-h-[90vh] sm:h-auto overflow-y-auto">
-        <div className="p-4 border-b border-gray-700 flex items-center justify-between sticky top-0 bg-gray-900 z-10">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+        <div className="p-4 border-b border-gray-700 flex items-center justify-between">
           <h2 className="text-lg font-bold text-green-400">Patient Profile</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        <div className="p-6">
+        <div className="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
           {/* Patient Info */}
-          <div className="mb-6 p-4 bg-gray-800/50 rounded-lg border-green-500/20 border-0">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <h3 className="text-green-400 font-semibold mb-2">Patient ID</h3>
-                <p className="text-gray-300 text-sm font-mono break-all">
-                  {publicKey.toString().slice(0, 8)}...{publicKey.toString().slice(-8)}
-                </p>
-              </div>
-              <div>
-                <h3 className="text-green-400 font-semibold mb-2">Specimen Count</h3>
-                <p className="text-white text-2xl font-bold">{nfts.length}</p>
-              </div>
-              <div className="flex items-center justify-center md:justify-end">
-                <button
-                  onClick={shareInfection}
-                  className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors"
-                >
-                  <Share2 className="h-4 w-4" />
-                  Share Infection
-                </button>
-              </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+            <div>
+              <h3 className="text-green-400 font-semibold mb-1">Patient ID</h3>
+              <p className="text-white text-sm font-mono">
+                {publicKey?.toString().slice(0, 8)}...{publicKey?.toString().slice(-8)}
+              </p>
+            </div>
+            <div>
+              <h3 className="text-green-400 font-semibold mb-1">Specimen Count</h3>
+              <p className="text-white text-2xl font-bold">{nfts.length}</p>
+            </div>
+            <div className="flex items-end">
+              <button
+                onClick={handleShare}
+                className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2 text-sm"
+              >
+                <Share2 className="h-4 w-4" />
+                Share Infection
+              </button>
             </div>
           </div>
 
           {/* NFT Gallery */}
-          {loading ? (
-            <div className="text-center py-8">
-              <div className="relative bg-gray-800/50 rounded-lg p-4 border-green-500/20 border-0">
-                <div className="animate-pulse">
-                  <div className="w-full md:w-48 h-48 bg-gray-700 rounded-lg mx-auto mb-4"></div>
-                  <div className="h-4 bg-gray-700 rounded w-3/4 mx-auto mb-2"></div>
-                  <div className="h-3 bg-gray-700 rounded w-1/2 mx-auto"></div>
-                </div>
+          <div className="border-t border-gray-700 pt-6">
+            <h3 className="text-green-400 font-bold text-xl mb-4">NFT Gallery</h3>
+
+            {loading && (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-green-400" />
+                <span className="ml-2 text-gray-400">Loading specimens...</span>
               </div>
-              <p className="text-gray-300 mt-2">Analyzing specimens...</p>
-            </div>
-          ) : error ? (
-            <div className="text-center py-8">
-              <AlertTriangle className="h-8 w-8 text-red-400 mx-auto mb-2" />
-              <p className="text-red-400 mb-4">Error: {error}</p>
-              <button
-                onClick={fetchNFTs}
-                className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2 mx-auto"
-              >
-                <RefreshCw className="h-4 w-4" />
-                Retry Analysis
-              </button>
-            </div>
-          ) : nfts.length === 0 ? (
-            <div className="text-center py-8">
-              <Virus className="h-8 w-8 text-green-400 mx-auto mb-2" />
-              <p className="text-gray-300 mb-2">No Plague specimens detected.</p>
-              <p className="text-gray-400 text-sm mb-4">Patient appears to be uninfected.</p>
-              <a
-                href="https://magiceden.io/marketplace/plagueproject"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"
-              >
-                Get Plague NFTs on Magic Eden
-              </a>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <h3 className="text-green-400 font-semibold text-lg">NFT Gallery</h3>
+            )}
 
-              {/* Current NFT Display */}
-              <div className="relative bg-gray-800/50 rounded-lg p-4 border-green-500/20 border-0">
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-white font-semibold">{nfts[currentIndex]?.name || "Unknown Specimen"}</h4>
-                  <div className="flex items-center gap-2">
-                    <span className="text-gray-400 text-sm">
-                      {currentIndex + 1} of {nfts.length}
-                    </span>
-                    <a
-                      href={`https://solscan.io/token/${nfts[currentIndex]?.mint}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-green-400 hover:text-green-300 transition-colors"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                    </a>
-                  </div>
+            {error && (
+              <div className="text-center py-12">
+                <p className="text-red-400 mb-4">{error}</p>
+                <button
+                  onClick={fetchNFTs}
+                  className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+                >
+                  Retry
+                </button>
+              </div>
+            )}
+
+            {!loading && !error && nfts.length === 0 && (
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-gray-800 rounded-lg mx-auto mb-4 flex items-center justify-center">
+                  <div className="w-8 h-8 bg-gray-600 rounded"></div>
                 </div>
+                <p className="text-gray-400">No Plague NFTs found in this wallet</p>
+              </div>
+            )}
 
-                <div className="flex flex-col md:flex-row gap-4">
-                  <div className="flex-shrink-0 relative">
-                    {/* Loading overlay */}
-                    {imageLoading[nfts[currentIndex]?.mint] && (
-                      <div className="absolute inset-0 w-full md:w-48 h-48 bg-gray-700 rounded-lg flex items-center justify-center z-10">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-400"></div>
-                      </div>
-                    )}
+            {!loading && !error && nfts.length > 0 && (
+              <div className="space-y-6">
+                {nfts.map((nft, index) => (
+                  <div key={`${nft.id}-${index}`} className="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="text-white font-semibold">{nft.name}</h4>
+                      <span className="text-gray-400 text-sm">
+                        {index + 1} of {nfts.length}
+                      </span>
+                      {nft.external_url && (
+                        <a
+                          href={nft.external_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-green-400 hover:text-green-300 transition-colors"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
+                      )}
+                    </div>
 
-                    <img
-                      key={`nft-${nfts[currentIndex]?.mint}-${currentIndex}`}
-                      src={getImageUrl(nfts[currentIndex]?.image) || "/placeholder.svg"}
-                      alt={nfts[currentIndex]?.name || "Plague NFT"}
-                      className="w-full md:w-48 h-48 object-cover rounded-lg border border-green-500/30 cursor-pointer hover:border-green-400 transition-colors"
-                      crossOrigin="anonymous"
-                      loading="eager"
-                      onLoad={() => handleImageLoad(nfts[currentIndex]?.mint)}
-                      onError={(e) => handleImageError(e, nfts[currentIndex]?.mint)}
-                      onClick={() => {
-                        const imageUrl = nfts[currentIndex]?.image
-                        if (imageUrl) {
-                          const friendlyUrl = getImageUrl(imageUrl)
-                          window.open(friendlyUrl, "_blank", "noopener,noreferrer")
-                        }
-                      }}
-                    />
-                  </div>
-
-                  <div className="flex-1">
-                    <h5 className="text-green-400 font-semibold mb-2">Attributes</h5>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      {nfts[currentIndex]?.attributes?.map((attr, index) => (
-                        <div key={index} className="bg-gray-700/50 p-2 rounded border border-gray-600">
-                          <div className="text-gray-400 text-xs">{attr.trait_type}</div>
-                          <div className="text-white text-sm font-medium">{attr.value}</div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* NFT Image */}
+                      <div className="relative">
+                        <div className="aspect-square bg-gray-700 rounded-lg overflow-hidden relative">
+                          {imageLoading[nft.id] && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-gray-700">
+                              <Loader2 className="h-8 w-8 animate-spin text-green-400" />
+                            </div>
+                          )}
+                          <Image
+                            key={`${nft.id}-${nft.image}`}
+                            src={getImageUrl(nft.image) || "/placeholder.svg"}
+                            alt={nft.name}
+                            fill
+                            className={`object-cover transition-opacity duration-300 ${
+                              imageLoading[nft.id] ? "opacity-0" : "opacity-100"
+                            }`}
+                            loading="eager"
+                            onLoad={() => handleImageLoad(nft.id)}
+                            onError={() => handleImageError(nft.id)}
+                            crossOrigin="anonymous"
+                          />
                         </div>
-                      )) || <div className="text-gray-400 text-sm">No attributes available</div>}
+                      </div>
+
+                      {/* Attributes */}
+                      <div>
+                        <h5 className="text-green-400 font-semibold mb-3">Attributes</h5>
+                        <div className="grid grid-cols-1 gap-3">
+                          {nft.attributes?.map((attr, attrIndex) => (
+                            <div key={attrIndex} className="bg-gray-700/50 rounded-lg p-3">
+                              <div className="text-gray-400 text-xs uppercase tracking-wide mb-1">
+                                {attr.trait_type}
+                              </div>
+                              <div className="text-white font-medium">{attr.value}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-
-                {/* Navigation */}
-                {nfts.length > 1 && (
-                  <div className="flex justify-center items-center gap-4 mt-4">
-                    <button
-                      onClick={prevNFT}
-                      className="bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-lg transition-colors"
-                    >
-                      <ChevronLeft className="h-5 w-5" />
-                    </button>
-
-                    <button
-                      onClick={fetchNFTs}
-                      disabled={loading}
-                      className="bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                      title="Refresh NFTs"
-                    >
-                      <RefreshCw className={`h-5 w-5 ${loading ? "animate-spin" : ""}`} />
-                    </button>
-
-                    <button
-                      onClick={nextNFT}
-                      className="bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-lg transition-colors"
-                    >
-                      <ChevronRight className="h-5 w-5" />
-                    </button>
-                  </div>
-                )}
+                ))}
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>

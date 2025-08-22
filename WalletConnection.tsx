@@ -38,11 +38,11 @@ export default function WalletConnection() {
         border: 2px solid #22c55e !important;
         color: white !important;
         font-weight: 600 !important;
-        padding: 8px 16px !important;
+        padding: 10px 20px !important;
         border-radius: 8px !important;
         font-size: 14px !important;
-        min-height: 36px !important;
-        min-width: 100px !important;
+        min-height: 40px !important;
+        min-width: 110px !important;
         transition: all 0.2s ease !important;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
       }
@@ -62,12 +62,21 @@ export default function WalletConnection() {
         transform: none !important;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
       }
+      .wallet-adapter-button-trigger {
+        background: #16a34a !important;
+        border: 2px solid #22c55e !important;
+        color: white !important;
+      }
+      .wallet-adapter-button-trigger:hover {
+        background: #15803d !important;
+        border-color: #16a34a !important;
+      }
       @media (max-width: 640px) {
         .wallet-adapter-button {
-          padding: 6px 12px !important;
-          font-size: 12px !important;
-          min-height: 32px !important;
-          min-width: 80px !important;
+          padding: 8px 16px !important;
+          font-size: 13px !important;
+          min-height: 36px !important;
+          min-width: 90px !important;
         }
       }
     `
@@ -80,7 +89,7 @@ export default function WalletConnection() {
   }, [mounted])
 
   if (!mounted) {
-    return <div className="h-9 w-24 animate-pulse rounded-lg bg-gray-700" />
+    return <div className="h-10 w-28 animate-pulse rounded-lg bg-gray-700" />
   }
 
   return (

@@ -4,7 +4,6 @@ import type React from "react"
 
 import { useState, useEffect, useRef } from "react"
 import { useWallet } from "@solana/wallet-adapter-react"
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
 import Image from "next/image"
 import { Info, User, CalendarPlus, Rat, Syringe, TestTubeDiagonal, Radiation, X, ExternalLink } from "lucide-react"
 import AboutModal from "./AboutModal"
@@ -14,6 +13,7 @@ import Footer from "./Footer"
 import TeamModal from "./TeamModal"
 import PrivacyModal from "./PrivacyModal"
 import CookieConsent from "./CookieConsent"
+import WalletConnection from "./WalletConnection"
 
 export default function PlagueMain() {
   const { connected } = useWallet()
@@ -176,16 +176,7 @@ export default function PlagueMain() {
 
             {/* Wallet Connection - Right */}
             <div className="flex justify-end">
-              <WalletMultiButton
-                className="!bg-green-600 hover:!bg-green-700 !text-white !font-bold !text-xs sm:!text-sm !px-2 sm:!px-4 !py-1.5 sm:!py-2 !rounded-lg !border-2 !border-green-500 hover:!border-green-400 !transition-all !shadow-lg !min-h-[32px] sm:!min-h-[40px] !w-[70px] sm:!w-auto !overflow-hidden !whitespace-nowrap !text-ellipsis [&>*]:!bg-green-600 [&>*]:hover:!bg-green-700 [&>*]:!border-green-500"
-                style={{
-                  backgroundColor: "#16a34a !important",
-                  borderColor: "#22c55e !important",
-                }}
-                startIcon={undefined}
-              >
-                {connected ? "Connected" : "Connect"}
-              </WalletMultiButton>
+              <WalletConnection />
             </div>
           </div>
         </div>
@@ -195,7 +186,7 @@ export default function PlagueMain() {
       <main className="relative z-10 flex-1 flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12 pt-48 sm:pt-32">
         <div className="max-w-4xl mx-auto text-center">
           <div className="mb-8 sm:mb-12">
-            <div className="mb-6 sm:mb-8 text-white leading-tight text-2xl sm:text-5xl md:text-6xl">
+            <div className="mb-6 sm:mb-8 text-white leading-tight text-3xl sm:text-5xl md:text-6xl">
               <div className="mb-2">Bring your ideas</div>
               <div>
                 to <em className="italic font-normal">NFTs</em> & Web 3.
