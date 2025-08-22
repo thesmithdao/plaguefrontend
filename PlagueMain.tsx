@@ -177,7 +177,11 @@ export default function PlagueMain() {
             {/* Wallet Connection - Right */}
             <div className="flex justify-end">
               <WalletMultiButton
-                className="!bg-green-600 hover:!bg-green-700 !text-white !font-bold !text-xs sm:!text-sm !px-2 sm:!px-4 !py-1.5 sm:!py-2 !rounded-lg !border-2 !border-green-500 hover:!border-green-400 !transition-all !shadow-lg !min-h-[32px] sm:!min-h-[40px] !w-[70px] sm:!w-auto !overflow-hidden !whitespace-nowrap !text-ellipsis"
+                className="!bg-green-600 hover:!bg-green-700 !text-white !font-bold !text-xs sm:!text-sm !px-2 sm:!px-4 !py-1.5 sm:!py-2 !rounded-lg !border-2 !border-green-500 hover:!border-green-400 !transition-all !shadow-lg !min-h-[32px] sm:!min-h-[40px] !w-[70px] sm:!w-auto !overflow-hidden !whitespace-nowrap !text-ellipsis [&>*]:!bg-green-600 [&>*]:hover:!bg-green-700 [&>*]:!border-green-500"
+                style={{
+                  backgroundColor: "#16a34a !important",
+                  borderColor: "#22c55e !important",
+                }}
                 startIcon={undefined}
               >
                 {connected ? "Connected" : "Connect"}
