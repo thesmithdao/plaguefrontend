@@ -136,7 +136,7 @@ export default function PlagueMain() {
       {/* Header/Navbar */}
       <header className="fixed top-0 left-0 right-0 z-20 p-4 sm:p-6 bg-transparent backdrop-blur-sm">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-3 items-center">
+          <div className="flex items-center justify-between sm:grid sm:grid-cols-3">
             {/* Logo - Left */}
             <div className="flex justify-start">
               <div
@@ -156,8 +156,8 @@ export default function PlagueMain() {
               </div>
             </div>
 
-            {/* Navigation - Center */}
-            <nav className="flex items-center justify-center space-x-4 sm:space-x-8">
+            {/* Navigation - Center on desktop, compact on mobile */}
+            <nav className="flex items-center justify-center space-x-3 sm:space-x-8 mx-4 sm:mx-0">
               <button
                 onClick={() => openModal("about")}
                 className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-base"
