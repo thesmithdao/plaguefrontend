@@ -135,52 +135,56 @@ export default function PlagueMain() {
 
       {/* Header/Navbar */}
       <header className="fixed top-0 left-0 right-0 z-20 p-4 sm:p-6 bg-transparent backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          {/* Logo */}
-          <div
-            className="flex items-center space-x-3 px-2 sm:px-20 cursor-pointer"
-            onClick={handleLogoClick}
-            role="button"
-            tabIndex={0}
-            aria-label="Go to home page"
-          >
-            <Image
-              src="/images/test-tube-logo.png"
-              alt="PLAGUE"
-              width={40}
-              height={40}
-              className="w-8 h-8 sm:w-10 sm:h-10"
-            />
-          </div>
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-3 items-center">
+            {/* Logo - Left */}
+            <div className="flex justify-start">
+              <div
+                className="flex items-center space-x-3 cursor-pointer"
+                onClick={handleLogoClick}
+                role="button"
+                tabIndex={0}
+                aria-label="Go to home page"
+              >
+                <Image
+                  src="/images/test-tube-logo.png"
+                  alt="PLAGUE"
+                  width={40}
+                  height={40}
+                  className="w-8 h-8 sm:w-10 sm:h-10"
+                />
+              </div>
+            </div>
 
-          {/* Navigation - Desktop and Mobile */}
-          <nav className="flex items-center space-x-2 sm:space-x-6">
-            <button
-              onClick={() => openModal("about")}
-              className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-sm"
-            >
-              <Info className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span>About</span>
-            </button>
-            <button
-              onClick={() => openModal("profile")}
-              className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-sm"
-            >
-              <User className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span>Profile</span>
-            </button>
-          </nav>
+            {/* Navigation - Center */}
+            <nav className="flex items-center justify-center space-x-4 sm:space-x-8">
+              <button
+                onClick={() => openModal("about")}
+                className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-base"
+              >
+                <Info className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span>About</span>
+              </button>
+              <button
+                onClick={() => openModal("profile")}
+                className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-base"
+              >
+                <User className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span>Profile</span>
+              </button>
+            </nav>
 
-          {/* Wallet Connection */}
-          <div className="flex items-center space-x-4">
-            <WalletMultiButton
-              className="!bg-green-600 hover:!bg-green-700 !text-white !font-bold !text-[8px] sm:!text-sm !px-0.5 sm:!px-3 !py-0.5 sm:!py-2 !rounded-md !border-2 !border-green-500 hover:!border-green-400 !transition-all !shadow-lg !min-h-[20px] sm:!min-h-[40px] !max-w-[50px] sm:!max-w-none !overflow-hidden !whitespace-nowrap !text-ellipsis"
-              startIcon={undefined}
-              onClick={(event) => {
-                // Let the default behavior handle wallet selection and connection
-                // This will auto-connect after wallet selection
-              }}
-            />
+            {/* Wallet Connection - Right */}
+            <div className="flex justify-end">
+              <WalletMultiButton
+                className="!bg-green-600 hover:!bg-green-700 !text-white !font-bold !text-[8px] sm:!text-sm !px-0.5 sm:!px-3 !py-0.5 sm:!py-2 !rounded-md !border-2 !border-green-500 hover:!border-green-400 !transition-all !shadow-lg !min-h-[20px] sm:!min-h-[40px] !max-w-[50px] sm:!max-w-none !overflow-hidden !whitespace-nowrap !text-ellipsis"
+                startIcon={undefined}
+                onClick={(event) => {
+                  // Let the default behavior handle wallet selection and connection
+                  // This will auto-connect after wallet selection
+                }}
+              />
+            </div>
           </div>
         </div>
       </header>
@@ -188,15 +192,15 @@ export default function PlagueMain() {
       {/* Hero Section */}
       <main className="relative z-10 flex-1 flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12 pt-48 sm:pt-32">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="mb-8 sm:mb-12 mr-0">
-            <div className="mb-6 sm:mb-8 text-white leading-tight px-0 text-2xl sm:text-5xl md:text-6xl">
-              <div className="mb-2 px-0">Bring your ideas</div>
-              <div className="px-3.5">
+          <div className="mb-8 sm:mb-12">
+            <div className="mb-6 sm:mb-8 text-white leading-tight text-2xl sm:text-5xl md:text-6xl">
+              <div className="mb-2">Bring your ideas</div>
+              <div>
                 to <em className="italic font-normal">NFTs</em> & Web 3.
               </div>
             </div>
 
-            <div className="flex flex-row gap-4 justify-center items-center mt-8 sm:mt-12">
+            <div className="flex justify-center mt-8 sm:mt-12">
               <button
                 className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all shadow-lg flex items-center justify-center gap-2 text-base"
                 onClick={() => setShowContactForm(true)}
@@ -209,13 +213,13 @@ export default function PlagueMain() {
 
           {/* Features Section */}
           <div className="bg-gray-900/40 border border-green-500/20 rounded-xl p-6 sm:p-8 backdrop-blur-sm mt-16">
-            <h3 className="text-2xl sm:text-3xl font-bold text-green-400 mb-6">Doctor's Recipe</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <h3 className="text-2xl sm:text-3xl font-bold text-green-400 mb-6 text-center">Doctor's Recipe</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
               <div className="flex items-start space-x-4">
-                <div className="w-16 h-16 rounded-lg bg-green-500/20 p-3 flex items-center justify-center group">
+                <div className="w-16 h-16 rounded-lg bg-green-500/20 p-3 flex items-center justify-center group flex-shrink-0">
                   <Rat className="h-8 w-8 group-hover:text-green-400 transition-colors text-green-400" />
                 </div>
-                <div>
+                <div className="text-left">
                   <h4 className="text-lg font-semibold text-white mb-2">Viral Marketing</h4>
                   <p className="text-gray-400 text-sm">
                     Comprehensive marketing strategies designed for web3 projects, focusing on community building and
@@ -224,10 +228,10 @@ export default function PlagueMain() {
                 </div>
               </div>
               <div className="flex items-start space-x-4">
-                <div className="w-16 h-16 rounded-lg bg-green-500/20 p-3 flex items-center justify-center group">
+                <div className="w-16 h-16 rounded-lg bg-green-500/20 p-3 flex items-center justify-center group flex-shrink-0">
                   <Syringe className="h-8 w-8 group-hover:text-green-400 transition-colors text-green-300" />
                 </div>
-                <div>
+                <div className="text-left">
                   <h4 className="text-lg font-semibold text-white mb-2">Community Management</h4>
                   <p className="text-gray-400 text-sm">
                     Expert community management services to engage your audience, build loyalty, and drive organic
@@ -236,10 +240,10 @@ export default function PlagueMain() {
                 </div>
               </div>
               <div className="flex items-start space-x-4">
-                <div className="w-16 h-16 rounded-lg bg-green-500/20 p-3 flex items-center justify-center group">
+                <div className="w-16 h-16 rounded-lg bg-green-500/20 p-3 flex items-center justify-center group flex-shrink-0">
                   <TestTubeDiagonal className="h-8 w-8 group-hover:text-green-400 transition-colors text-green-300" />
                 </div>
-                <div>
+                <div className="text-left">
                   <h4 className="text-lg font-semibold text-white mb-2">Content Creation</h4>
                   <p className="text-gray-400 text-sm">
                     High-quality content creation including visual assets, copywriting, and multimedia content optimized
@@ -248,10 +252,10 @@ export default function PlagueMain() {
                 </div>
               </div>
               <div className="flex items-start space-x-4">
-                <div className="w-16 h-16 rounded-lg bg-green-500/20 p-3 flex items-center justify-center group">
+                <div className="w-16 h-16 rounded-lg bg-green-500/20 p-3 flex items-center justify-center group flex-shrink-0">
                   <Radiation className="h-8 w-8 group-hover:text-green-400 transition-colors text-green-300" />
                 </div>
-                <div>
+                <div className="text-left">
                   <h4 className="text-lg font-semibold text-white mb-2">Web3 Growth</h4>
                   <p className="text-gray-400 text-sm">
                     We build Initial hype for protocols with 360° activations — from storytelling to tokenization. Hyped
@@ -264,8 +268,8 @@ export default function PlagueMain() {
 
           {/* Case Studies Section */}
           <div className="rounded-xl p-6 sm:p-8 backdrop-blur-sm mt-8 border-0 bg-transparent">
-            <h3 className="text-2xl sm:text-3xl font-bold text-green-400 py-0 mt-0 mb-6">Ecosystem</h3>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <h3 className="text-2xl sm:text-3xl font-bold text-green-400 mb-6 text-center">Ecosystem</h3>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
               <a
                 href="https://magiceden.io/marketplace/plagueproject"
                 target="_blank"
@@ -311,7 +315,7 @@ export default function PlagueMain() {
                 Let's discuss how we can help your web3 project spread through the digital ecosystem. Our team is ready
                 to craft a memetic strategy that resonates with your target audience.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <div className="flex justify-center">
                 <button
                   className="bg-gray-800/80 hover:bg-gray-700/80 text-green-400 font-bold py-3 px-8 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all backdrop-blur-sm flex items-center justify-center gap-2 text-sm sm:text-base"
                   onClick={() => setShowContactForm(true)}
