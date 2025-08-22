@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useWallet } from "@solana/wallet-adapter-react"
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
-import { X, Share2, ExternalLink, Loader2 } from "lucide-react"
+import { X, ExternalLink, Share2 } from "lucide-react"
 import Image from "next/image"
 
 interface NFT {
@@ -17,7 +16,11 @@ interface NFT {
   external_url?: string
 }
 
-export default function Profile({ onClose }: { onClose: () => void }) {
+interface ProfileProps {
+  onClose: () => void
+}
+
+export default function Profile({ onClose }: ProfileProps) {
   const { connected, publicKey } = useWallet()
   const [nfts, setNfts] = useState<NFT[]>([])
   const [loading, setLoading] = useState(false)
@@ -38,17 +41,7 @@ export default function Profile({ onClose }: { onClose: () => void }) {
         throw new Error(data.error || "Failed to fetch NFTs")
       }
 
-      // Filter for Plague NFTs and preload images
-      const plagueNFTs = data.nfts.filter((nft: any) => nft.name && nft.name.toLowerCase().includes("plague"))
-
-      // Set initial loading state for all images
-      const loadingState: { [key: string]: boolean } = {}
-      plagueNFTs.forEach((nft: NFT) => {
-        loadingState[nft.id] = true
-      })
-      setImageLoading(loadingState)
-
-      setNfts(plagueNFTs)
+      setNfts(data.nfts || [])
     } catch (err) {
       console.error("Error fetching NFTs:", err)
       setError(err instanceof Error ? err.message : "Failed to load NFTs")
@@ -72,45 +65,46 @@ export default function Profile({ onClose }: { onClose: () => void }) {
     }
 
     // Handle Arweave URLs
-    if (imageUrl.includes("arweave.net")) {
-      return imageUrl
+    if (imageUrl.startsWith("ar://")) {
+      return imageUrl.replace("ar://", "https://arweave.net/")
     }
 
-    // Handle other URLs
+    // Return as-is for HTTP/HTTPS URLs
     return imageUrl
   }
 
   const handleImageLoad = (nftId: string) => {
-    setImageLoading((prev) => ({
-      ...prev,
-      [nftId]: false,
-    }))
+    setImageLoading((prev) => ({ ...prev, [nftId]: false }))
   }
 
   const handleImageError = (nftId: string) => {
-    setImageLoading((prev) => ({
-      ...prev,
-      [nftId]: false,
-    }))
+    setImageLoading((prev) => ({ ...prev, [nftId]: false }))
+  }
+
+  const handleImageLoadStart = (nftId: string) => {
+    setImageLoading((prev) => ({ ...prev, [nftId]: true }))
   }
 
   const handleShare = async () => {
-    const shareText = `Check out my Plague NFT collection! Patient ID: ${publicKey?.toString().slice(0, 8)}...${publicKey?.toString().slice(-8)}`
+    if (!publicKey) return
+
+    const shareText = `Check out my Plague Labs profile! Patient ID: ${publicKey.toString().slice(0, 8)}...${publicKey.toString().slice(-8)}`
+    const shareUrl = `${window.location.origin}?wallet=${publicKey.toString()}`
 
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "My Plague NFT Collection",
+          title: "Plague Labs Profile",
           text: shareText,
-          url: window.location.href,
+          url: shareUrl,
         })
       } catch (err) {
         // Fallback to clipboard
-        navigator.clipboard.writeText(`${shareText} ${window.location.href}`)
+        navigator.clipboard.writeText(`${shareText} ${shareUrl}`)
       }
     } else {
       // Fallback to clipboard
-      navigator.clipboard.writeText(`${shareText} ${window.location.href}`)
+      navigator.clipboard.writeText(`${shareText} ${shareUrl}`)
     }
   }
 
@@ -127,12 +121,13 @@ export default function Profile({ onClose }: { onClose: () => void }) {
           <div className="p-6 text-center">
             <div className="mb-4">
               <div className="w-16 h-16 bg-gray-800 rounded-full mx-auto mb-4 flex items-center justify-center">
-                <div className="w-8 h-8 bg-gray-600 rounded-full"></div>
+                <X className="h-8 w-8 text-gray-600" />
               </div>
               <h3 className="text-white font-semibold mb-2">Wallet Not Connected</h3>
-              <p className="text-gray-400 text-sm mb-6">Connect your wallet to view your Plague NFT collection</p>
+              <p className="text-gray-400 text-sm">
+                Please connect your wallet to view your patient profile and NFT specimens.
+              </p>
             </div>
-            <WalletMultiButton className="!bg-green-600 hover:!bg-green-700 !text-white !font-bold !px-6 !py-3 !rounded-lg !border-2 !border-green-500 hover:!border-green-400 !transition-all !w-full" />
           </div>
         </div>
       </div>
@@ -151,11 +146,11 @@ export default function Profile({ onClose }: { onClose: () => void }) {
 
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
           {/* Patient Info */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div>
               <h3 className="text-green-400 font-semibold mb-1">Patient ID</h3>
               <p className="text-white text-sm font-mono">
-                {publicKey?.toString().slice(0, 8)}...{publicKey?.toString().slice(-8)}
+                {publicKey ? `${publicKey.toString().slice(0, 8)}...${publicKey.toString().slice(-8)}` : ""}
               </p>
             </div>
             <div>
@@ -165,7 +160,7 @@ export default function Profile({ onClose }: { onClose: () => void }) {
             <div className="flex items-end">
               <button
                 onClick={handleShare}
-                className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2 text-sm"
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-colors"
               >
                 <Share2 className="h-4 w-4" />
                 Share Infection
@@ -175,12 +170,12 @@ export default function Profile({ onClose }: { onClose: () => void }) {
 
           {/* NFT Gallery */}
           <div className="border-t border-gray-700 pt-6">
-            <h3 className="text-green-400 font-bold text-xl mb-4">NFT Gallery</h3>
+            <h3 className="text-green-400 font-semibold mb-4">NFT Gallery</h3>
 
             {loading && (
               <div className="flex items-center justify-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-green-400" />
-                <span className="ml-2 text-gray-400">Loading specimens...</span>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-400"></div>
+                <span className="ml-3 text-gray-400">Loading specimens...</span>
               </div>
             )}
 
@@ -189,7 +184,7 @@ export default function Profile({ onClose }: { onClose: () => void }) {
                 <p className="text-red-400 mb-4">{error}</p>
                 <button
                   onClick={fetchNFTs}
-                  className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm"
                 >
                   Retry
                 </button>
@@ -198,10 +193,10 @@ export default function Profile({ onClose }: { onClose: () => void }) {
 
             {!loading && !error && nfts.length === 0 && (
               <div className="text-center py-12">
-                <div className="w-16 h-16 bg-gray-800 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                  <div className="w-8 h-8 bg-gray-600 rounded"></div>
+                <div className="w-16 h-16 bg-gray-800 rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <X className="h-8 w-8 text-gray-600" />
                 </div>
-                <p className="text-gray-400">No Plague NFTs found in this wallet</p>
+                <p className="text-gray-400">No specimens found in this wallet.</p>
               </div>
             )}
 
@@ -209,11 +204,13 @@ export default function Profile({ onClose }: { onClose: () => void }) {
               <div className="space-y-6">
                 {nfts.map((nft, index) => (
                   <div key={`${nft.id}-${index}`} className="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
-                    <div className="flex items-center justify-between mb-4">
-                      <h4 className="text-white font-semibold">{nft.name}</h4>
-                      <span className="text-gray-400 text-sm">
-                        {index + 1} of {nfts.length}
-                      </span>
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <h4 className="text-white font-semibold">{nft.name}</h4>
+                        <p className="text-gray-400 text-sm">
+                          {index + 1} of {nfts.length}
+                        </p>
+                      </div>
                       {nft.external_url && (
                         <a
                           href={nft.external_url}
@@ -226,13 +223,13 @@ export default function Profile({ onClose }: { onClose: () => void }) {
                       )}
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {/* NFT Image */}
                       <div className="relative">
                         <div className="aspect-square bg-gray-700 rounded-lg overflow-hidden relative">
                           {imageLoading[nft.id] && (
                             <div className="absolute inset-0 flex items-center justify-center bg-gray-700">
-                              <Loader2 className="h-8 w-8 animate-spin text-green-400" />
+                              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-400"></div>
                             </div>
                           )}
                           <Image
@@ -243,18 +240,19 @@ export default function Profile({ onClose }: { onClose: () => void }) {
                             className={`object-cover transition-opacity duration-300 ${
                               imageLoading[nft.id] ? "opacity-0" : "opacity-100"
                             }`}
-                            loading="eager"
+                            onLoadStart={() => handleImageLoadStart(nft.id)}
                             onLoad={() => handleImageLoad(nft.id)}
                             onError={() => handleImageError(nft.id)}
+                            loading="eager"
                             crossOrigin="anonymous"
                           />
                         </div>
                       </div>
 
                       {/* Attributes */}
-                      <div>
+                      <div className="md:col-span-2">
                         <h5 className="text-green-400 font-semibold mb-3">Attributes</h5>
-                        <div className="grid grid-cols-1 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           {nft.attributes?.map((attr, attrIndex) => (
                             <div key={attrIndex} className="bg-gray-700/50 rounded-lg p-3">
                               <div className="text-gray-400 text-xs uppercase tracking-wide mb-1">

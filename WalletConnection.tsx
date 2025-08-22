@@ -71,6 +71,17 @@ export default function WalletConnection() {
         background: #15803d !important;
         border-color: #16a34a !important;
       }
+      .wallet-adapter-dropdown-list {
+        background: #1f2937 !important;
+        border: 1px solid #374151 !important;
+      }
+      .wallet-adapter-dropdown-list-item {
+        background: #1f2937 !important;
+        color: white !important;
+      }
+      .wallet-adapter-dropdown-list-item:hover {
+        background: #374151 !important;
+      }
       @media (max-width: 640px) {
         .wallet-adapter-button {
           padding: 8px 16px !important;
@@ -94,7 +105,7 @@ export default function WalletConnection() {
 
   return (
     <div className="relative flex flex-col items-end">
-      <WalletMultiButton>{connected ? "Connected" : "Connect"}</WalletMultiButton>
+      <WalletMultiButton />
     </div>
   )
 }
