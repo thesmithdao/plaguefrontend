@@ -1,139 +1,454 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import type React from "react"
+
+import { useState, useEffect, useRef } from "react"
 import { useWallet } from "@solana/wallet-adapter-react"
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
 import Image from "next/image"
+import { Info, User, CalendarPlus, Rat, Syringe, TestTubeDiagonal, Radiation, X, ExternalLink } from "lucide-react"
 import AboutModal from "./AboutModal"
 import Profile from "./Profile"
-import LoreModal from "./LoreModal"
+import TermsModal from "./TermsModal"
+import Footer from "./Footer"
 import TeamModal from "./TeamModal"
 import PrivacyModal from "./PrivacyModal"
-import TermsModal from "./TermsModal"
-import SuccessModal from "./SuccessModal"
-import BottomModal from "./BottomModal"
 import CookieConsent from "./CookieConsent"
-import Footer from "./Footer"
-import WalletConnection from "./WalletConnection"
 
 export default function PlagueMain() {
   const { connected } = useWallet()
-  const [showAbout, setShowAbout] = useState(false)
-  const [showProfile, setShowProfile] = useState(false)
-  const [showLore, setShowLore] = useState(false)
-  const [showTeam, setShowTeam] = useState(false)
-  const [showPrivacy, setShowPrivacy] = useState(false)
-  const [showTerms, setShowTerms] = useState(false)
-  const [showSuccess, setShowSuccess] = useState(false)
-  const [showBottom, setShowBottom] = useState(false)
+  const [activeModal, setActiveModal] = useState<string | null>(null)
+  const [showContactForm, setShowContactForm] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitMessage, setSubmitMessage] = useState<{ type: "success" | "error"; text: string } | null>(null)
+  const formRef = useRef<HTMLFormElement>(null)
 
+  const openModal = (modalName: string) => {
+    setActiveModal(modalName)
+  }
+
+  const closeModal = () => {
+    setActiveModal(null)
+  }
+
+  // Listen for custom events to open modals from CookieConsent
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowBottom(true)
-    }, 3000)
+    const handleOpenPrivacy = () => openModal("privacy")
+    const handleOpenTerms = () => openModal("terms")
 
-    return () => clearTimeout(timer)
+    window.addEventListener("open-privacy-modal", handleOpenPrivacy)
+    window.addEventListener("open-terms-modal", handleOpenTerms)
+
+    return () => {
+      window.removeEventListener("open-privacy-modal", handleOpenPrivacy)
+      window.removeEventListener("open-terms-modal", handleOpenTerms)
+    }
   }, [])
+
+  const handleLogoClick = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" }) // Scrolls to the top of the page smoothly
+  }
+
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    setSubmitMessage(null)
+
+    const formData = new FormData(e.currentTarget)
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.get("name"),
+          email: formData.get("email"),
+          subject: formData.get("subject"),
+          message: formData.get("message"),
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setSubmitMessage({
+          type: "success",
+          text: data.message || "Message sent successfully! We'll get back to you within 24 hours.",
+        })
+        // Reset form safely
+        if (formRef.current) {
+          formRef.current.reset()
+        }
+      } else {
+        if (response.status === 429) {
+          setSubmitMessage({ type: "error", text: "Too many requests. Please wait a minute before trying again." })
+        } else if (data.details) {
+          const errorMessages = data.details.map((detail: any) => detail.message).join(", ")
+          setSubmitMessage({ type: "error", text: errorMessages })
+        } else {
+          setSubmitMessage({ type: "error", text: data.error || "Failed to send message. Please try again." })
+        }
+      }
+    } catch (error) {
+      console.error("Form submission error:", error)
+      setSubmitMessage({ type: "error", text: "Network error. Please check your connection and try again." })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
-      {/* Background Video */}
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        className="absolute inset-0 w-full h-full object-cover z-0"
-        style={{ filter: "brightness(0.3)" }}
-      >
-        <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/git-blob/prj_vTqQuXuVFNjebUAev08JBC8Hnkeh/Ev5e_gf-UN8fKrVSqM_m23/public/bgvideo.mp4" type="video/mp4" />
-      </video>
+      {/* Video Background */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          crossOrigin="anonymous"
+          preload="auto"
+          className="w-full h-full object-cover sm:object-cover object-center min-w-full min-h-full"
+          style={{
+            filter: "brightness(0.6) contrast(1.1)",
+            objectPosition: "center center",
+            transform: "scale(1.02)", // Slight scale to avoid edge artifacts on mobile
+          }}
+        >
+          <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/git-blob/prj_vTqQuXuVFNjebUAev08JBC8Hnkeh/Ev5e_gf-UN8fKrVSqM_m23/public/bgvideo.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
 
-      {/* Content Overlay */}
-      <div className="relative z-10 flex flex-col min-h-screen">
-        {/* Header */}
-        <header className="w-full p-4 sm:p-6">
-          <div className="flex items-center justify-between sm:grid sm:grid-cols-3 sm:items-center max-w-7xl mx-auto">
-            {/* Logo */}
-            <div className="flex items-center">
-              <Image
-                src="/images/test-tube-logo.png"
-                alt="Plague Labs"
-                width={40}
-                height={40}
-                className="w-8 h-8 sm:w-10 sm:h-10"
-              />
-            </div>
+        {/* Vignette overlay */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: "radial-gradient(circle at center, transparent 20%, rgba(0,0,0,0.3) 60%, rgba(0,0,0,0.8) 100%)",
+          }}
+        />
 
-            {/* Navigation */}
-            <nav className="flex items-center justify-center mx-4 sm:mx-0">
-              <div className="flex items-center space-x-3 sm:space-x-8">
-                <button
-                  onClick={() => setShowAbout(true)}
-                  className="text-white hover:text-green-400 transition-colors font-medium text-sm sm:text-base"
-                >
-                  About
-                </button>
-                <button
-                  onClick={() => setShowProfile(true)}
-                  className="text-white hover:text-green-400 transition-colors font-medium text-sm sm:text-base"
-                >
-                  Profile
-                </button>
-              </div>
-            </nav>
-
-            {/* Wallet Connection */}
-            <div className="flex justify-end">
-              <WalletConnection />
-            </div>
-          </div>
-        </header>
-
-        {/* Main Content */}
-        <main className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 text-center">
-          <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
-            {/* Hero Text */}
-            <div className="space-y-4 sm:space-y-6">
-              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold text-green-400 leading-tight">PLAGUE LABS</h1>
-              <p className="text-lg sm:text-xl lg:text-2xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
-                Enter the laboratory where digital pathogens evolve and spread across the blockchain
-              </p>
-            </div>
-
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
-              <button
-                onClick={() => setShowLore(true)}
-                className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
-              >
-                Explore the Lore
-              </button>
-              <button
-                onClick={() => setShowTeam(true)}
-                className="w-full sm:w-auto bg-gray-800 hover:bg-gray-700 text-white font-bold py-3 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-gray-600"
-              >
-                Meet the Team
-              </button>
-            </div>
-          </div>
-        </main>
-
-        {/* Footer */}
-        <Footer onPrivacyClick={() => setShowPrivacy(true)} onTermsClick={() => setShowTerms(true)} />
+        {/* Dark overlay for better text readability */}
+        <div className="absolute inset-0 bg-black/30" />
       </div>
 
-      {/* Modals */}
-      {showAbout && <AboutModal onClose={() => setShowAbout(false)} />}
-      {showProfile && <Profile onClose={() => setShowProfile(false)} />}
-      {showLore && <LoreModal onClose={() => setShowLore(false)} />}
-      {showTeam && <TeamModal onClose={() => setShowTeam(false)} />}
-      {showPrivacy && <PrivacyModal onClose={() => setShowPrivacy(false)} />}
-      {showTerms && <TermsModal onClose={() => setShowTerms(false)} />}
-      {showSuccess && <SuccessModal onClose={() => setShowSuccess(false)} />}
-      {showBottom && <BottomModal onClose={() => setShowBottom(false)} />}
+      {/* Header/Navbar */}
+      <header className="fixed top-0 left-0 right-0 z-20 p-4 sm:p-6 bg-transparent backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-between sm:grid sm:grid-cols-3">
+            {/* Logo - Left */}
+            <div className="flex justify-start">
+              <div
+                className="flex items-center space-x-3 cursor-pointer"
+                onClick={handleLogoClick}
+                role="button"
+                tabIndex={0}
+                aria-label="Go to home page"
+              >
+                <Image
+                  src="/images/test-tube-logo.png"
+                  alt="PLAGUE"
+                  width={40}
+                  height={40}
+                  className="w-8 h-8 sm:w-10 sm:h-10"
+                />
+              </div>
+            </div>
+
+            {/* Navigation - Center on desktop, compact on mobile */}
+            <nav className="flex items-center justify-center space-x-3 sm:space-x-8 mx-4 sm:mx-0">
+              <button
+                onClick={() => openModal("about")}
+                className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-base"
+              >
+                <Info className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span>About</span>
+              </button>
+              <button
+                onClick={() => openModal("profile")}
+                className="text-gray-300 hover:text-green-400 transition-colors flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-base"
+              >
+                <User className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span>Profile</span>
+              </button>
+            </nav>
+
+            {/* Wallet Connection - Right */}
+            <div className="flex justify-end">
+              <WalletMultiButton
+                className="!bg-green-600 hover:!bg-green-700 !text-white !font-bold !text-xs sm:!text-sm !px-2 sm:!px-4 !py-1.5 sm:!py-2 !rounded-lg !border-2 !border-green-500 hover:!border-green-400 !transition-all !shadow-lg !min-h-[32px] sm:!min-h-[40px] !w-[70px] sm:!w-auto !overflow-hidden !whitespace-nowrap !text-ellipsis [&>*]:!bg-green-600 [&>*]:hover:!bg-green-700 [&>*]:!border-green-500"
+                style={{
+                  backgroundColor: "#16a34a !important",
+                  borderColor: "#22c55e !important",
+                }}
+                startIcon={undefined}
+              >
+                {connected ? "Connected" : "Connect"}
+              </WalletMultiButton>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <main className="relative z-10 flex-1 flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12 pt-48 sm:pt-32">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="mb-8 sm:mb-12">
+            <div className="mb-6 sm:mb-8 text-white leading-tight text-2xl sm:text-5xl md:text-6xl">
+              <div className="mb-2">Bring your ideas</div>
+              <div>
+                to <em className="italic font-normal">NFTs</em> & Web 3.
+              </div>
+            </div>
+
+            <div className="flex justify-center mt-8 sm:mt-12">
+              <button
+                className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all shadow-lg flex items-center justify-center gap-2 text-base"
+                onClick={() => setShowContactForm(true)}
+              >
+                <CalendarPlus className="h-4 w-4 sm:h-5 sm:w-5" />
+                Get in touch
+              </button>
+            </div>
+          </div>
+
+          {/* Features Section */}
+          <div className="bg-gray-900/40 border border-green-500/20 rounded-xl p-6 sm:p-8 backdrop-blur-sm mt-16">
+            <h3 className="text-2xl sm:text-3xl font-bold text-green-400 mb-6 text-center">Doctor's Recipe</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+              <div className="flex items-start space-x-4">
+                <div className="w-16 h-16 rounded-lg bg-green-500/20 p-3 flex items-center justify-center group flex-shrink-0">
+                  <Rat className="h-8 w-8 group-hover:text-green-400 transition-colors text-green-400" />
+                </div>
+                <div className="text-left">
+                  <h4 className="text-lg font-semibold text-white mb-2">Viral Marketing</h4>
+                  <p className="text-gray-400 text-sm">
+                    Comprehensive marketing strategies designed for web3 projects, focusing on community building and
+                    brand awareness in the decentralized ecosystem.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-4">
+                <div className="w-16 h-16 rounded-lg bg-green-500/20 p-3 flex items-center justify-center group flex-shrink-0">
+                  <Syringe className="h-8 w-8 group-hover:text-green-400 transition-colors text-green-300" />
+                </div>
+                <div className="text-left">
+                  <h4 className="text-lg font-semibold text-white mb-2">Community Management</h4>
+                  <p className="text-gray-400 text-sm">
+                    Expert community management services to engage your audience, build loyalty, and drive organic
+                    growth across all Web2 and Web3 social platforms.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-4">
+                <div className="w-16 h-16 rounded-lg bg-green-500/20 p-3 flex items-center justify-center group flex-shrink-0">
+                  <TestTubeDiagonal className="h-8 w-8 group-hover:text-green-400 transition-colors text-green-300" />
+                </div>
+                <div className="text-left">
+                  <h4 className="text-lg font-semibold text-white mb-2">Content Creation</h4>
+                  <p className="text-gray-400 text-sm">
+                    High-quality content creation including visual assets, copywriting, and multimedia content optimized
+                    for web3 audiences.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-4">
+                <div className="w-16 h-16 rounded-lg bg-green-500/20 p-3 flex items-center justify-center group flex-shrink-0">
+                  <Radiation className="h-8 w-8 group-hover:text-green-400 transition-colors text-green-300" />
+                </div>
+                <div className="text-left">
+                  <h4 className="text-lg font-semibold text-white mb-2">Web3 Growth</h4>
+                  <p className="text-gray-400 text-sm">
+                    We build Initial hype for protocols with 360° activations — from storytelling to tokenization. Hyped
+                    engineered, crowd rallied, traction locked.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Case Studies Section */}
+          <div className="rounded-xl p-6 sm:p-8 backdrop-blur-sm mt-8 border-0 bg-transparent">
+            <h3 className="text-2xl sm:text-3xl font-bold text-green-400 mb-6 text-center">Ecosystem</h3>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+              <a
+                href="https://magiceden.io/marketplace/plagueproject"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-gray-800/50 rounded-lg p-6 border border-green-500/10 block hover:border-green-500/40 transition-colors"
+              >
+                <img
+                  src="/images/collection-plague-new.png"
+                  alt="Plague Collection Case Study Banner"
+                  className="w-full h-32 object-cover rounded-lg mb-4 bg-green-500/10"
+                />
+                <h4 className="text-lg font-semibold text-white mb-2">Plague Collection</h4>
+                <p className="text-gray-400 text-sm mb-4">
+                  Launched a 6,6k+ NFT collection that sold out in 3 hours, generating 3,6k SOL in primary sales through
+                  viral marketing strategies.
+                </p>
+              </a>
+              <a
+                href="https://magiceden.io/marketplace/goo_friends"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-gray-800/50 rounded-lg p-6 border border-green-500/10 block hover:border-green-500/40 transition-colors"
+              >
+                <img
+                  src="/images/goo-friends-new.png"
+                  alt="Goo Friends Logo"
+                  className="w-full h-32 object-cover rounded-lg mb-4 bg-green-500/10"
+                />
+                <h4 className="text-lg font-semibold text-white mb-2">Goo Friends</h4>
+                <p className="text-gray-400 text-sm mb-4">
+                  Goo Friends is a free Solana NFT collection celebrating the solana community culture. Backed by major
+                  collabs like Okay Bears and many others.
+                </p>
+              </a>
+            </div>
+          </div>
+
+          {/* Contact Section */}
+          <div className="border-green-500/20 rounded-xl p-6 sm:p-8 backdrop-blur-sm mt-8 border-0 bg-transparent">
+            <h3 className="text-2xl sm:text-3xl font-bold text-green-400 mb-6 text-center">Ready to Go Viral?</h3>
+            <div className="max-w-2xl mx-auto text-center">
+              <p className="text-gray-300 mb-6 text-base sm:text-xl leading-7">
+                Let's discuss how we can help your web3 project spread through the digital ecosystem. Our team is ready
+                to craft a memetic strategy that resonates with your target audience.
+              </p>
+              <div className="flex justify-center">
+                <button
+                  className="bg-gray-800/80 hover:bg-gray-700/80 text-green-400 font-bold py-3 px-8 rounded-lg border-2 border-green-500 hover:border-green-400 transition-all backdrop-blur-sm flex items-center justify-center gap-2 text-sm sm:text-base"
+                  onClick={() => setShowContactForm(true)}
+                >
+                  <CalendarPlus className="h-4 w-4 sm:h-5 sm:w-5" />
+                  Get in touch
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <Footer onOpenTerms={() => openModal("terms")} onOpenPrivacy={() => openModal("privacy")} />
 
       {/* Cookie Consent */}
       <CookieConsent />
+
+      {/* Modals */}
+      {activeModal === "about" && <AboutModal onClose={closeModal} />}
+      {activeModal === "profile" && <Profile onClose={closeModal} />}
+      {activeModal === "terms" && <TermsModal onClose={closeModal} />}
+      {activeModal === "team" && <TeamModal onClose={closeModal} />}
+      {activeModal === "privacy" && <PrivacyModal onClose={closeModal} />}
+
+      {/* Contact Form Modal */}
+      {showContactForm && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-md">
+            <div className="p-4 border-b border-gray-700 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-green-400">Get in Touch</h2>
+              <button
+                onClick={() => {
+                  setShowContactForm(false)
+                  setSubmitMessage(null)
+                }}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <form ref={formRef} className="p-6 space-y-4" onSubmit={handleFormSubmit}>
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">
+                  Name
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  required
+                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
+                  placeholder="Your name"
+                />
+              </div>
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  required
+                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
+                  placeholder="your@email.com"
+                />
+              </div>
+              <div>
+                <label htmlFor="subject" className="block text-sm font-medium text-gray-300 mb-1">
+                  Subject
+                </label>
+                <input
+                  type="text"
+                  id="subject"
+                  name="subject"
+                  required
+                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
+                  placeholder="Project inquiry, collaboration, etc."
+                />
+              </div>
+              <div>
+                <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-1">
+                  Message
+                </label>
+                <textarea
+                  id="message"
+                  name="message"
+                  required
+                  rows={4}
+                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors resize-none"
+                  placeholder="Tell us about your project..."
+                />
+              </div>
+
+              <div className="border-gray-700 pt-4 border-t-0">
+                {submitMessage && (
+                  <div
+                    className={`mb-3 p-3 rounded-lg text-sm ${
+                      submitMessage.type === "success"
+                        ? "bg-green-900/50 text-green-300 border border-green-500/30"
+                        : "bg-red-900/50 text-red-300 border border-red-500/30"
+                    }`}
+                  >
+                    {submitMessage.text}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <ExternalLink className="h-4 w-4" />
+                      Send Message
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

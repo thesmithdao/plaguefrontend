@@ -37,19 +37,20 @@ export default function WalletConnection() {
         background: #16a34a !important;
         border: 2px solid #22c55e !important;
         color: white !important;
-        font-weight: bold !important;
-        padding: 5px 11px !important;
-        border-radius: 6px !important;
-        font-size: 8px !important;
-        min-height: 25px !important;
-        min-width: 50px !important;
+        font-weight: 600 !important;
+        padding: 8px 16px !important;
+        border-radius: 8px !important;
+        font-size: 14px !important;
+        min-height: 36px !important;
+        min-width: 100px !important;
         transition: all 0.2s ease !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
       }
       .wallet-adapter-button:hover {
         background: #15803d !important;
         border-color: #16a34a !important;
         transform: translateY(-1px) !important;
-        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3) !important;
+        box-shadow: 0 4px 8px rgba(34, 197, 94, 0.2) !important;
       }
       .wallet-adapter-button:active {
         transform: translateY(0) !important;
@@ -59,14 +60,14 @@ export default function WalletConnection() {
         border-color: #9ca3af !important;
         cursor: not-allowed !important;
         transform: none !important;
-        box-shadow: none !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
       }
       @media (max-width: 640px) {
         .wallet-adapter-button {
-          padding: 4px 8px !important;
-          font-size: 7px !important;
-          min-height: 20px !important;
-          min-width: 40px !important;
+          padding: 6px 12px !important;
+          font-size: 12px !important;
+          min-height: 32px !important;
+          min-width: 80px !important;
         }
       }
     `
@@ -79,12 +80,12 @@ export default function WalletConnection() {
   }, [mounted])
 
   if (!mounted) {
-    return <div className="h-6 w-12 animate-pulse rounded-lg bg-gray-700" />
+    return <div className="h-9 w-24 animate-pulse rounded-lg bg-gray-700" />
   }
 
   return (
     <div className="relative flex flex-col items-end">
-      <WalletMultiButton />
+      <WalletMultiButton>{connected ? "Connected" : "Connect"}</WalletMultiButton>
     </div>
   )
 }
