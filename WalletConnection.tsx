@@ -34,20 +34,20 @@ export default function WalletConnection() {
       .wallet-adapter-button {
         -webkit-appearance: none !important;
         appearance: none !important;
-        background: #16a34a !important;
-        border: 2px solid #22c55e !important;
+        background: #16a34a !important;           /* 🎨 BUTTON COLOR - Change this for different green */
+        border: 2px solid #22c55e !important;    /* 🎨 BORDER COLOR */
         color: white !important;
         font-weight: bold !important;
-        padding: 12px 24px !important;
+        padding: 16px 32px !important;           /* 📏 BUTTON SIZE - Increase padding for bigger button */
         border-radius: 8px !important;
-        font-size: 14px !important;
-        min-height: 44px !important;
-        min-width: 120px !important;
+        font-size: 14px !important;              /* 📝 TEXT SIZE */
+        min-height: 50px !important;             /* 📏 MINIMUM HEIGHT */
+        min-width: 140px !important;             /* 📏 MINIMUM WIDTH */
         transition: all 0.2s ease !important;
       }
       .wallet-adapter-button:hover {
-        background: #15803d !important;
-        border-color: #16a34a !important;
+        background: #15803d !important;           /* 🎨 HOVER COLOR */
+        border-color: #16a34a !important;        /* 🎨 HOVER BORDER */
         transform: translateY(-1px) !important;
         box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3) !important;
       }
