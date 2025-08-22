@@ -1,97 +1,112 @@
 "use client"
 
-import { useEffect } from "react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
+import { useEffect, useState } from "react"
 
 export default function WalletConnection() {
-  const { wallet, connect, connected, connecting, disconnect } = useWallet()
+  const { wallet, connected, publicKey, connect } = useWallet()
+  const [mounted, setMounted] = useState(false)
 
-  // Auto-connect to previously connected wallet
   useEffect(() => {
-    if (wallet && !connected && !connecting) {
-      try {
-        connect()
-      } catch (error) {
-        console.log("Auto-connect failed:", error)
-      }
+    setMounted(true)
+  }, [])
+
+  // Auto-connect when wallet is selected
+  useEffect(() => {
+    if (wallet && !connected) {
+      connect().catch(() => {
+        // Silently handle connection errors
+      })
     }
-  }, [wallet, connected, connecting, connect])
+  }, [wallet, connected, connect])
 
   useEffect(() => {
-    // Inject custom styles for the wallet button
+    if (!mounted) return
     const style = document.createElement("style")
     style.textContent = `
-      .wallet-adapter-button-trigger {
-        background-color: #16a34a !important;
+      header:has(.wallet-adapter-button) {
+        z-index: 30 !important;
+      }
+      .wallet-adapter-modal-wrapper, .wallet-adapter-dropdown-list {
+        z-index: 100000 !important;
+      }
+      .wallet-adapter-button {
+        -webkit-appearance: none !important;
+        appearance: none !important;
+        background: #16a34a !important;
         border: 2px solid #22c55e !important;
         color: white !important;
         font-weight: 600 !important;
-        border-radius: 8px !important;
-        transition: all 0.2s ease !important;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
         padding: 10px 20px !important;
+        border-radius: 8px !important;
+        font-size: 14px !important;
         min-height: 40px !important;
         min-width: 110px !important;
-        font-size: 14px !important;
+        transition: all 0.2s ease !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
       }
-      
-      @media (max-width: 640px) {
-        .wallet-adapter-button-trigger {
-          padding: 6px 12px !important;
-          min-height: 32px !important;
-          min-width: 75px !important;
-          font-size: 12px !important;
-          border-radius: 6px !important;
-        }
-      }
-      
-      .wallet-adapter-button-trigger:hover {
-        background-color: #15803d !important;
+      .wallet-adapter-button:hover {
+        background: #15803d !important;
         border-color: #16a34a !important;
         transform: translateY(-1px) !important;
         box-shadow: 0 4px 8px rgba(34, 197, 94, 0.2) !important;
       }
-      
-      .wallet-adapter-button-trigger:active {
+      .wallet-adapter-button:active {
         transform: translateY(0) !important;
       }
-      
-      .wallet-adapter-dropdown {
-        background-color: #1f2937 !important;
-        border: 1px solid #374151 !important;
-        border-radius: 8px !important;
+      .wallet-adapter-button:disabled {
+        background: #6b7280 !important;
+        border-color: #9ca3af !important;
+        cursor: not-allowed !important;
+        transform: none !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
       }
-      
-      .wallet-adapter-dropdown-list {
-        background-color: #1f2937 !important;
-      }
-      
-      .wallet-adapter-dropdown-list-item {
-        background-color: #1f2937 !important;
+      .wallet-adapter-button-trigger {
+        background: #16a34a !important;
+        border: 2px solid #22c55e !important;
         color: white !important;
       }
-      
+      .wallet-adapter-button-trigger:hover {
+        background: #15803d !important;
+        border-color: #16a34a !important;
+      }
+      .wallet-adapter-dropdown-list {
+        background: #1f2937 !important;
+        border: 1px solid #374151 !important;
+      }
+      .wallet-adapter-dropdown-list-item {
+        background: #1f2937 !important;
+        color: white !important;
+      }
       .wallet-adapter-dropdown-list-item:hover {
-        background-color: #374151 !important;
+        background: #374151 !important;
+      }
+      @media (max-width: 640px) {
+        .wallet-adapter-button {
+          padding: 6px 12px !important;
+          font-size: 12px !important;
+          min-height: 32px !important;
+          min-width: 75px !important;
+          border-radius: 6px !important;
+        }
       }
     `
     document.head.appendChild(style)
-
     return () => {
-      document.head.removeChild(style)
+      if (document.head.contains(style)) {
+        document.head.removeChild(style)
+      }
     }
-  }, [])
+  }, [mounted])
+
+  if (!mounted) {
+    return <div className="h-8 w-20 sm:h-10 sm:w-28 animate-pulse rounded-lg bg-gray-700" />
+  }
 
   return (
-    <div className="flex items-center">
-      {connecting ? (
-        <div className="bg-green-600 text-white font-semibold rounded-lg flex items-center justify-center h-8 w-20 sm:h-10 sm:w-28 animate-pulse">
-          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-        </div>
-      ) : (
-        <WalletMultiButton />
-      )}
+    <div className="relative flex flex-col items-end">
+      <WalletMultiButton />
     </div>
   )
 }
