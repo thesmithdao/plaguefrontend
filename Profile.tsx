@@ -29,6 +29,7 @@ export default function Profile({ onClose }: ProfileProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [imageLoading, setImageLoading] = useState<{ [key: string]: boolean }>({})
+  const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>({})
 
   const fetchNFTs = async () => {
     if (!publicKey) return
@@ -51,6 +52,8 @@ export default function Profile({ onClose }: ProfileProps) {
       if (data.success) {
         setNfts(data.nfts || [])
         console.log("Found NFTs:", data.nfts?.length || 0)
+        // Reset image error states when fetching new NFTs
+        setImageErrors({})
       } else {
         throw new Error(data.error || "API returned unsuccessful response")
       }
@@ -70,6 +73,16 @@ export default function Profile({ onClose }: ProfileProps) {
 
   const getImageUrl = (imageUrl: string): string => {
     if (!imageUrl) return "/placeholder.svg"
+
+    // Fix malformed Helius CDN URLs with double slashes
+    if (imageUrl.includes("cdn.helius-rpc.com/cdn-cgi/image//")) {
+      // Extract the actual image URL after the double slash
+      const actualUrl = imageUrl.split("//").pop()
+      if (actualUrl && actualUrl.startsWith("https://")) {
+        console.log("Fixed Helius CDN URL:", actualUrl)
+        return actualUrl
+      }
+    }
 
     // Handle IPFS URLs
     if (imageUrl.startsWith("ipfs://")) {
@@ -97,11 +110,13 @@ export default function Profile({ onClose }: ProfileProps) {
 
   const handleImageLoad = (nftId: string) => {
     setImageLoading((prev) => ({ ...prev, [nftId]: false }))
+    setImageErrors((prev) => ({ ...prev, [nftId]: false }))
   }
 
   const handleImageError = (nftId: string) => {
     console.log("Image failed to load for NFT:", nftId)
     setImageLoading((prev) => ({ ...prev, [nftId]: false }))
+    setImageErrors((prev) => ({ ...prev, [nftId]: true }))
   }
 
   const handleImageLoadStart = (nftId: string) => {
@@ -271,25 +286,33 @@ export default function Profile({ onClose }: ProfileProps) {
                       {/* NFT Image */}
                       <div className="relative">
                         <div className="aspect-square bg-gray-700 rounded-lg overflow-hidden relative">
-                          {imageLoading[nft.id] && (
+                          {imageLoading[nft.id] && !imageErrors[nft.id] && (
                             <div className="absolute inset-0 flex items-center justify-center bg-gray-700">
                               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-400"></div>
                             </div>
                           )}
-                          <Image
-                            key={`${nft.id}-${nft.image}`}
-                            src={getImageUrl(nft.image) || "/placeholder.svg"}
-                            alt={nft.name}
-                            fill
-                            className={`object-cover transition-opacity duration-300 ${
-                              imageLoading[nft.id] ? "opacity-0" : "opacity-100"
-                            }`}
-                            onLoadStart={() => handleImageLoadStart(nft.id)}
-                            onLoad={() => handleImageLoad(nft.id)}
-                            onError={() => handleImageError(nft.id)}
-                            loading="eager"
-                            crossOrigin="anonymous"
-                          />
+
+                          {imageErrors[nft.id] ? (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-700 text-gray-400">
+                              <X className="h-8 w-8 mb-2" />
+                              <span className="text-xs text-center px-2">Image unavailable</span>
+                            </div>
+                          ) : (
+                            <Image
+                              key={`${nft.id}-${nft.image}`}
+                              src={getImageUrl(nft.image) || "/placeholder.svg"}
+                              alt={nft.name}
+                              fill
+                              className={`object-cover transition-opacity duration-300 ${
+                                imageLoading[nft.id] ? "opacity-0" : "opacity-100"
+                              }`}
+                              onLoadStart={() => handleImageLoadStart(nft.id)}
+                              onLoad={() => handleImageLoad(nft.id)}
+                              onError={() => handleImageError(nft.id)}
+                              loading="eager"
+                              unoptimized={true}
+                            />
+                          )}
                         </div>
                       </div>
 
