@@ -38,9 +38,9 @@ export default function WalletConnection() {
         border: 2px solid #22c55e !important;    /* 🎨 BORDER COLOR */
         color: white !important;
         font-weight: bold !important;
-        padding: 16px 32px !important;           /* 📏 BUTTON SIZE - Increase padding for bigger button */
-        border-radius: 8px !important;
-        font-size: 14px !important;              /* 📝 TEXT SIZE */
+        padding: 10px 22px !important;           /* 📏 BUTTON SIZE - Increase padding for bigger button */
+        border-radius: 2px !important;
+        font-size: 10px !important;              /* 📝 TEXT SIZE */
         min-height: 50px !important;             /* 📏 MINIMUM HEIGHT */
         min-width: 140px !important;             /* 📏 MINIMUM WIDTH */
         transition: all 0.2s ease !important;
