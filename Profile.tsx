@@ -2,11 +2,10 @@
 
 import { useState, useEffect } from "react"
 import { useWallet } from "@solana/wallet-adapter-react"
-import { X, ExternalLink, Share2 } from "lucide-react"
+import { X, Share2, ExternalLink } from "lucide-react"
 import Image from "next/image"
 
 interface NFT {
-  id: string
   name: string
   image: string
   attributes: Array<{
@@ -17,258 +16,229 @@ interface NFT {
 }
 
 interface ProfileProps {
+  isOpen: boolean
   onClose: () => void
 }
 
-export default function Profile({ onClose }: ProfileProps) {
+export default function Profile({ isOpen, onClose }: ProfileProps) {
   const { connected, publicKey } = useWallet()
   const [nfts, setNfts] = useState<NFT[]>([])
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [imageLoading, setImageLoading] = useState<{ [key: string]: boolean }>({})
+  const [currentNftIndex, setCurrentNftIndex] = useState(0)
+  const [imageLoading, setImageLoading] = useState<{ [key: number]: boolean }>({})
+
+  const getImageUrl = (url: string) => {
+    if (!url) return "/placeholder.jpg"
+
+    // Handle IPFS URLs
+    if (url.startsWith("ipfs://")) {
+      return `https://ipfs.io/ipfs/${url.slice(7)}`
+    }
+
+    // Handle Arweave URLs
+    if (url.startsWith("ar://")) {
+      return `https://arweave.net/${url.slice(5)}`
+    }
+
+    // Return as-is for HTTP/HTTPS URLs
+    return url
+  }
+
+  useEffect(() => {
+    if (isOpen && connected && publicKey) {
+      fetchNFTs()
+    }
+  }, [isOpen, connected, publicKey])
 
   const fetchNFTs = async () => {
     if (!publicKey) return
 
     setLoading(true)
-    setError(null)
-
     try {
       const response = await fetch(`/api/get-nfts?wallet=${publicKey.toString()}`)
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to fetch NFTs")
+      if (response.ok) {
+        const data = await response.json()
+        setNfts(data.nfts || [])
+        setCurrentNftIndex(0)
+        // Initialize loading states
+        const loadingStates: { [key: number]: boolean } = {}
+        data.nfts?.forEach((_: any, index: number) => {
+          loadingStates[index] = true
+        })
+        setImageLoading(loadingStates)
       }
-
-      setNfts(data.nfts || [])
-    } catch (err) {
-      console.error("Error fetching NFTs:", err)
-      setError(err instanceof Error ? err.message : "Failed to load NFTs")
+    } catch (error) {
+      console.error("Error fetching NFTs:", error)
     } finally {
       setLoading(false)
     }
   }
 
-  useEffect(() => {
-    if (connected && publicKey) {
-      fetchNFTs()
-    }
-  }, [connected, publicKey])
-
-  const getImageUrl = (imageUrl: string): string => {
-    if (!imageUrl) return "/placeholder.jpg"
-
-    // Handle IPFS URLs
-    if (imageUrl.startsWith("ipfs://")) {
-      return imageUrl.replace("ipfs://", "https://ipfs.io/ipfs/")
-    }
-
-    // Handle Arweave URLs
-    if (imageUrl.startsWith("ar://")) {
-      return imageUrl.replace("ar://", "https://arweave.net/")
-    }
-
-    // Return as-is for HTTP/HTTPS URLs
-    return imageUrl
+  const handleImageLoad = (index: number) => {
+    setImageLoading((prev) => ({
+      ...prev,
+      [index]: false,
+    }))
   }
 
-  const handleImageLoad = (nftId: string) => {
-    setImageLoading((prev) => ({ ...prev, [nftId]: false }))
+  const handleImageError = (index: number) => {
+    setImageLoading((prev) => ({
+      ...prev,
+      [index]: false,
+    }))
   }
 
-  const handleImageError = (nftId: string) => {
-    setImageLoading((prev) => ({ ...prev, [nftId]: false }))
-  }
-
-  const handleImageLoadStart = (nftId: string) => {
-    setImageLoading((prev) => ({ ...prev, [nftId]: true }))
-  }
-
-  const handleShare = async () => {
-    if (!publicKey) return
-
-    const shareText = `Check out my Plague Labs profile! Patient ID: ${publicKey.toString().slice(0, 8)}...${publicKey.toString().slice(-8)}`
-    const shareUrl = `${window.location.origin}?wallet=${publicKey.toString()}`
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: "Plague Labs Profile",
-          text: shareText,
-          url: shareUrl,
-        })
-      } catch (err) {
-        // Fallback to clipboard
-        navigator.clipboard.writeText(`${shareText} ${shareUrl}`)
-      }
+  const shareInfection = () => {
+    if (navigator.share && nfts[currentNftIndex]) {
+      navigator.share({
+        title: `Check out my ${nfts[currentNftIndex].name}!`,
+        text: `I own this amazing NFT: ${nfts[currentNftIndex].name}`,
+        url: window.location.href,
+      })
     } else {
-      // Fallback to clipboard
-      navigator.clipboard.writeText(`${shareText} ${shareUrl}`)
+      // Fallback to copying to clipboard
+      const shareText = `Check out my ${nfts[currentNftIndex]?.name}! ${window.location.href}`
+      navigator.clipboard.writeText(shareText)
+      alert("Share link copied to clipboard!")
     }
   }
 
-  if (!connected) {
-    return (
-      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-sm">
-          <div className="p-4 border-b border-gray-700 flex items-center justify-between">
-            <h2 className="text-lg font-bold text-green-400">Patient Profile</h2>
-            <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
-              <X className="h-5 w-5" />
-            </button>
-          </div>
-          <div className="p-6 text-center">
-            <div className="mb-4">
-              <div className="w-16 h-16 bg-gray-800 rounded-full mx-auto mb-4 flex items-center justify-center">
-                <X className="h-8 w-8 text-gray-600" />
-              </div>
-              <h3 className="text-white font-semibold mb-2">Wallet Not Connected</h3>
-              <p className="text-gray-400 text-sm">
-                Please connect your wallet to view your patient profile and NFT specimens.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
-        <div className="p-4 border-b border-gray-700 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-green-400">Patient Profile</h2>
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+      <div className="bg-gray-900 rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-6 border-b border-gray-700">
+          <h2 className="text-xl font-bold text-green-400">Patient Profile</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
-            <X className="h-5 w-5" />
+            <X className="h-6 w-6" />
           </button>
         </div>
 
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
-          {/* Patient Info */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div>
-              <h3 className="text-green-400 font-semibold mb-1">Patient ID</h3>
-              <p className="text-white text-sm font-mono">
-                {publicKey ? `${publicKey.toString().slice(0, 8)}...${publicKey.toString().slice(-8)}` : ""}
-              </p>
+        <div className="p-6">
+          {!connected ? (
+            <div className="text-center py-12">
+              <div className="text-gray-400 mb-4">Please connect your wallet to view your profile</div>
             </div>
-            <div>
-              <h3 className="text-green-400 font-semibold mb-1">Specimen Count</h3>
-              <p className="text-white text-2xl font-bold">{nfts.length}</p>
+          ) : loading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-400 mx-auto mb-4"></div>
+              <div className="text-gray-400">Loading your specimens...</div>
             </div>
-            <div className="flex items-end">
-              <button
-                onClick={handleShare}
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-colors"
-              >
-                <Share2 className="h-4 w-4" />
-                Share Infection
-              </button>
+          ) : nfts.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="text-gray-400 mb-4">No specimens found in your wallet</div>
+              <div className="text-sm text-gray-500">Make sure you own Plague NFTs to see them here</div>
             </div>
-          </div>
-
-          {/* NFT Gallery */}
-          <div className="border-t border-gray-700 pt-6">
-            <h3 className="text-green-400 font-semibold mb-4">NFT Gallery</h3>
-
-            {loading && (
-              <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-400"></div>
-                <span className="ml-3 text-gray-400">Loading specimens...</span>
-              </div>
-            )}
-
-            {error && (
-              <div className="text-center py-12">
-                <p className="text-red-400 mb-4">{error}</p>
-                <button
-                  onClick={fetchNFTs}
-                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm"
-                >
-                  Retry
-                </button>
-              </div>
-            )}
-
-            {!loading && !error && nfts.length === 0 && (
-              <div className="text-center py-12">
-                <div className="w-16 h-16 bg-gray-800 rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <X className="h-8 w-8 text-gray-600" />
+          ) : (
+            <div className="space-y-6">
+              {/* Patient Info */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
+                <div>
+                  <div className="text-green-400 font-semibold mb-1">Patient ID</div>
+                  <div className="text-sm text-gray-300 font-mono">
+                    {publicKey?.toString().slice(0, 8)}...{publicKey?.toString().slice(-8)}
+                  </div>
                 </div>
-                <p className="text-gray-400">No specimens found in this wallet.</p>
+                <div>
+                  <div className="text-green-400 font-semibold mb-1">Specimen Count</div>
+                  <div className="text-2xl font-bold">{nfts.length}</div>
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    onClick={shareInfection}
+                    className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors inline-flex items-center space-x-2"
+                  >
+                    <Share2 className="h-4 w-4" />
+                    <span>Share Infection</span>
+                  </button>
+                </div>
               </div>
-            )}
 
-            {!loading && !error && nfts.length > 0 && (
-              <div className="space-y-6">
-                {nfts.map((nft, index) => (
-                  <div key={`${nft.id}-${index}`} className="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
-                    <div className="flex items-start justify-between mb-4">
-                      <div>
-                        <h4 className="text-white font-semibold">{nft.name}</h4>
-                        <p className="text-gray-400 text-sm">
-                          {index + 1} of {nfts.length}
-                        </p>
-                      </div>
-                      {nft.external_url && (
+              {/* NFT Gallery */}
+              <div>
+                <h3 className="text-lg font-semibold text-green-400 mb-4">NFT Gallery</h3>
+
+                {/* Current NFT Display */}
+                <div className="bg-gray-800 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="text-lg font-semibold">{nfts[currentNftIndex]?.name}</h4>
+                    <div className="text-sm text-gray-400">
+                      {currentNftIndex + 1} of {nfts.length}
+                      {nfts[currentNftIndex]?.external_url && (
                         <a
-                          href={nft.external_url}
+                          href={nfts[currentNftIndex].external_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-green-400 hover:text-green-300 transition-colors"
+                          className="ml-2 text-green-400 hover:text-green-300"
                         >
-                          <ExternalLink className="h-4 w-4" />
+                          <ExternalLink className="h-4 w-4 inline" />
                         </a>
                       )}
                     </div>
+                  </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {/* NFT Image */}
-                      <div className="relative">
-                        <div className="aspect-square bg-gray-700 rounded-lg overflow-hidden relative">
-                          {imageLoading[nft.id] && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-gray-700">
-                              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-400"></div>
-                            </div>
-                          )}
-                          <Image
-                            key={`${nft.id}-${nft.image}`}
-                            src={getImageUrl(nft.image) || "/placeholder.svg"}
-                            alt={nft.name}
-                            fill
-                            className={`object-cover transition-opacity duration-300 ${
-                              imageLoading[nft.id] ? "opacity-0" : "opacity-100"
-                            }`}
-                            onLoadStart={() => handleImageLoadStart(nft.id)}
-                            onLoad={() => handleImageLoad(nft.id)}
-                            onError={() => handleImageError(nft.id)}
-                            loading="eager"
-                            crossOrigin="anonymous"
-                          />
-                        </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* NFT Image */}
+                    <div className="relative">
+                      <div className="aspect-square bg-gray-700 rounded-lg overflow-hidden relative">
+                        {imageLoading[currentNftIndex] && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-gray-700">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-400"></div>
+                          </div>
+                        )}
+                        <Image
+                          key={`${currentNftIndex}-${nfts[currentNftIndex]?.name}`}
+                          src={getImageUrl(nfts[currentNftIndex]?.image) || "/placeholder.svg"}
+                          alt={nfts[currentNftIndex]?.name || "NFT"}
+                          fill
+                          className={`object-cover transition-opacity duration-300 ${
+                            imageLoading[currentNftIndex] ? "opacity-0" : "opacity-100"
+                          }`}
+                          loading="eager"
+                          onLoad={() => handleImageLoad(currentNftIndex)}
+                          onError={() => handleImageError(currentNftIndex)}
+                        />
                       </div>
+                    </div>
 
-                      {/* Attributes */}
-                      <div className="md:col-span-2">
-                        <h5 className="text-green-400 font-semibold mb-3">Attributes</h5>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          {nft.attributes?.map((attr, attrIndex) => (
-                            <div key={attrIndex} className="bg-gray-700/50 rounded-lg p-3">
-                              <div className="text-gray-400 text-xs uppercase tracking-wide mb-1">
-                                {attr.trait_type}
-                              </div>
-                              <div className="text-white font-medium">{attr.value}</div>
-                            </div>
-                          ))}
-                        </div>
+                    {/* Attributes */}
+                    <div>
+                      <h5 className="text-green-400 font-semibold mb-3">Attributes</h5>
+                      <div className="grid grid-cols-1 gap-3">
+                        {nfts[currentNftIndex]?.attributes?.map((attr, index) => (
+                          <div key={index} className="bg-gray-700 rounded-lg p-3">
+                            <div className="text-xs text-gray-400 uppercase tracking-wide">{attr.trait_type}</div>
+                            <div className="text-sm font-semibold">{attr.value}</div>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   </div>
-                ))}
+
+                  {/* Navigation */}
+                  {nfts.length > 1 && (
+                    <div className="flex justify-center space-x-4 mt-6">
+                      <button
+                        onClick={() => setCurrentNftIndex(Math.max(0, currentNftIndex - 1))}
+                        disabled={currentNftIndex === 0}
+                        className="bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800 disabled:text-gray-500 text-white px-4 py-2 rounded-lg transition-colors"
+                      >
+                        Previous
+                      </button>
+                      <button
+                        onClick={() => setCurrentNftIndex(Math.min(nfts.length - 1, currentNftIndex + 1))}
+                        disabled={currentNftIndex === nfts.length - 1}
+                        className="bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800 disabled:text-gray-500 text-white px-4 py-2 rounded-lg transition-colors"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

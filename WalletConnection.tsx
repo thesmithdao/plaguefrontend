@@ -84,10 +84,11 @@ export default function WalletConnection() {
       }
       @media (max-width: 640px) {
         .wallet-adapter-button {
-          padding: 8px 16px !important;
-          font-size: 13px !important;
-          min-height: 36px !important;
-          min-width: 90px !important;
+          padding: 6px 12px !important;
+          font-size: 12px !important;
+          min-height: 32px !important;
+          min-width: 75px !important;
+          border-radius: 6px !important;
         }
       }
     `
@@ -100,7 +101,7 @@ export default function WalletConnection() {
   }, [mounted])
 
   if (!mounted) {
-    return <div className="h-10 w-28 animate-pulse rounded-lg bg-gray-700" />
+    return <div className="h-8 w-20 sm:h-10 sm:w-28 animate-pulse rounded-lg bg-gray-700" />
   }
 
   return (
