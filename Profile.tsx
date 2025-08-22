@@ -10,7 +10,7 @@ import {
   Share2,
   RefreshCw,
   AlertTriangle,
-  WormIcon as Virus,
+  Citrus as Virus,
   Syringe,
 } from "lucide-react"
 
@@ -34,6 +34,8 @@ export default function Profile({ onClose }: ProfileProps) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [imageLoaded, setImageLoaded] = useState<{ [key: string]: boolean }>({})
+  const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>({})
 
   useEffect(() => {
     if (publicKey) {
@@ -41,12 +43,33 @@ export default function Profile({ onClose }: ProfileProps) {
     }
   }, [publicKey])
 
+  // Preload images when NFTs are loaded
+  useEffect(() => {
+    if (nfts.length > 0) {
+      nfts.forEach((nft, index) => {
+        if (nft.image && !imageLoaded[nft.mint] && !imageErrors[nft.mint]) {
+          const img = new Image()
+          img.crossOrigin = "anonymous"
+          img.onload = () => {
+            setImageLoaded((prev) => ({ ...prev, [nft.mint]: true }))
+          }
+          img.onerror = () => {
+            setImageErrors((prev) => ({ ...prev, [nft.mint]: true }))
+          }
+          img.src = nft.image.includes("ipfs://") ? nft.image.replace("ipfs://", "https://ipfs.io/ipfs/") : nft.image
+        }
+      })
+    }
+  }, [nfts, imageLoaded, imageErrors])
+
   const fetchNFTs = async () => {
     if (!publicKey) return
 
     try {
       setLoading(true)
       setError(null)
+      setImageLoaded({})
+      setImageErrors({})
 
       const response = await fetch(`/api/get-nfts?walletAddress=${publicKey.toString()}`)
 
@@ -92,10 +115,30 @@ export default function Profile({ onClose }: ProfileProps) {
     onClose()
   }
 
+  const handleImageLoad = (mint: string) => {
+    setImageLoaded((prev) => ({ ...prev, [mint]: true }))
+  }
+
+  const handleImageError = (mint: string) => {
+    setImageErrors((prev) => ({ ...prev, [mint]: true }))
+  }
+
+  const getImageSrc = (nft: NFT) => {
+    if (imageErrors[nft.mint]) {
+      return "/placeholder.svg?height=256&width=256&text=Plague"
+    }
+
+    if (nft.image?.includes("ipfs://")) {
+      return nft.image.replace("ipfs://", "https://ipfs.io/ipfs/")
+    }
+
+    return nft.image || "/placeholder.svg?height=256&width=256&text=Plague"
+  }
+
   if (!publicKey) {
     return (
       <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div className="bg-gray-900 border border-gray-700 rounded-xl max-w-3xl max-h-[85vh] overflow-y-auto w-full px-6 py-1.5 mx-6">
+        <div className="bg-gray-900 border border-gray-700 rounded-xl max-w-md max-h-[85vh] overflow-y-auto w-full px-6 py-1.5 mx-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-bold text-green-400">Patient Profile</h2>
             <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
@@ -159,7 +202,13 @@ export default function Profile({ onClose }: ProfileProps) {
           {/* NFT Gallery */}
           {loading ? (
             <div className="text-center py-8">
-              <div className="relative bg-gray-800/50 rounded-lg p-4 border-green-500/20 border-0"></div>
+              <div className="relative bg-gray-800/50 rounded-lg p-4 border-green-500/20 border-0">
+                <div className="animate-pulse">
+                  <div className="w-full md:w-48 h-48 bg-gray-700 rounded-lg mx-auto mb-4"></div>
+                  <div className="h-4 bg-gray-700 rounded w-3/4 mx-auto mb-2"></div>
+                  <div className="h-3 bg-gray-700 rounded w-1/2 mx-auto"></div>
+                </div>
+              </div>
               <p className="text-gray-300 mt-2">Analyzing specimens...</p>
             </div>
           ) : error ? (
@@ -212,12 +261,25 @@ export default function Profile({ onClose }: ProfileProps) {
                 </div>
 
                 <div className="flex flex-col md:flex-row gap-4">
-                  <div className="flex-shrink-0">
+                  <div className="flex-shrink-0 relative">
+                    {/* Loading placeholder */}
+                    {!imageLoaded[nfts[currentIndex]?.mint] && !imageErrors[nfts[currentIndex]?.mint] && (
+                      <div className="absolute inset-0 w-full md:w-48 h-48 bg-gray-700 rounded-lg animate-pulse flex items-center justify-center">
+                        <div className="text-gray-500 text-sm">Loading...</div>
+                      </div>
+                    )}
+
                     <img
-                      src={nfts[currentIndex]?.image || "/placeholder.svg?height=256&width=256&text=Plague"}
+                      key={`${nfts[currentIndex]?.mint}-${currentIndex}`}
+                      src={getImageSrc(nfts[currentIndex]) || "/placeholder.svg"}
                       alt={nfts[currentIndex]?.name || "Plague NFT"}
-                      className="w-full md:w-48 h-48 object-cover rounded-lg border border-green-500/30 cursor-pointer hover:border-green-400 transition-colors"
+                      className={`w-full md:w-48 h-48 object-cover rounded-lg border border-green-500/30 cursor-pointer hover:border-green-400 transition-all duration-300 ${
+                        imageLoaded[nfts[currentIndex]?.mint] ? "opacity-100" : "opacity-0"
+                      }`}
                       crossOrigin="anonymous"
+                      loading="eager"
+                      onLoad={() => handleImageLoad(nfts[currentIndex]?.mint)}
+                      onError={() => handleImageError(nfts[currentIndex]?.mint)}
                       onClick={() => {
                         const imageUrl = nfts[currentIndex]?.image
                         if (imageUrl) {
@@ -226,10 +288,6 @@ export default function Profile({ onClose }: ProfileProps) {
                             : imageUrl
                           window.open(friendlyUrl, "_blank", "noopener,noreferrer")
                         }
-                      }}
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement
-                        target.src = "/placeholder.svg?height=256&width=256&text=Plague"
                       }}
                     />
                   </div>
@@ -274,40 +332,6 @@ export default function Profile({ onClose }: ProfileProps) {
                     </button>
                   </div>
                 )}
-              </div>
-
-              {/* Specimen Carousel */}
-              <div className="space-y-4 hidden">
-                <div className="flex justify-between items-center">
-                  <h5 className="text-green-400 font-semibold">Specimen Carousel</h5>
-                  <div className="text-gray-400 text-sm">{nfts.length} specimens total</div>
-                </div>
-
-                <div className="relative">
-                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
-                    {nfts.map((nft, index) => (
-                      <button
-                        key={nft.mint}
-                        onClick={() => setCurrentIndex(index)}
-                        className={`relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all hover:scale-105 ${
-                          index === currentIndex
-                            ? "border-green-400 ring-2 ring-green-400/50"
-                            : "border-gray-600 hover:border-green-500"
-                        }`}
-                      >
-                        <img
-                          src={nft.image || "/placeholder.svg?height=64&width=64&text=Plague"}
-                          alt={nft.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement
-                            target.src = "/placeholder.svg?height=64&width=64&text=Plague"
-                          }}
-                        />
-                      </button>
-                    ))}
-                  </div>
-                </div>
               </div>
             </div>
           )}
