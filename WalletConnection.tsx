@@ -42,7 +42,7 @@ export default function WalletConnection() {
         border-radius: 2px !important;
         font-size: 10px !important;              /* 📝 TEXT SIZE */
         min-height: 50px !important;             /* 📏 MINIMUM HEIGHT */
-        min-width: 140px !important;             /* 📏 MINIMUM WIDTH */
+        min-width: 100px !important;             /* 📏 MINIMUM WIDTH */
         transition: all 0.2s ease !important;
       }
       .wallet-adapter-button:hover {
