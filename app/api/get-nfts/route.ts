@@ -10,7 +10,7 @@ const COLLECTION_CONFIG = {
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams
-  const walletAddress = searchParams.get("walletAddress")
+  const walletAddress = searchParams.get("walletAddress") || searchParams.get("wallet")
 
   if (!walletAddress) {
     return NextResponse.json({ error: "Wallet address is required" }, { status: 400 })
@@ -115,12 +115,14 @@ export async function GET(req: NextRequest) {
       }
 
       return {
+        id: nft.id,
         mint: nft.id,
         name: nft.content?.metadata?.name || "PLAGUE Specimen",
         image: imageUrl,
         description: nft.content?.metadata?.description || "",
         attributes: nft.content?.metadata?.attributes || [],
         collection: nft.grouping?.find((g: any) => g.group_key === "collection")?.group_value || null,
+        external_url: `https://solscan.io/token/${nft.id}`,
       }
     })
 
@@ -139,6 +141,7 @@ export async function GET(req: NextRequest) {
       success: true,
     })
   } catch (error: any) {
+    console.error("NFT API Error:", error)
     return NextResponse.json(
       {
         error: error.message || "Failed to fetch NFTs",
